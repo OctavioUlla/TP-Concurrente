@@ -20,19 +20,18 @@ public class Rdp {
      * @param transicion : Numero de transicion empezando desde 1
      */
     public boolean Disparar(int transicion) {
-        try {
-            if (IsSensibilizada(transicion)) {
-
+        if (IsSensibilizada(transicion - 1)) {
+            try {
                 for (int i = 0; i < plazas; i++) {
                     estado[i] += matriz[transicion - 1][i];
                 }
-
-                return true;
+            } catch (IndexOutOfBoundsException e) {
+                e.printStackTrace();
+                System.err.println(
+                        "Numero de plazas en matriz de incidencia no coincide con numero de plazas en el estado incial");
             }
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
-            System.err.println(
-                    "Numero de plazas en matriz de incidencia no coincide con numero de plazas en el estado incial");
+
+            return true;
         }
 
         return false;
@@ -49,13 +48,19 @@ public class Rdp {
     }
 
     private boolean IsSensibilizada(int transicion) {
-        for (int i = 0; i < plazas; i++) {
-            // Compara la cantidad de tokens por la cantidad de necesarios por esta plaza
-            // Si la suma es menos que 0 no esta sensibilizada
-            if (matriz[transicion][i] + estado[i] < 0) {
-                // No hay tokens necesarios para sensibilizar transición
-                return false;
+        try {
+            for (int i = 0; i < plazas; i++) {
+                // Compara la cantidad de tokens por la cantidad de necesarios por esta plaza
+                // Si la suma es menos que 0 no esta sensibilizada
+                if (matriz[transicion][i] + estado[i] < 0) {
+                    // No hay tokens necesarios para sensibilizar transición
+                    return false;
+                }
             }
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+            System.err.println(
+                    "Numero de plazas en matriz de incidencia no coincide con numero de plazas en el estado incial");
         }
 
         return true;
