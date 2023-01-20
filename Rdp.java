@@ -16,14 +16,11 @@ public class Rdp {
         transiciones = matrizIncidencia.length;
     }
 
-    /**
-     * @param transicion : Numero de transicion empezando desde 1
-     */
     public boolean Disparar(int transicion) {
-        if (IsSensibilizada(transicion - 1)) {
+        if (IsSensibilizada(transicion)) {
             try {
                 for (int i = 0; i < plazas; i++) {
-                    estado[i] += matriz[transicion - 1][i];
+                    estado[i] += matriz[transicion][i];
                 }
             } catch (IndexOutOfBoundsException e) {
                 e.printStackTrace();
