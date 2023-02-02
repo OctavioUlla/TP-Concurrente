@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Rdp {
 
     private int[][] matriz;
@@ -34,11 +37,17 @@ public class Rdp {
         return false;
     }
 
-    public boolean[] GetTransicionesSensibilizadas() {
-        boolean[] transicionesSensibilizadas = new boolean[transiciones];
+    public int[] GetEstado() {
+        return estado;
+    }
+
+    public List<Integer> GetTransicionesSensibilizadas() {
+        List<Integer> transicionesSensibilizadas = new ArrayList<Integer>();
 
         for (int i = 0; i < transiciones; i++) {
-            transicionesSensibilizadas[i] = IsSensibilizada(i);
+            if (IsSensibilizada(i)) {
+                transicionesSensibilizadas.add(i);
+            }
         }
 
         return transicionesSensibilizadas;
@@ -47,11 +56,16 @@ public class Rdp {
     private boolean IsSensibilizada(int transicion) {
         try {
             for (int i = 0; i < plazas; i++) {
+
+                int tokens = matriz[transicion][i];
+
                 // Compara la cantidad de tokens por la cantidad de necesarios por esta plaza
                 // Si la suma es menos que 0 no esta sensibilizada
-                if (matriz[transicion][i] + estado[i] < 0) {
-                    // No hay tokens necesarios para sensibilizar transición
-                    return false;
+                if (tokens < 0) {
+                    if (tokens + estado[i] < 0) {
+                        // No hay tokens necesarios para sensibilizar transición
+                        return false;
+                    }
                 }
             }
         } catch (IndexOutOfBoundsException e) {
