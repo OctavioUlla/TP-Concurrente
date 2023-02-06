@@ -9,6 +9,7 @@ public class Rdp {
     private List<String> transiciones;
     private int[][] matriz;
     private int[] estado;
+    private int[] estadoInicial;
 
     /**
      * @param matrizIncidencia : int[transiciones][plazas]
@@ -17,7 +18,10 @@ public class Rdp {
         this.plazas = plazas;
         this.transiciones = transiciones;
         matriz = matrizIncidencia;
-        estado = estadoInicial;
+        this.estadoInicial = estadoInicial;
+
+        estado = new int[estadoInicial.length];
+        System.arraycopy(estadoInicial, 0, estado, 0, estado.length);
     }
 
     public boolean Disparar(String transicion) {
@@ -34,6 +38,10 @@ public class Rdp {
         }
 
         return false;
+    }
+
+    public void Reset() {
+        System.arraycopy(estadoInicial, 0, estado, 0, estado.length);
     }
 
     public int GetTokens(String plaza) {

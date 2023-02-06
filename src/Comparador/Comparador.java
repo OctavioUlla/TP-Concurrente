@@ -12,7 +12,7 @@ import Main.Rdp;
 
 public class Comparador {
 
-    final static int cantidadDeDisparos = 10000;
+    final static int cantidadDeDisparos = 10000000;
     final static String[] plazasProcesos = { "P1", "P2", "P3", "P4", "P5", "P6", "P8", "P9", "P10" };
 
     public static void main(String[] args) {
@@ -33,6 +33,7 @@ public class Comparador {
     private static void Correr(Rdp rdp, int cantidadDeDisparos) {
         float[] tokensCount = new float[plazasProcesos.length];
         Set<List<Integer>> marcados = new HashSet<List<Integer>>();
+        int deadlocks = 0;
 
         RellenarEstadisticas(rdp, tokensCount, marcados);
 
@@ -40,9 +41,9 @@ public class Comparador {
             List<String> transicionesSensibilizadas = rdp.GetTransicionesSensibilizadas();
 
             if (transicionesSensibilizadas.size() == 0) {
-                cantidadDeDisparos = i;
-                System.out.println("Se ha detectado un Deadlock \nCantidad de disparos realizados:" + i + "\n");
-                break;
+                deadlocks++;
+                rdp.Reset();
+                continue;
             }
 
             Collections.shuffle(transicionesSensibilizadas);
@@ -50,6 +51,8 @@ public class Comparador {
 
             RellenarEstadisticas(rdp, tokensCount, marcados);
         }
+
+        System.out.println("Deadlocks: " + deadlocks);
 
         System.out.println("Cantidad de tokens promedio: ");
 
