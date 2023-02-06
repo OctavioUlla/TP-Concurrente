@@ -9,7 +9,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -44,7 +43,69 @@ public class ImportadorPIPE implements IImportador {
 
         RellenarMatriz(doc, matrizIncidencia, plazas, transiciones);
 
-        return null;
+        int[] estadoInicial = GetEstadoInicial(doc, plazas);
+
+        return new Rdp(matrizIncidencia, estadoInicial);
+    }
+
+    private List<String> GetPlazas(Document doc) {
+
+        List<String> plazas = new ArrayList<String>();
+
+        NodeList plazasNodes = doc.getElementsByTagName("place");
+
+        for (int i = 0; i < plazasNodes.getLength(); i++) {
+
+            Element plaza = (Element) plazasNodes.item(i);
+
+            String plazaId = plaza.getAttribute("id");
+
+            plazas.add(plazaId);
+        }
+
+        return plazas;
+    }
+
+    private int[] GetEstadoInicial(Document doc, List<String> plazas) {
+
+        int[] estado = new int[plazas.size()];
+
+        NodeList plazasNodes = doc.getElementsByTagName("place");
+
+        for (int i = 0; i < plazasNodes.getLength(); i++) {
+
+            Element plaza = (Element) plazasNodes.item(i);
+
+            Element initialMarking = (Element) plaza
+                    .getElementsByTagName("initialMarking")
+                    .item(0);
+
+            estado[i] = Integer.parseInt(initialMarking
+                    .getElementsByTagName("value")
+                    .item(0)
+                    .getTextContent()
+                    .split(",")[1]);
+        }
+
+        return estado;
+    }
+
+    private List<String> GetTransiciones(Document doc) {
+
+        List<String> transiciones = new ArrayList<String>();
+
+        NodeList transicionesNodes = doc.getElementsByTagName("transition");
+
+        for (int i = 0; i < transicionesNodes.getLength(); i++) {
+
+            Element transicion = (Element) transicionesNodes.item(i);
+
+            String transicionId = transicion.getAttribute("id");
+
+            transiciones.add(transicionId);
+        }
+
+        return transiciones;
     }
 
     private void RellenarMatriz(
@@ -57,89 +118,41 @@ public class ImportadorPIPE implements IImportador {
 
         for (int i = 0; i < arcos.getLength(); i++) {
 
-            Node arco = arcos.item(i);
+            Element arco = (Element) arcos.item(i);
 
-            if (arco.getNodeType() == Node.ELEMENT_NODE) {
-                Element arcoData = (Element) arco;
+            String source = arco.getAttribute("source");
 
-                String source = arcoData.getAttribute("source");
+            String target = arco.getAttribute("target");
 
-                String target = arcoData.getAttribute("target");
+            Element inscription = (Element) arco
+                    .getElementsByTagName("inscription")
+                    .item(0);
 
-                Element inscription = (Element) arcoData
-                        .getElementsByTagName("inscription")
-                        .item(0);
+            int weight = Integer.parseInt(inscription
+                    .getElementsByTagName("value")
+                    .item(0)
+                    .getTextContent()
+                    .split(",")[1]);
 
-                int weight = Integer.parseInt(inscription
-                        .getElementsByTagName("value")
-                        .item(0)
-                        .getTextContent()
-                        .split(",")[1]);
+            int plazaIndex;
+            int transicionIndex;
 
-                int plazaIndex;
-                int transicionIndex;
-
-                // Si source es una plaza, es una plaza de entrada
-                // Y target una transicion
-                if (plazas.contains(source)) {
-                    plazaIndex = plazas.indexOf(source);
-                    transicionIndex = transiciones.indexOf(target);
-                    // Signo negativo porque es plaza de entrada
-                    weight *= -1;
-                }
-                // Source es una transicion,
-                // Target es plaza de salida
-                else {
-                    plazaIndex = plazas.indexOf(target);
-                    transicionIndex = transiciones.indexOf(source);
-                }
-
-                matrizIncidencia[transicionIndex][plazaIndex] = weight;
+            // Si source es una plaza, es una plaza de entrada
+            // Y target una transicion
+            if (plazas.contains(source)) {
+                plazaIndex = plazas.indexOf(source);
+                transicionIndex = transiciones.indexOf(target);
+                // Signo negativo porque es plaza de entrada
+                weight *= -1;
             }
-        }
-    }
-
-    private List<String> GetPlazas(Document doc) {
-
-        List<String> plazas = new ArrayList<String>();
-
-        NodeList plazasNodes = doc.getElementsByTagName("place");
-
-        for (int i = 0; i < plazasNodes.getLength(); i++) {
-
-            Node plaza = plazasNodes.item(i);
-
-            if (plaza.getNodeType() == Node.ELEMENT_NODE) {
-                Element plazaData = (Element) plaza;
-
-                String plazaId = plazaData.getAttribute("id");
-
-                plazas.add(plazaId);
+            // Source es una transicion,
+            // Target es plaza de salida
+            else {
+                plazaIndex = plazas.indexOf(target);
+                transicionIndex = transiciones.indexOf(source);
             }
+
+            matrizIncidencia[transicionIndex][plazaIndex] = weight;
         }
-
-        return plazas;
-    }
-
-    private List<String> GetTransiciones(Document doc) {
-
-        List<String> transiciones = new ArrayList<String>();
-
-        NodeList transicionesNodes = doc.getElementsByTagName("transition");
-
-        for (int i = 0; i < transicionesNodes.getLength(); i++) {
-
-            Node transicion = transicionesNodes.item(i);
-
-            if (transicion.getNodeType() == Node.ELEMENT_NODE) {
-                Element transicionData = (Element) transicion;
-
-                String transicionId = transicionData.getAttribute("id");
-
-                transiciones.add(transicionId);
-            }
-        }
-
-        return transiciones;
     }
 }
