@@ -1,3 +1,5 @@
+package Main;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,8 +36,8 @@ public class Rdp {
         return false;
     }
 
-    public int[] GetEstado() {
-        return estado;
+    public int GetTokens(String plaza) {
+        return estado[plazas.indexOf(plaza)];
     }
 
     public List<String> GetTransicionesSensibilizadas() {
