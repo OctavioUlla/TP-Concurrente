@@ -6,43 +6,15 @@ import java.util.Set;
 
 public class Comparador {
 
+    final static int cantidadDeDisparos = 1000;
+
     public static void main(String[] args) {
-        final int cantidadDeDisparos = 1000;
-        int[][] matrizIncidenciaConDeadlock = {
-                { 1, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1, 0, 0, 0 },
-                { -1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, -1, 0, 0 },
-                { -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, -1, 0, 0 },
-                { 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, -1, 0 },
-                { 0, 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, -1, 0 },
-                { 0, 0, 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, -1 },
-                { 0, 0, 0, 0, -1, 1, 0, 0, 0, 0, 0, 0, 0, 1, -1 },
-                { 0, 0, 0, 0, 0, -1, 1, 0, 0, 0, 0, 0, 0, 0, 1 },
-                { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, -1, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, -1, 1, 0, 0, 0, -1, 1, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, -1, 1, 0, -1, 1, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 1, 1, 0, 0, 0 } };
 
-        int[] estadoInicialConDeadlock = { 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 4, 2, 2, 3, 1 };
+        IImportador importador = new ImportadorPIPE();
 
-        Rdp rdpConDeadlock = new Rdp(matrizIncidenciaConDeadlock, estadoInicialConDeadlock);
+        Rdp rdpConDeadlock = importador.Importar("RedesDePetri/Red de petri.xml");
 
-        int[][] matrizIncidenciaSinDeadlock = {
-                { 1, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1, 0, 0, 0, -1, -1 },
-                { -1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, -1, 0, 0, 1, 0 },
-                { -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, -1, 0, 0, 1, 0 },
-                { 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, -1, 0, 0, 1 },
-                { 0, 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, -1, 0, 0, 1 },
-                { 0, 0, 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, -1, 0, 0 },
-                { 0, 0, 0, 0, -1, 1, 0, 0, 0, 0, 0, 0, 0, 1, -1, 0, 0 },
-                { 0, 0, 0, 0, 0, -1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, -1, 0, -1, -1 },
-                { 0, 0, 0, 0, 0, 0, 0, -1, 1, 0, 0, 0, -1, 1, 0, 0, 1 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, -1, 1, 0, -1, 1, 0, 0, 1, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 1, 1, 0, 0, 0, 0, 0 } };
-
-        int[] estadoInicialSinDeadlock = { 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 4, 2, 2, 3, 1, 2, 3 };
-
-        Rdp rdpSinDeadlock = new Rdp(matrizIncidenciaSinDeadlock, estadoInicialSinDeadlock);
+        Rdp rdpSinDeadlock = importador.Importar("RedesDePetri/Red de petri sin deadlock.xml");
 
         System.out.println("Red de Petri Sin desbloquear:");
         Correr(rdpConDeadlock, cantidadDeDisparos);
@@ -54,27 +26,23 @@ public class Comparador {
     public static void Correr(Rdp rdp, int cantidadDeDisparos) {
         int tokensProceso = 0;
         List<Integer> estadoProceso = new ArrayList<>();
-        //int[] estadoProceso = new int[10];
-        Set<List<Integer>> marcadosProceso = new HashSet<List<Integer>>();
-        List<Integer> transicionesSensibilizadas = new ArrayList<>();
 
-        for (int j = 0; j < 10; j++) 
-        { 
-            if(j!=7)
-            {
+        Set<List<Integer>> marcadosProceso = new HashSet<List<Integer>>();
+        List<String> transicionesSensibilizadas;
+
+        for (int j = 0; j < 10; j++) {
+            if (j != 6) {
                 tokensProceso += rdp.GetEstado()[j];
                 estadoProceso.add(rdp.GetEstado()[j]);
-            }            
+            }
         }
         marcadosProceso.add(estadoProceso);
         estadoProceso.clear();
 
-        for (int i = 0; i < cantidadDeDisparos; i++) 
-        {
+        for (int i = 0; i < cantidadDeDisparos; i++) {
             transicionesSensibilizadas = rdp.GetTransicionesSensibilizadas();
 
-            if (transicionesSensibilizadas.size() == 0) 
-            {
+            if (transicionesSensibilizadas.size() == 0) {
                 cantidadDeDisparos = i;
                 System.out.println("Se ha detectado un Deadlock \ncantidad de disparos realizados:" + i + "\n");
                 break;
@@ -83,13 +51,11 @@ public class Comparador {
             Collections.shuffle(transicionesSensibilizadas);
             rdp.Disparar(transicionesSensibilizadas.get(0));
 
-            for (int j = 0; j < 10; j++) 
-            { 
-                if(j!=7)
-                {
+            for (int j = 0; j < 10; j++) {
+                if (j != 6) {
                     tokensProceso += rdp.GetEstado()[j];
                     estadoProceso.add(rdp.GetEstado()[j]);
-                }            
+                }
             }
             marcadosProceso.add(estadoProceso);
             estadoProceso.clear();

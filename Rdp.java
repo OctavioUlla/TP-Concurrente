@@ -3,32 +3,29 @@ import java.util.List;
 
 public class Rdp {
 
+    private List<String> plazas;
+    private List<String> transiciones;
     private int[][] matriz;
     private int[] estado;
-    private int plazas;
-    private int transiciones;
 
     /**
      * @param matrizIncidencia : int[transiciones][plazas]
      */
-    public Rdp(int[][] matrizIncidencia, int[] estadoInicial) {
+    public Rdp(List<String> plazas, List<String> transiciones, int[][] matrizIncidencia, int[] estadoInicial) {
+        this.plazas = plazas;
+        this.transiciones = transiciones;
         matriz = matrizIncidencia;
         estado = estadoInicial;
-
-        plazas = estado.length;
-        transiciones = matrizIncidencia.length;
     }
 
-    public boolean Disparar(int transicion) {
-        if (IsSensibilizada(transicion)) {
-            try {
-                for (int i = 0; i < plazas; i++) {
-                    estado[i] += matriz[transicion][i];
-                }
-            } catch (IndexOutOfBoundsException e) {
-                e.printStackTrace();
-                System.err.println(
-                        "Numero de plazas en matriz de incidencia no coincide con numero de plazas en el estado incial");
+    public boolean Disparar(String transicion) {
+
+        int transicionIndex = transiciones.indexOf(transicion);
+
+        if (IsSensibilizada(transicionIndex)) {
+
+            for (int i = 0; i < plazas.size(); i++) {
+                estado[i] += matriz[transicionIndex][i];
             }
 
             return true;
@@ -41,37 +38,32 @@ public class Rdp {
         return estado;
     }
 
-    public List<Integer> GetTransicionesSensibilizadas() {
-        List<Integer> transicionesSensibilizadas = new ArrayList<Integer>();
+    public List<String> GetTransicionesSensibilizadas() {
+        List<String> transicionesSensibilizadas = new ArrayList<String>();
 
-        for (int i = 0; i < transiciones; i++) {
+        for (int i = 0; i < transiciones.size(); i++) {
             if (IsSensibilizada(i)) {
-                transicionesSensibilizadas.add(i);
+                transicionesSensibilizadas.add(transiciones.get(i));
             }
         }
 
         return transicionesSensibilizadas;
     }
 
-    private boolean IsSensibilizada(int transicion) {
-        try {
-            for (int i = 0; i < plazas; i++) {
+    private boolean IsSensibilizada(int transicionIndex) {
 
-                int tokens = matriz[transicion][i];
+        for (int i = 0; i < plazas.size(); i++) {
 
-                // Compara la cantidad de tokens por la cantidad de necesarios por esta plaza
-                // Si la suma es menos que 0 no esta sensibilizada
-                if (tokens < 0) {
-                    if (tokens + estado[i] < 0) {
-                        // No hay tokens necesarios para sensibilizar transición
-                        return false;
-                    }
+            int tokens = matriz[transicionIndex][i];
+
+            // Compara la cantidad de tokens por la cantidad de necesarios por esta plaza
+            // Si la suma es menos que 0 no esta sensibilizada
+            if (tokens < 0) {
+                if (tokens + estado[i] < 0) {
+                    // No hay tokens necesarios para sensibilizar transición
+                    return false;
                 }
             }
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
-            System.err.println(
-                    "Numero de plazas en matriz de incidencia no coincide con numero de plazas en el estado incial");
         }
 
         return true;
