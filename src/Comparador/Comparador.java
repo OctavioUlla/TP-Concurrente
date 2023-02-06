@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Set;
 
 import Importador.IImportador;
-import Importador.ImportadorPIPE;
+import Importador.ImportadorFactory;
+import Importador.TipoImportador;
 import Main.Rdp;
 
 public class Comparador {
@@ -17,7 +18,8 @@ public class Comparador {
 
     public static void main(String[] args) {
 
-        IImportador importador = new ImportadorPIPE();
+        ImportadorFactory importadorFactory = new ImportadorFactory();
+        IImportador importador = importadorFactory.GetImportador(TipoImportador.PIPE);
 
         Rdp rdpConDeadlock = importador.Importar("./RedesDePetri/Red de petri.xml");
 
