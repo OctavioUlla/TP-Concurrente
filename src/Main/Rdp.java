@@ -1,13 +1,17 @@
 package Main;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import javax.print.DocFlavor.STRING;
 
 public class Rdp {
     private final List<String> plazas;
     private final List<String> transiciones;
-    private final int[][] matriz;
+    private final Map<String, int[]> matrizMap;
     private final int[] estadoInicial;
 
     private int[] estado;
@@ -18,8 +22,13 @@ public class Rdp {
     public Rdp(List<String> plazas, List<String> transiciones, int[][] matrizIncidencia, int[] estadoInicial) {
         this.plazas = plazas;
         this.transiciones = transiciones;
-        matriz = matrizIncidencia;
         this.estadoInicial = estadoInicial;
+
+        matrizMap = new HashMap<String, int[]>();
+        // Armar HashMap
+        for (int i = 0; i < transiciones.size(); i++) {
+            matrizMap.put(transiciones.get(i), matrizIncidencia[i]);
+        }
 
         estado = new int[estadoInicial.length];
         System.arraycopy(estadoInicial, 0, estado, 0, estado.length);
@@ -27,12 +36,10 @@ public class Rdp {
 
     public boolean Disparar(String transicion) {
 
-        int transicionIndex = transiciones.indexOf(transicion);
-
         if (IsSensibilizada(transicion)) {
 
             for (int i = 0; i < plazas.size(); i++) {
-                estado[i] += matriz[transicionIndex][i];
+                estado[i] += matrizMap.get(transicion)[i];
             }
 
             return true;
@@ -56,9 +63,7 @@ public class Rdp {
     }
 
     private boolean IsSensibilizada(String transicion) {
-
-        int transicionIndex = transiciones.indexOf(transicion);
-        int[] tokensNecesarios = matriz[transicionIndex];
+        int[] tokensNecesarios = matrizMap.get(transicion);
 
         return IntStream.range(0, transiciones.size())
                 .allMatch(i -> estado[i] >= tokensNecesarios[i]);
