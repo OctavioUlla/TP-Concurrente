@@ -5,11 +5,12 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Rdp {
-    private List<String> plazas;
-    private List<String> transiciones;
-    private int[][] matriz;
+    private final List<String> plazas;
+    private final List<String> transiciones;
+    private final int[][] matriz;
+    private final int[] estadoInicial;
+
     private int[] estado;
-    private int[] estadoInicial;
 
     /**
      * @param matrizIncidencia : int[transiciones][plazas]
