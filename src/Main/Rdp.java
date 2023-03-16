@@ -34,16 +34,15 @@ public class Rdp {
 
     public boolean Disparar(String transicion) {
 
-        if (IsSensibilizada(transicion)) {
-
-            for (int i = 0; i < plazas.size(); i++) {
-                estado[i] += matrizMap.get(transicion)[i];
-            }
-
-            return true;
+        if (!IsSensibilizada(transicion)) {
+            return false;
         }
 
-        return false;
+        for (int i = 0; i < plazas.size(); i++) {
+            estado[i] += matrizMap.get(transicion)[i];
+        }
+
+        return true;
     }
 
     public void Reset() {
