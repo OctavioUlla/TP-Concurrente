@@ -1,13 +1,14 @@
 package Main;
 
-import java.util.ArrayList;
+import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collector;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Rdp {
-
     private List<String> plazas;
     private List<String> transiciones;
     private int[][] matriz;
@@ -31,7 +32,7 @@ public class Rdp {
 
         int transicionIndex = transiciones.indexOf(transicion);
 
-        if (IsSensibilizada(transicionIndex)) {
+        if (IsSensibilizada(transicion)) {
 
             for (int i = 0; i < plazas.size(); i++) {
                 estado[i] += matriz[transicionIndex][i];
@@ -53,26 +54,16 @@ public class Rdp {
 
     public List<String> GetTransicionesSensibilizadas() {
         return transiciones.stream()
-                .filter(t -> IsSensibilizada(transiciones.indexOf(t)))
+                .filter(t -> IsSensibilizada(t))
                 .collect(Collectors.toList());
     }
 
-    private boolean IsSensibilizada(int transicionIndex) {
+    private boolean IsSensibilizada(String transicion) {
 
-        for (int i = 0; i < plazas.size(); i++) {
+        int transicionIndex = transiciones.indexOf(transicion);
+        int[] tokensNecesarios = matriz[transicionIndex];
 
-            int tokens = matriz[transicionIndex][i];
-
-            // Compara la cantidad de tokens por la cantidad de necesarios por esta plaza
-            // Si la suma es menos que 0 no esta sensibilizada
-            if (tokens < 0) {
-                if (tokens + estado[i] < 0) {
-                    // No hay tokens necesarios para sensibilizar transición
-                    return false;
-                }
-            }
-        }
-
-        return true;
+        return IntStream.range(0, transiciones.size())
+                .allMatch(i -> estado[i] >= tokensNecesarios[i]);
     }
 }
