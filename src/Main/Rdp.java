@@ -1,7 +1,10 @@
 package Main;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class Rdp {
 
@@ -49,15 +52,9 @@ public class Rdp {
     }
 
     public List<String> GetTransicionesSensibilizadas() {
-        List<String> transicionesSensibilizadas = new ArrayList<String>();
-
-        for (int i = 0; i < transiciones.size(); i++) {
-            if (IsSensibilizada(i)) {
-                transicionesSensibilizadas.add(transiciones.get(i));
-            }
-        }
-
-        return transicionesSensibilizadas;
+        return transiciones.stream()
+                .filter(t -> IsSensibilizada(transiciones.indexOf(t)))
+                .collect(Collectors.toList());
     }
 
     private boolean IsSensibilizada(int transicionIndex) {
