@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import javax.print.DocFlavor.STRING;
-
 public class Rdp {
     private final List<String> plazas;
     private final List<String> transiciones;
