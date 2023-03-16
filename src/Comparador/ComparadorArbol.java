@@ -51,15 +51,21 @@ public class ComparadorArbol {
     }
 
     public static void searchMarcados(Rdp rdp, HashSet<List<Integer>> marcados) {
-        if (!marcados.add(plazasProcesos.stream().map(p -> rdp.GetTokens(p)).collect(Collectors.toList()))) {
+
+        List<Integer> marcado = plazasProcesos.stream()
+                .map(p -> rdp.GetTokens(p))
+                .collect(Collectors.toList());
+
+        if (!marcados.add(marcado)) {
             // Si se repite marcado volver
             return;
         }
 
-        rdp.GetTransicionesSensibilizadas().stream().forEach(t -> {
-            rdp.Disparar(t);
-            searchMarcados(rdp, marcados);
-        });
+        rdp.GetTransicionesSensibilizadas().stream()
+                .forEach(t -> {
+                    rdp.Disparar(t);
+                    searchMarcados(rdp, marcados);
+                });
 
     }
 }
