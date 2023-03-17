@@ -45,11 +45,11 @@ public class ImportadorPIPE implements IImportador {
         List<String> plazas = getPlazas(doc);
         List<String> transiciones = getTransiciones(doc);
 
-        Map<String, int[]> matrizIncidencia = new HashMap<String, int[]>();
+        Map<String, Map<String, Integer>> matrizIncidencia = new HashMap<String, Map<String, Integer>>();
 
         rellenarMatriz(doc, matrizIncidencia, plazas, transiciones);
 
-        int[] estadoInicial = getEstadoInicial(doc, plazas);
+        Map<String, Integer> estadoInicial = getEstadoInicial(doc);
 
         return new Rdp(plazas, transiciones, matrizIncidencia, estadoInicial);
     }
@@ -72,9 +72,9 @@ public class ImportadorPIPE implements IImportador {
         return plazas;
     }
 
-    private int[] getEstadoInicial(Document doc, List<String> plazas) {
+    private Map<String, Integer> getEstadoInicial(Document doc) {
 
-        int[] estado = new int[plazas.size()];
+        Map<String, Integer> estado = new HashMap<String, Integer>();
 
         NodeList plazasNodes = doc.getElementsByTagName("place");
 
@@ -82,15 +82,19 @@ public class ImportadorPIPE implements IImportador {
 
             Element plaza = (Element) plazasNodes.item(i);
 
+            String plazaName = plaza.getAttribute("id");
+
             Element initialMarking = (Element) plaza
                     .getElementsByTagName("initialMarking")
                     .item(0);
 
-            estado[i] = Integer.parseInt(initialMarking
+            int tokens = Integer.parseInt(initialMarking
                     .getElementsByTagName("value")
                     .item(0)
                     .getTextContent()
                     .split(",")[1]);
+
+            estado.put(plazaName, tokens);
         }
 
         return estado;
@@ -116,11 +120,11 @@ public class ImportadorPIPE implements IImportador {
 
     private void rellenarMatriz(
             Document doc,
-            Map<String, int[]> matrizIncidencia,
+            Map<String, Map<String, Integer>> matrizIncidencia,
             List<String> plazas,
             List<String> transiciones) {
 
-        transiciones.stream().forEach(t -> matrizIncidencia.put(t, new int[plazas.size()]));
+        transiciones.stream().forEach(t -> matrizIncidencia.put(t, new HashMap<String, Integer>()));
 
         NodeList arcos = doc.getElementsByTagName("arc");
 
@@ -142,13 +146,13 @@ public class ImportadorPIPE implements IImportador {
                     .getTextContent()
                     .split(",")[1]);
 
-            int plazaIndex;
+            String plaza;
             String transicion;
 
             // Si source es una plaza, es una plaza de entrada
             // Y target una transicion
             if (plazas.contains(source)) {
-                plazaIndex = plazas.indexOf(source);
+                plaza = source;
                 transicion = target;
                 // Signo negativo porque es plaza de entrada
                 weight *= -1;
@@ -156,11 +160,11 @@ public class ImportadorPIPE implements IImportador {
             // Source es una transicion,
             // Target es plaza de salida
             else {
-                plazaIndex = plazas.indexOf(target);
+                plaza = target;
                 transicion = source;
             }
 
-            matrizIncidencia.get(transicion)[plazaIndex] = weight;
+            matrizIncidencia.get(transicion).put(plaza, weight);
         }
     }
 }
