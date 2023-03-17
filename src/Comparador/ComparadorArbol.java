@@ -52,24 +52,25 @@ public class ComparadorArbol {
     }
 
     public static void searchMarcados(Rdp rdp, HashSet<List<Integer>> marcados) {
+        // Deep copy
+        Map<String, Integer> marcado = rdp.getMarcado().entrySet().stream()
+                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
 
-        List<Integer> marcado = plazasProcesos.stream()
-                .map(p -> rdp.getTokens(p))
+        List<Integer> marcadoProcesos = marcado.entrySet().stream()
+                .filter(p -> plazasProcesos.contains(p.getKey()))
+                .map(p -> p.getValue())
                 .collect(Collectors.toList());
 
-        if (!marcados.add(marcado)) {
+        if (!marcados.add(marcadoProcesos)) {
             // Si se repite marcado volver
             return;
         }
-
-        Map<String, Integer> estado = rdp.getMarcado().entrySet().stream()
-                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
 
         rdp.getTransicionesSensibilizadas()
                 .forEach(t -> {
                     rdp.disparar(t);
                     searchMarcados(rdp, marcados);
-                    rdp.setMarcado(estado);
+                    rdp.setMarcado(marcado);
                 });
     }
 }

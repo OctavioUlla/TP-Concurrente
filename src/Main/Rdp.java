@@ -31,10 +31,6 @@ public class Rdp {
         return true;
     }
 
-    public int getTokens(String plaza) {
-        return marcado.get(plaza);
-    }
-
     public Map<String, Integer> getMarcado() {
         return marcado;
     }
