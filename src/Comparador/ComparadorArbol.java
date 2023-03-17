@@ -44,10 +44,8 @@ public class ComparadorArbol {
                 + marcados.stream()
                         .map(toks -> toks
                                 .stream()
-                                .mapToInt(Integer::intValue)
-                                .sum())
-                        .mapToInt(Integer::intValue)
-                        .sum() / (float) marcados.size());
+                                .reduce(0, Integer::sum))
+                        .reduce(0, Integer::sum) / (float) marcados.size());
     }
 
     public static void searchMarcados(Rdp rdp, HashSet<List<Integer>> marcados) {
