@@ -6,21 +6,18 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Rdp {
-    private final List<String> plazas;
     private final List<String> transiciones;
     private final Map<String, Map<String, Integer>> matriz;
 
-    private final Map<String, Integer> estado;
+    private final Map<String, Integer> tokens;
 
-    public Rdp(List<String> plazas,
-            List<String> transiciones,
+    public Rdp(List<String> transiciones,
             Map<String, Map<String, Integer>> matrizIncidencia,
             Map<String, Integer> estadoInicial) {
 
-        this.plazas = Collections.unmodifiableList(plazas);
         this.transiciones = Collections.unmodifiableList(transiciones);
         this.matriz = Collections.unmodifiableMap(matrizIncidencia);
-        this.estado = Collections.unmodifiableMap(estadoInicial);
+        this.tokens = estadoInicial;
     }
 
     public boolean disparar(String transicion) {
@@ -29,17 +26,15 @@ public class Rdp {
             return false;
         }
 
-        Map<String, Integer> plazasMatriz = matriz.get(transicion);
-
-        for (String plaza : plazas) {
-            estado.put(plaza, estado.get(plaza) + plazasMatriz.get(plaza));
-        }
+        matriz.get(transicion)
+                .entrySet()
+                .forEach(cambioPlaza -> tokens.merge(cambioPlaza.getKey(), cambioPlaza.getValue(), Integer::sum));
 
         return true;
     }
 
     public int getTokens(String plaza) {
-        return estado.get(plaza);
+        return tokens.get(plaza);
     }
 
     public List<String> getTransicionesSensibilizadas() {
@@ -52,6 +47,6 @@ public class Rdp {
         Map<String, Integer> plazasNecesarias = matriz.get(transicion);
 
         return plazasNecesarias.keySet().stream()
-                .allMatch(p -> estado.get(p) + plazasNecesarias.get(p) >= 0);
+                .allMatch(p -> tokens.get(p) + plazasNecesarias.get(p) >= 0);
     }
 }

@@ -10,5 +10,6 @@ public class Main {
         IImportador importador = importadorFactory.getImportador(TipoImportador.PIPE);
 
         Rdp rdp = importador.importar("./RedesDePetri/Red de petri sin deadlock.xml");
+        rdp.disparar("T1");
     }
 }
