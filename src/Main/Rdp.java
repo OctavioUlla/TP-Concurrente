@@ -32,9 +32,9 @@ public class Rdp {
         System.arraycopy(estadoInicial, 0, estado, 0, estado.length);
     }
 
-    public boolean Disparar(String transicion) {
+    public boolean disparar(String transicion) {
 
-        if (!IsSensibilizada(transicion)) {
+        if (!isSensibilizada(transicion)) {
             return false;
         }
 
@@ -45,21 +45,17 @@ public class Rdp {
         return true;
     }
 
-    public void Reset() {
-        System.arraycopy(estadoInicial, 0, estado, 0, estado.length);
-    }
-
-    public int GetTokens(String plaza) {
+    public int getTokens(String plaza) {
         return estado[plazas.indexOf(plaza)];
     }
 
-    public List<String> GetTransicionesSensibilizadas() {
+    public List<String> getTransicionesSensibilizadas() {
         return transiciones.stream()
-                .filter(t -> IsSensibilizada(t))
+                .filter(t -> isSensibilizada(t))
                 .collect(Collectors.toList());
     }
 
-    private boolean IsSensibilizada(String transicion) {
+    private boolean isSensibilizada(String transicion) {
         int[] tokensNecesarios = matrizMap.get(transicion);
 
         return IntStream.range(0, transiciones.size())

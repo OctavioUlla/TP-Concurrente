@@ -19,7 +19,7 @@ import Main.Rdp;
 public class ImportadorPIPE implements IImportador {
 
     @Override
-    public Rdp Importar(String filename) {
+    public Rdp importar(String filename) {
 
         File xmlFile = new File(filename);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -40,19 +40,19 @@ public class ImportadorPIPE implements IImportador {
             return null;
         }
 
-        List<String> plazas = GetPlazas(doc);
-        List<String> transiciones = GetTransiciones(doc);
+        List<String> plazas = getPlazas(doc);
+        List<String> transiciones = getTransiciones(doc);
 
         int[][] matrizIncidencia = new int[transiciones.size()][plazas.size()];
 
-        RellenarMatriz(doc, matrizIncidencia, plazas, transiciones);
+        rellenarMatriz(doc, matrizIncidencia, plazas, transiciones);
 
-        int[] estadoInicial = GetEstadoInicial(doc, plazas);
+        int[] estadoInicial = getEstadoInicial(doc, plazas);
 
         return new Rdp(plazas, transiciones, matrizIncidencia, estadoInicial);
     }
 
-    private List<String> GetPlazas(Document doc) {
+    private List<String> getPlazas(Document doc) {
 
         List<String> plazas = new ArrayList<String>();
 
@@ -70,7 +70,7 @@ public class ImportadorPIPE implements IImportador {
         return plazas;
     }
 
-    private int[] GetEstadoInicial(Document doc, List<String> plazas) {
+    private int[] getEstadoInicial(Document doc, List<String> plazas) {
 
         int[] estado = new int[plazas.size()];
 
@@ -94,7 +94,7 @@ public class ImportadorPIPE implements IImportador {
         return estado;
     }
 
-    private List<String> GetTransiciones(Document doc) {
+    private List<String> getTransiciones(Document doc) {
 
         List<String> transiciones = new ArrayList<String>();
 
@@ -112,7 +112,7 @@ public class ImportadorPIPE implements IImportador {
         return transiciones;
     }
 
-    private void RellenarMatriz(
+    private void rellenarMatriz(
             Document doc,
             int[][] matrizIncidencia,
             List<String> plazas,
