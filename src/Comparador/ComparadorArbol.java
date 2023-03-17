@@ -14,8 +14,6 @@ import Importador.TipoImportador;
 import Main.Rdp;
 
 public class ComparadorArbol {
-
-    final static int cantidadDeDisparos = 10000000;
     final static List<String> plazasProcesos = Collections
             .unmodifiableList(
                     Arrays.asList(new String[] { "P1", "P2", "P3", "P4", "P5", "P6", "P8", "P9", "P10" }));
