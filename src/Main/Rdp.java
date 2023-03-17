@@ -1,23 +1,19 @@
 package Main;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Rdp {
-    private final List<String> transiciones;
     private final Map<String, Map<String, Integer>> matriz;
 
-    private final Map<String, Integer> plazaTokensMap;
+    private Map<String, Integer> marcado;
 
-    public Rdp(List<String> transiciones,
-            Map<String, Map<String, Integer>> matrizIncidencia,
-            Map<String, Integer> estadoInicial) {
-
-        this.transiciones = Collections.unmodifiableList(transiciones);
+    public Rdp(Map<String, Map<String, Integer>> matrizIncidencia, Map<String, Integer> marcadoInicial) {
         this.matriz = Collections.unmodifiableMap(matrizIncidencia);
-        this.plazaTokensMap = estadoInicial;
+        this.marcado = marcadoInicial;
     }
 
     public boolean disparar(String transicion) {
@@ -28,7 +24,7 @@ public class Rdp {
 
         matriz.get(transicion)
                 .entrySet()
-                .forEach(plazaTok -> plazaTokensMap.merge(plazaTok.getKey(),
+                .forEach(plazaTok -> marcado.merge(plazaTok.getKey(),
                         plazaTok.getValue(),
                         Integer::sum));
 
@@ -36,17 +32,27 @@ public class Rdp {
     }
 
     public int getTokens(String plaza) {
-        return plazaTokensMap.get(plaza);
+        return marcado.get(plaza);
+    }
+
+    public Map<String, Integer> getMarcado() {
+        return marcado;
+    }
+
+    public void setMarcado(Map<String, Integer> estado) {
+        marcado = new HashMap<String, Integer>(estado);
     }
 
     public List<String> getTransicionesSensibilizadas() {
-        return transiciones.stream()
+        return matriz.keySet().stream()
                 .filter(t -> isSensibilizada(t))
                 .collect(Collectors.toList());
     }
 
     private boolean isSensibilizada(String transicion) {
         return matriz.get(transicion).entrySet().stream()
-                .allMatch(plazaTok -> plazaTokensMap.get(plazaTok.getKey()) + plazaTok.getValue() >= 0);
+                .allMatch(
+                        marcadoNecesario -> marcado.get(marcadoNecesario.getKey())
+                                + marcadoNecesario.getValue() >= 0);
     }
 }

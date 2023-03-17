@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import Importador.IImportador;
@@ -60,11 +62,14 @@ public class ComparadorArbol {
             return;
         }
 
+        Map<String, Integer> estado = rdp.getMarcado().entrySet().stream()
+                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+
         rdp.getTransicionesSensibilizadas()
                 .forEach(t -> {
                     rdp.disparar(t);
                     searchMarcados(rdp, marcados);
+                    rdp.setMarcado(estado);
                 });
-
     }
 }
