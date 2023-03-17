@@ -12,9 +12,6 @@ public class Rdp {
 
     private final Map<String, Integer> estado;
 
-    /**
-     * @param matrizIncidencia : int[transiciones][plazas]
-     */
     public Rdp(List<String> plazas,
             List<String> transiciones,
             Map<String, Map<String, Integer>> matrizIncidencia,
