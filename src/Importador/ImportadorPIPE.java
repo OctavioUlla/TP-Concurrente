@@ -3,7 +3,9 @@ package Importador;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -19,7 +21,7 @@ import Main.Rdp;
 public class ImportadorPIPE implements IImportador {
 
     @Override
-    public Rdp Importar(String filename) {
+    public Rdp importar(String filename) {
 
         File xmlFile = new File(filename);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -40,19 +42,19 @@ public class ImportadorPIPE implements IImportador {
             return null;
         }
 
-        List<String> plazas = GetPlazas(doc);
-        List<String> transiciones = GetTransiciones(doc);
+        List<String> plazas = getPlazas(doc);
+        List<String> transiciones = getTransiciones(doc);
 
-        int[][] matrizIncidencia = new int[transiciones.size()][plazas.size()];
+        Map<String, Map<String, Integer>> matrizIncidencia = new HashMap<String, Map<String, Integer>>();
 
-        RellenarMatriz(doc, matrizIncidencia, plazas, transiciones);
+        rellenarMatriz(doc, matrizIncidencia, plazas, transiciones);
 
-        int[] estadoInicial = GetEstadoInicial(doc, plazas);
+        Map<String, Integer> estadoInicial = getEstadoInicial(doc);
 
-        return new Rdp(plazas, transiciones, matrizIncidencia, estadoInicial);
+        return new Rdp(transiciones, matrizIncidencia, estadoInicial);
     }
 
-    private List<String> GetPlazas(Document doc) {
+    private List<String> getPlazas(Document doc) {
 
         List<String> plazas = new ArrayList<String>();
 
@@ -70,9 +72,9 @@ public class ImportadorPIPE implements IImportador {
         return plazas;
     }
 
-    private int[] GetEstadoInicial(Document doc, List<String> plazas) {
+    private Map<String, Integer> getEstadoInicial(Document doc) {
 
-        int[] estado = new int[plazas.size()];
+        Map<String, Integer> estado = new HashMap<String, Integer>();
 
         NodeList plazasNodes = doc.getElementsByTagName("place");
 
@@ -80,21 +82,25 @@ public class ImportadorPIPE implements IImportador {
 
             Element plaza = (Element) plazasNodes.item(i);
 
+            String plazaName = plaza.getAttribute("id");
+
             Element initialMarking = (Element) plaza
                     .getElementsByTagName("initialMarking")
                     .item(0);
 
-            estado[i] = Integer.parseInt(initialMarking
+            int tokens = Integer.parseInt(initialMarking
                     .getElementsByTagName("value")
                     .item(0)
                     .getTextContent()
                     .split(",")[1]);
+
+            estado.put(plazaName, tokens);
         }
 
         return estado;
     }
 
-    private List<String> GetTransiciones(Document doc) {
+    private List<String> getTransiciones(Document doc) {
 
         List<String> transiciones = new ArrayList<String>();
 
@@ -112,11 +118,13 @@ public class ImportadorPIPE implements IImportador {
         return transiciones;
     }
 
-    private void RellenarMatriz(
+    private void rellenarMatriz(
             Document doc,
-            int[][] matrizIncidencia,
+            Map<String, Map<String, Integer>> matrizIncidencia,
             List<String> plazas,
             List<String> transiciones) {
+
+        transiciones.stream().forEach(t -> matrizIncidencia.put(t, new HashMap<String, Integer>()));
 
         NodeList arcos = doc.getElementsByTagName("arc");
 
@@ -138,25 +146,25 @@ public class ImportadorPIPE implements IImportador {
                     .getTextContent()
                     .split(",")[1]);
 
-            int plazaIndex;
-            int transicionIndex;
+            String plaza;
+            String transicion;
 
             // Si source es una plaza, es una plaza de entrada
             // Y target una transicion
             if (plazas.contains(source)) {
-                plazaIndex = plazas.indexOf(source);
-                transicionIndex = transiciones.indexOf(target);
+                plaza = source;
+                transicion = target;
                 // Signo negativo porque es plaza de entrada
                 weight *= -1;
             }
             // Source es una transicion,
             // Target es plaza de salida
             else {
-                plazaIndex = plazas.indexOf(target);
-                transicionIndex = transiciones.indexOf(source);
+                plaza = target;
+                transicion = source;
             }
 
-            matrizIncidencia[transicionIndex][plazaIndex] = weight;
+            matrizIncidencia.get(transicion).put(plaza, weight);
         }
     }
 }

@@ -7,8 +7,9 @@ public class Main {
 
     public static void main(String[] args) {
         ImportadorFactory importadorFactory = new ImportadorFactory();
-        IImportador importador = importadorFactory.GetImportador(TipoImportador.PIPE);
+        IImportador importador = importadorFactory.getImportador(TipoImportador.PIPE);
 
-        Rdp rdp = importador.Importar("./RedesDePetri/Red de petri sin deadlock.xml");
+        Rdp rdp = importador.importar("./RedesDePetri/Red de petri sin deadlock.xml");
+        rdp.disparar("T1");
     }
 }
