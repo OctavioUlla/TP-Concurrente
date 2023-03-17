@@ -39,13 +39,14 @@ public class ComparadorArbol {
 
         searchMarcados(rdp, marcados);
 
+        double promediosProcesos = marcados.stream()
+                .map(toks -> toks.stream().mapToInt(Integer::intValue).sum())
+                .mapToInt(Integer::intValue)
+                .average()
+                .orElse(Double.NaN);
+
         System.out.println("Cantidad marcados posibles: " + marcados.size());
-        System.out.println("Promedio tokens en plazas: "
-                + marcados.stream()
-                        .map(toks -> toks
-                                .stream()
-                                .reduce(0, Integer::sum))
-                        .reduce(0, Integer::sum) / (float) marcados.size());
+        System.out.println("Promedio tokens en plazas: " + promediosProcesos);
     }
 
     public static void searchMarcados(Rdp rdp, HashSet<List<Integer>> marcados) {
@@ -59,7 +60,7 @@ public class ComparadorArbol {
             return;
         }
 
-        rdp.getTransicionesSensibilizadas().stream()
+        rdp.getTransicionesSensibilizadas()
                 .forEach(t -> {
                     rdp.disparar(t);
                     searchMarcados(rdp, marcados);
