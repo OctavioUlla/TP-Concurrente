@@ -3,7 +3,9 @@ package Importador;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,7 +45,7 @@ public class ImportadorPIPE implements IImportador {
         List<String> plazas = getPlazas(doc);
         List<String> transiciones = getTransiciones(doc);
 
-        int[][] matrizIncidencia = new int[transiciones.size()][plazas.size()];
+        Map<String, int[]> matrizIncidencia = new HashMap<String, int[]>();
 
         rellenarMatriz(doc, matrizIncidencia, plazas, transiciones);
 
@@ -114,9 +116,11 @@ public class ImportadorPIPE implements IImportador {
 
     private void rellenarMatriz(
             Document doc,
-            int[][] matrizIncidencia,
+            Map<String, int[]> matrizIncidencia,
             List<String> plazas,
             List<String> transiciones) {
+
+        transiciones.stream().forEach(t -> matrizIncidencia.put(t, new int[plazas.size()]));
 
         NodeList arcos = doc.getElementsByTagName("arc");
 
@@ -139,13 +143,13 @@ public class ImportadorPIPE implements IImportador {
                     .split(",")[1]);
 
             int plazaIndex;
-            int transicionIndex;
+            String transicion;
 
             // Si source es una plaza, es una plaza de entrada
             // Y target una transicion
             if (plazas.contains(source)) {
                 plazaIndex = plazas.indexOf(source);
-                transicionIndex = transiciones.indexOf(target);
+                transicion = target;
                 // Signo negativo porque es plaza de entrada
                 weight *= -1;
             }
@@ -153,10 +157,10 @@ public class ImportadorPIPE implements IImportador {
             // Target es plaza de salida
             else {
                 plazaIndex = plazas.indexOf(target);
-                transicionIndex = transiciones.indexOf(source);
+                transicion = source;
             }
 
-            matrizIncidencia[transicionIndex][plazaIndex] = weight;
+            matrizIncidencia.get(transicion)[plazaIndex] = weight;
         }
     }
 }
