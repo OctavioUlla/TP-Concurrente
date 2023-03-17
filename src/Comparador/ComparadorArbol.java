@@ -21,11 +21,11 @@ public class ComparadorArbol {
     public static void main(String[] args) {
 
         ImportadorFactory importadorFactory = new ImportadorFactory();
-        IImportador importador = importadorFactory.GetImportador(TipoImportador.PIPE);
+        IImportador importador = importadorFactory.getImportador(TipoImportador.PIPE);
 
-        Rdp rdpConDeadlock = importador.Importar("./RedesDePetri/Red de petri.xml");
+        Rdp rdpConDeadlock = importador.importar("./RedesDePetri/Red de petri.xml");
 
-        Rdp rdpSinDeadlock = importador.Importar("./RedesDePetri/Red de petri sin deadlock.xml");
+        Rdp rdpSinDeadlock = importador.importar("./RedesDePetri/Red de petri sin deadlock.xml");
 
         System.out.println("Red de Petri Sin desbloquear:");
         correr(rdpConDeadlock);
@@ -53,7 +53,7 @@ public class ComparadorArbol {
     public static void searchMarcados(Rdp rdp, HashSet<List<Integer>> marcados) {
 
         List<Integer> marcado = plazasProcesos.stream()
-                .map(p -> rdp.GetTokens(p))
+                .map(p -> rdp.getTokens(p))
                 .collect(Collectors.toList());
 
         if (!marcados.add(marcado)) {
@@ -61,9 +61,9 @@ public class ComparadorArbol {
             return;
         }
 
-        rdp.GetTransicionesSensibilizadas().stream()
+        rdp.getTransicionesSensibilizadas().stream()
                 .forEach(t -> {
-                    rdp.Disparar(t);
+                    rdp.disparar(t);
                     searchMarcados(rdp, marcados);
                 });
 
