@@ -2,7 +2,7 @@ package Importador;
 
 public class ImportadorFactory {
 
-    public IImportador GetImportador(TipoImportador tipo) {
+    public IImportador getImportador(TipoImportador tipo) {
         switch (tipo) {
             case PIPE:
                 return new ImportadorPIPE();

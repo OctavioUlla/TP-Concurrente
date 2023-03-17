@@ -1,81 +1,52 @@
 package Main;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Rdp {
+    private final List<String> transiciones;
+    private final Map<String, Map<String, Integer>> matriz;
 
-    private List<String> plazas;
-    private List<String> transiciones;
-    private int[][] matriz;
-    private int[] estado;
-    private int[] estadoInicial;
+    private final Map<String, Integer> plazaTokensMap;
 
-    /**
-     * @param matrizIncidencia : int[transiciones][plazas]
-     */
-    public Rdp(List<String> plazas, List<String> transiciones, int[][] matrizIncidencia, int[] estadoInicial) {
-        this.plazas = plazas;
-        this.transiciones = transiciones;
-        matriz = matrizIncidencia;
-        this.estadoInicial = estadoInicial;
+    public Rdp(List<String> transiciones,
+            Map<String, Map<String, Integer>> matrizIncidencia,
+            Map<String, Integer> estadoInicial) {
 
-        estado = new int[estadoInicial.length];
-        System.arraycopy(estadoInicial, 0, estado, 0, estado.length);
+        this.transiciones = Collections.unmodifiableList(transiciones);
+        this.matriz = Collections.unmodifiableMap(matrizIncidencia);
+        this.plazaTokensMap = estadoInicial;
     }
 
-    public boolean Disparar(String transicion) {
+    public boolean disparar(String transicion) {
 
-        int transicionIndex = transiciones.indexOf(transicion);
-
-        if (IsSensibilizada(transicionIndex)) {
-
-            for (int i = 0; i < plazas.size(); i++) {
-                estado[i] += matriz[transicionIndex][i];
-            }
-
-            return true;
+        if (!isSensibilizada(transicion)) {
+            return false;
         }
 
-        return false;
-    }
-
-    public void Reset() {
-        System.arraycopy(estadoInicial, 0, estado, 0, estado.length);
-    }
-
-    public int GetTokens(String plaza) {
-        return estado[plazas.indexOf(plaza)];
-    }
-
-    public List<String> GetTransicionesSensibilizadas() {
-        List<String> transicionesSensibilizadas = new ArrayList<String>();
-
-        for (int i = 0; i < transiciones.size(); i++) {
-            if (IsSensibilizada(i)) {
-                transicionesSensibilizadas.add(transiciones.get(i));
-            }
-        }
-
-        return transicionesSensibilizadas;
-    }
-
-    private boolean IsSensibilizada(int transicionIndex) {
-
-        for (int i = 0; i < plazas.size(); i++) {
-
-            int tokens = matriz[transicionIndex][i];
-
-            // Compara la cantidad de tokens por la cantidad de necesarios por esta plaza
-            // Si la suma es menos que 0 no esta sensibilizada
-            if (tokens < 0) {
-                if (tokens + estado[i] < 0) {
-                    // No hay tokens necesarios para sensibilizar transición
-                    return false;
-                }
-            }
-        }
+        matriz.get(transicion)
+                .entrySet()
+                .forEach(plazaTok -> plazaTokensMap.merge(plazaTok.getKey(),
+                        plazaTok.getValue(),
+                        Integer::sum));
 
         return true;
+    }
+
+    public int getTokens(String plaza) {
+        return plazaTokensMap.get(plaza);
+    }
+
+    public List<String> getTransicionesSensibilizadas() {
+        return transiciones.stream()
+                .filter(t -> isSensibilizada(t))
+                .collect(Collectors.toList());
+    }
+
+    private boolean isSensibilizada(String transicion) {
+        return matriz.get(transicion).entrySet().stream()
+                .allMatch(plazaTok -> plazaTokensMap.get(plazaTok.getKey()) + plazaTok.getValue() >= 0);
     }
 }
