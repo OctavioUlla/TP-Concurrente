@@ -2,7 +2,7 @@ package Politicas;
 
 import java.util.List;
 
-public class Politica implements IPolitica {
+public class PoliticaPrimera implements IPolitica {
 
     @Override
     public String getProximaTransicion(List<String> transicionesSensibilizadas) {
