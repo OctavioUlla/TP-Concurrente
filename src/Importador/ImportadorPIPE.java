@@ -51,7 +51,7 @@ public class ImportadorPIPE implements IImportador {
 
         Map<String, Integer> estadoInicial = getEstadoInicial(doc);
 
-        return new Rdp(transiciones, matrizIncidencia, estadoInicial);
+        return new Rdp(matrizIncidencia, estadoInicial);
     }
 
     private List<String> getPlazas(Document doc) {
