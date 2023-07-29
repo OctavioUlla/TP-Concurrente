@@ -1,11 +1,11 @@
 package Politicas;
 
-import java.util.List;
+import java.util.Set;
 
 public class PoliticaBalanceada implements IPolitica {
 
     @Override
-    public String getProximaTransicion(List<String> transicionesSensibilizadas) {
+    public String getProximaTransicion(Set<String> transicionesSensibilizadas) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getProximaTransicion'");
     }
