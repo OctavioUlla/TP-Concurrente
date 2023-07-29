@@ -3,14 +3,16 @@ package Main;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import Segmentos.Segmento;
+
 public class Disparador implements Runnable {
 
     private final Monitor monitor;
     private final Iterator<String> tIterator;
 
-    public Disparador(Monitor monitor, Iterable<String> transiciones) {
+    public Disparador(Monitor monitor, Segmento segmento) {
         this.monitor = monitor;
-        this.tIterator = transiciones.iterator();
+        this.tIterator = segmento.iterator();
     }
 
     @Override

@@ -28,13 +28,13 @@ public class Comparador {
         Rdp rdpSinDeadlock = importador.importar("./RedesDePetri/Red de petri sin deadlock.xml");
 
         System.out.println("Red de Petri Sin desbloquear:");
-        correr(rdpConDeadlock);
+        analizar(rdpConDeadlock);
 
         System.out.println("\nRed de Petri Desbloqueada:");
-        correr(rdpSinDeadlock);
+        analizar(rdpSinDeadlock);
     }
 
-    public static void correr(Rdp rdp) {
+    public static void analizar(Rdp rdp) {
         HashSet<List<Integer>> marcados = new HashSet<List<Integer>>();
 
         searchMarcados(rdp, marcados);
