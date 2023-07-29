@@ -1,12 +1,12 @@
 package Politicas;
 
-import java.util.List;
+import java.util.Set;
 
 public class PoliticaPrimera implements IPolitica {
 
     @Override
-    public String getProximaTransicion(List<String> transicionesSensibilizadas) {
-        return transicionesSensibilizadas.get(0);
+    public String getProximaTransicion(Set<String> transicionesSensibilizadas) {
+        return transicionesSensibilizadas.iterator().next();
     }
 
 }

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Rdp {
@@ -39,10 +40,14 @@ public class Rdp {
         marcado = new HashMap<String, Integer>(estado);
     }
 
-    public List<String> getTransicionesSensibilizadas() {
+    public Set<String> getTrancisiones() {
+        return matriz.keySet();
+    }
+
+    public Set<String> getTransicionesSensibilizadas() {
         return matriz.keySet().stream()
                 .filter(t -> isSensibilizada(t))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     private boolean isSensibilizada(String transicion) {

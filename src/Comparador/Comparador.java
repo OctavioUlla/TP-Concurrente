@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import Importador.IImportador;
@@ -13,9 +14,9 @@ import Importador.TipoImportador;
 import Main.Rdp;
 
 public class Comparador {
-    final static List<String> plazasProcesos = Collections
-            .unmodifiableList(
-                    Arrays.asList(new String[] { "P1", "P2", "P3", "P4", "P5", "P6", "P8", "P9", "P10" }));
+    final static Set<String> plazasProcesos = Collections
+            .unmodifiableSet(new HashSet<String>(
+                    Arrays.asList("P1", "P2", "P3", "P4", "P5", "P6", "P8", "P9", "P10")));
 
     public static void main(String[] args) {
 

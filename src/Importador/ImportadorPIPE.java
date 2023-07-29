@@ -2,10 +2,10 @@ package Importador;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -42,8 +42,8 @@ public class ImportadorPIPE implements IImportador {
             return null;
         }
 
-        List<String> plazas = getPlazas(doc);
-        List<String> transiciones = getTransiciones(doc);
+        Set<String> plazas = getPlazas(doc);
+        Set<String> transiciones = getTransiciones(doc);
 
         Map<String, Map<String, Integer>> matrizIncidencia = new HashMap<String, Map<String, Integer>>();
 
@@ -54,9 +54,9 @@ public class ImportadorPIPE implements IImportador {
         return new Rdp(matrizIncidencia, estadoInicial);
     }
 
-    private List<String> getPlazas(Document doc) {
+    private Set<String> getPlazas(Document doc) {
 
-        List<String> plazas = new ArrayList<String>();
+        Set<String> plazas = new HashSet<String>();
 
         NodeList plazasNodes = doc.getElementsByTagName("place");
 
@@ -100,9 +100,9 @@ public class ImportadorPIPE implements IImportador {
         return estado;
     }
 
-    private List<String> getTransiciones(Document doc) {
+    private Set<String> getTransiciones(Document doc) {
 
-        List<String> transiciones = new ArrayList<String>();
+        Set<String> transiciones = new HashSet<String>();
 
         NodeList transicionesNodes = doc.getElementsByTagName("transition");
 
@@ -121,8 +121,8 @@ public class ImportadorPIPE implements IImportador {
     private void rellenarMatriz(
             Document doc,
             Map<String, Map<String, Integer>> matrizIncidencia,
-            List<String> plazas,
-            List<String> transiciones) {
+            Set<String> plazas,
+            Set<String> transiciones) {
 
         transiciones.stream().forEach(t -> matrizIncidencia.put(t, new HashMap<String, Integer>()));
 

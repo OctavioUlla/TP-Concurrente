@@ -1,7 +1,7 @@
 package Politicas;
 
-import java.util.List;
+import java.util.Set;
 
 public interface IPolitica {
-    String getProximaTransicion(List<String> transicionesSensibilizadas);
+    String getProximaTransicion(Set<String> transicionesSensibilizadas);
 }
