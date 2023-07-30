@@ -69,10 +69,8 @@ public class Matriz {
             } else {
                 l++;
             }
-            print();
         }
 
-        id.print();
         return id;
     }
 
