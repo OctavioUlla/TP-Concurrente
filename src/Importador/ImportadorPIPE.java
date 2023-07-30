@@ -124,7 +124,12 @@ public class ImportadorPIPE implements IImportador {
             Set<String> plazas,
             Set<String> transiciones) {
 
-        transiciones.stream().forEach(t -> matrizIncidencia.put(t, new HashMap<String, Integer>()));
+        // Rellenar con ceros
+        transiciones.stream().forEach(t -> {
+            Map<String, Integer> ceros = new HashMap<String, Integer>();
+            plazas.forEach(p -> ceros.put(p, 0));
+            matrizIncidencia.put(t, ceros);
+        });
 
         NodeList arcos = doc.getElementsByTagName("arc");
 

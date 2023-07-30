@@ -31,6 +31,10 @@ public class Rdp {
         return true;
     }
 
+    public Map<String, Map<String, Integer>> getMatriz() {
+        return matriz;
+    }
+
     public Map<String, Integer> getMarcado() {
         return marcado;
     }

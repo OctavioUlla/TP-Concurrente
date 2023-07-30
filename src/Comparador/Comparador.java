@@ -12,6 +12,7 @@ import Importador.IImportador;
 import Importador.ImportadorFactory;
 import Importador.TipoImportador;
 import Main.Rdp;
+import Main.RdpHelper;
 
 public class Comparador {
     final static Set<String> plazasProcesos = Collections
@@ -27,6 +28,9 @@ public class Comparador {
 
         Rdp rdpSinDeadlock = importador.importar("./RedesDePetri/Red de petri sin deadlock.xml");
 
+        RdpHelper.getTInvariantes(rdpConDeadlock);
+        RdpHelper.getTInvariantes(rdpSinDeadlock);
+
         System.out.println("Red de Petri Sin desbloquear:");
         analizar(rdpConDeadlock);
 
@@ -39,14 +43,12 @@ public class Comparador {
 
         searchMarcados(rdp, marcados);
 
-        double promediosProcesos = marcados.stream()
-                .map(toks -> toks.stream().mapToInt(Integer::intValue).sum())
-                .mapToInt(Integer::intValue)
-                .average()
-                .orElse(Double.NaN);
+        double promediosProcesos = getPromedioMarcados(marcados);
+        int maxHilosActivos = getMaxHilosActivos(marcados);
 
         System.out.println("Cantidad marcados posibles: " + marcados.size());
         System.out.println("Promedio tokens en plazas: " + promediosProcesos);
+        System.out.println("Max cantidad hilos activos: " + maxHilosActivos);
     }
 
     public static void searchMarcados(Rdp rdp, HashSet<List<Integer>> marcados) {
@@ -70,5 +72,21 @@ public class Comparador {
                     searchMarcados(rdp, marcados);
                     rdp.setMarcado(marcado);
                 });
+    }
+
+    public static double getPromedioMarcados(HashSet<List<Integer>> marcados) {
+        return marcados.stream()
+                .map(toks -> toks.stream().mapToInt(Integer::intValue).sum())
+                .mapToInt(Integer::intValue)
+                .average()
+                .orElse(0);
+    }
+
+    public static int getMaxHilosActivos(HashSet<List<Integer>> marcados) {
+        return marcados.stream()
+                .map(toks -> toks.stream().mapToInt(Integer::intValue).sum())
+                .mapToInt(Integer::intValue)
+                .max()
+                .orElse(0);
     }
 }
