@@ -28,7 +28,7 @@ public class Comparador {
 
         Rdp rdpSinDeadlock = importador.importar("./RedesDePetri/Red de petri sin deadlock.xml");
 
-        RdpHelper.getTInvariantes(rdpConDeadlock);
+        System.out.println(RdpHelper.getTInvariantes(rdpConDeadlock));
         RdpHelper.getTInvariantes(rdpSinDeadlock);
 
         System.out.println("Red de Petri Sin desbloquear:");
