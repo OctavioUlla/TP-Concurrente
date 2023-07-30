@@ -56,4 +56,25 @@ public class RdpHelper {
 
         return tInvariantes;
     }
+
+    public static List<Set<String>> getPlazasTInvariantes(Rdp rdp) {
+        List<Set<String>> plazasTInvariantes = new ArrayList<Set<String>>();
+        Map<String, Map<String, Integer>> matrizMap = rdp.getMatriz();
+
+        List<Set<String>> tInvariantes = getTInvariantes(rdp);
+
+        for (Set<String> tInvariante : tInvariantes) {
+            Set<String> plazasTInvariante = new HashSet<String>();
+            for (String t : tInvariante) {
+                Set<String> plazasT = matrizMap.get(t).entrySet().stream()
+                        .filter(x -> x.getValue() != 0)
+                        .map(x -> x.getKey())
+                        .collect(Collectors.toSet());
+                plazasTInvariante.addAll(plazasT);
+            }
+            plazasTInvariantes.add(plazasTInvariante);
+        }
+
+        return null;
+    }
 }
