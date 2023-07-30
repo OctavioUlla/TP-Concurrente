@@ -102,31 +102,6 @@ public class Matriz {
     }
 
     private void eliminarColumna(Matriz id, int k, int l) {
-        // Si pivot es negativo cambiar signo
-        /*
-         * if (data[k][l] < 0) {
-         * double f = data[k][l];
-         * for (int j = 0; j < M; j++) {
-         * data[k][j] = data[k][j] / f;
-         * if (j < N) {
-         * id.data[k][j] = id.data[k][j] / f;
-         * }
-         * }
-         * }
-         */
-        /*
-         * for (int i = k + 1; i < N; i++) {
-         * double f = data[i][l] / data[k][l];
-         * 
-         * for (int j = 0; j < M; j++) {
-         * data[i][j] = data[i][j] - data[k][j] * f;
-         * if (j < N) {
-         * id.data[i][j] = id.data[i][j] - id.data[k][j] * f;
-         * }
-         * }
-         * }
-         */
-
         // Si pivot es positivo
         if (data[k][l] > 0) {
             int negativo = encontrarNegativoColumna(k, l);
