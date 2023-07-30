@@ -75,6 +75,6 @@ public class RdpHelper {
             plazasTInvariantes.add(plazasTInvariante);
         }
 
-        return null;
+        return plazasTInvariantes;
     }
 }
