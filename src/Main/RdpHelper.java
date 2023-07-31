@@ -11,15 +11,6 @@ import java.util.stream.Collectors;
 public class RdpHelper {
 
     public static List<Set<String>> getTInvariantes(Rdp rdp) {
-        // T count
-        int n = rdp.getMatriz().size();
-        // P count
-        int m = rdp.getMatriz().values().iterator().next().size();
-
-        // Convert Map to matriz
-        Matriz matriz = new Matriz(n, m);
-        int i = 0;
-
         Set<Entry<String, Map<String, Integer>>> matrizEntries = rdp.getMatriz().entrySet();
         List<String> trancisiones = matrizEntries.stream()
                 .map(x -> x.getKey())
@@ -27,6 +18,15 @@ public class RdpHelper {
         List<Map<String, Integer>> rows = matrizEntries.stream()
                 .map(x -> x.getValue())
                 .collect(Collectors.toList());
+
+        // T count
+        int n = matrizEntries.size();
+        // P count
+        int m = rows.get(0).size();
+
+        // Convert Map to matriz
+        Matriz matriz = new Matriz(n, m);
+        int i = 0;
 
         for (Map<String, Integer> row : rows) {
             int j = 0;
@@ -61,20 +61,19 @@ public class RdpHelper {
         List<Set<String>> plazasTInvariantes = new ArrayList<Set<String>>();
         Map<String, Map<String, Integer>> matrizMap = rdp.getMatriz();
 
-        List<Set<String>> tInvariantes = getTInvariantes(rdp);
+        getTInvariantes(rdp).forEach(tInvariante -> {
 
-        for (Set<String> tInvariante : tInvariantes) {
-            Set<String> plazasTInvariante = new HashSet<String>();
-            for (String t : tInvariante) {
-                Set<String> plazasT = matrizMap.get(t).entrySet().stream()
-                        .filter(x -> x.getValue() != 0)
-                        .map(x -> x.getKey())
-                        .collect(Collectors.toSet());
-                plazasTInvariante.addAll(plazasT);
-            }
+            Set<String> plazasTInvariante = matrizMap.entrySet().stream()
+                    .filter(x -> tInvariante.contains(x.getKey()))
+                    .flatMap(x -> x.getValue().entrySet().stream())
+                    .filter(x -> x.getValue() != 0)
+                    .map(x -> x.getKey())
+                    .collect(Collectors.toSet());
+
             plazasTInvariantes.add(plazasTInvariante);
-        }
+        });
 
+        System.out.println(plazasTInvariantes);
         return plazasTInvariantes;
     }
 }

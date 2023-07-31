@@ -29,10 +29,6 @@ public class Comparador {
         Rdp rdpSinDeadlock = importador.importar("./RedesDePetri/Red de petri sin deadlock.xml");
         Rdp prueba = importador.importar("./RedesDePetri/Red prueba.xml");
 
-        System.out.println(RdpHelper.getTInvariantes(rdpConDeadlock));
-        System.out.println(RdpHelper.getTInvariantes(rdpSinDeadlock));
-        System.out.println(RdpHelper.getTInvariantes(prueba));
-
         System.out.println("Red de Petri Sin desbloquear:");
         analizar(rdpConDeadlock);
 
@@ -47,10 +43,13 @@ public class Comparador {
 
         double promediosProcesos = getPromedioMarcados(marcados);
         int maxHilosActivos = getMaxHilosActivos(marcados);
+        List<Set<String>> tInvariantes = RdpHelper.getTInvariantes(rdp);
+        RdpHelper.getPlazasTInvariantes(rdp);
 
         System.out.println("Cantidad marcados posibles: " + marcados.size());
         System.out.println("Promedio tokens en plazas: " + promediosProcesos);
         System.out.println("Max cantidad hilos activos: " + maxHilosActivos);
+        System.out.println("T Invariantes: " + tInvariantes);
     }
 
     public static void searchMarcados(Rdp rdp, HashSet<List<Integer>> marcados) {
