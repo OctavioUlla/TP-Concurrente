@@ -12,16 +12,15 @@ public class RdpHelper {
 
     public static List<Set<String>> getTInvariantes(Rdp rdp) {
         // Convert Map to matriz
-        Set<Entry<String, Map<String, Integer>>> matrizEntries = rdp.getMatriz().entrySet();
-        List<String> trancisiones = matrizEntries.stream()
-                .map(x -> x.getKey())
+        List<String> trancisiones = rdp.getTrancisiones()
+                .stream()
                 .collect(Collectors.toList());
-        List<Map<String, Integer>> rows = matrizEntries.stream()
+        List<Map<String, Integer>> rows = rdp.getMatriz().entrySet().stream()
                 .map(x -> x.getValue())
                 .collect(Collectors.toList());
 
         // T count
-        int n = matrizEntries.size();
+        int n = rows.size();
         // P count
         int m = rows.get(0).size();
 
@@ -63,16 +62,19 @@ public class RdpHelper {
         getTInvariantes(rdp).forEach(tInvariante -> {
 
             Set<String> plazasTInvariante = matrizMap.entrySet().stream()
-                    .filter(x -> tInvariante.contains(x.getKey()))
-                    .flatMap(x -> x.getValue().entrySet().stream())
-                    .filter(x -> x.getValue() != 0)
-                    .map(x -> x.getKey())
+                    .filter(x -> tInvariante.contains(x.getKey())) // Filtrar transiciones en T Invariante
+                    .flatMap(x -> x.getValue().entrySet().stream()) // Select all plazas
+                    .filter(x -> x.getValue() != 0) // Filtrar plazas que afectan transicion
+                    .map(x -> x.getKey()) // Select plazas
                     .collect(Collectors.toSet());
 
             plazasTInvariantes.add(plazasTInvariante);
         });
 
-        System.out.println(plazasTInvariantes);
         return plazasTInvariantes;
+    }
+
+    public static List<Set<String>> getPlazasAccionTInvariantes(Rdp rdp) {
+        List<Set<String>> plazasTInvariantes = getPlazasTInvariantes(rdp);
     }
 }
