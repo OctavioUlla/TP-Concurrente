@@ -40,15 +40,11 @@ public class RdpHelper {
 
         // Resolver matriz indicencia W . X = 0 para obtener p invariantes
         Matriz matrizPInvariantes = matriz.resolver(false);
-        matriz.print();
-        matrizPInvariantes.print();
 
         // Transformar matriz resultante a lista de invariantes
         List<String> plazas = rdp.getPlazas()
                 .stream()
                 .collect(Collectors.toList());
-
-        System.out.println(plazas);
 
         List<Set<String>> pInvariantes = new ArrayList<Set<String>>();
 
