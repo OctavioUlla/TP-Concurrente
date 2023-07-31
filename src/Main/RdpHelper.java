@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 public class RdpHelper {
 
     public static List<Set<String>> getTInvariantes(Rdp rdp) {
+        // Convert Map to matriz
         Set<Entry<String, Map<String, Integer>>> matrizEntries = rdp.getMatriz().entrySet();
         List<String> trancisiones = matrizEntries.stream()
                 .map(x -> x.getKey())
@@ -24,7 +25,6 @@ public class RdpHelper {
         // P count
         int m = rows.get(0).size();
 
-        // Convert Map to matriz
         Matriz matriz = new Matriz(n, m);
         int i = 0;
 
@@ -39,11 +39,10 @@ public class RdpHelper {
 
         // Resolver matriz indicencia A^T . X = 0 para obtener invariantes
         Matriz matrixTInvariantes = matriz.resolver();
-        int tInvarianteCount = n - matriz.getRango();
 
         // Transformar matriz resultante a lista de invariantes
         List<Set<String>> tInvariantes = new ArrayList<Set<String>>();
-        for (i = n - tInvarianteCount; i < n; i++) {
+        for (i = matriz.getRango(); i < n; i++) {
             Set<String> tInvariante = new HashSet<String>();
             for (int j = 0; j < n; j++) {
                 if (matrixTInvariantes.data[i][j] != 0) {
