@@ -5,48 +5,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 public class RdpHelper {
 
     public static List<Set<String>> getTInvariantes(Rdp rdp) {
-        // Convert Map to matriz
-        List<String> trancisiones = rdp.getTrancisiones()
-                .stream()
-                .collect(Collectors.toList());
-        List<Map<String, Integer>> rows = rdp.getMatriz().entrySet().stream()
-                .map(x -> x.getValue())
-                .collect(Collectors.toList());
+        Matriz matriz = rdp.getMatriz();
 
-        // T count
-        int n = rows.size();
-        // P count
-        int m = rows.get(0).size();
-
-        Matriz matriz = new Matriz(n, m);
-        int i = 0;
-
-        for (Map<String, Integer> row : rows) {
-            int j = 0;
-            for (Integer value : row.values()) {
-                matriz.data[i][j] = value;
-                j++;
-            }
-            i++;
-        }
-
-        // Resolver matriz indicencia A^T . X = 0 para obtener invariantes
-        Matriz matrixTInvariantes = matriz.resolver();
+        // Resolver matriz indicencia W^T . X = 0 para obtener t invariantes
+        Matriz matrizTInvariantes = matriz.resolver(true);
 
         // Transformar matriz resultante a lista de invariantes
+        List<String> transiciones = rdp.getTrancisiones()
+                .stream()
+                .collect(Collectors.toList());
+
         List<Set<String>> tInvariantes = new ArrayList<Set<String>>();
-        for (i = matriz.getRango(); i < n; i++) {
+
+        for (int i = matriz.getRango(); i < matriz.N; i++) {
             Set<String> tInvariante = new HashSet<String>();
-            for (int j = 0; j < n; j++) {
-                if (matrixTInvariantes.data[i][j] != 0) {
-                    String t = trancisiones.get(j);
-                    tInvariante.add(t);
+            for (int j = 0; j < matriz.N; j++) {
+                if (matrizTInvariantes.data[i][j] != 0) {
+                    tInvariante.add(transiciones.get(j));
                 }
             }
             tInvariantes.add(tInvariante);
@@ -55,9 +35,40 @@ public class RdpHelper {
         return tInvariantes;
     }
 
+    public static List<Set<String>> getPInvariantes(Rdp rdp) {
+        Matriz matriz = rdp.getMatriz().traspuesta();
+
+        // Resolver matriz indicencia W . X = 0 para obtener p invariantes
+        Matriz matrizPInvariantes = matriz.resolver(false);
+        matriz.print();
+        matrizPInvariantes.print();
+
+        // Transformar matriz resultante a lista de invariantes
+        List<String> plazas = rdp.getPlazas()
+                .stream()
+                .collect(Collectors.toList());
+
+        System.out.println(plazas);
+
+        List<Set<String>> pInvariantes = new ArrayList<Set<String>>();
+
+        for (int i = matriz.getRango(); i < matriz.N; i++) {
+            Set<String> pInvariante = new HashSet<String>();
+            for (int j = 0; j < matriz.N; j++) {
+                if (matrizPInvariantes.data[i][j] != 0) {
+                    pInvariante.add(plazas.get(j));
+                }
+            }
+            pInvariantes.add(pInvariante);
+        }
+
+        System.out.println(pInvariantes);
+        return pInvariantes;
+    }
+
     public static List<Set<String>> getPlazasTInvariantes(Rdp rdp) {
         List<Set<String>> plazasTInvariantes = new ArrayList<Set<String>>();
-        Map<String, Map<String, Integer>> matrizMap = rdp.getMatriz();
+        Map<String, Map<String, Integer>> matrizMap = rdp.getMatrizMap();
 
         getTInvariantes(rdp).forEach(tInvariante -> {
 
@@ -76,5 +87,11 @@ public class RdpHelper {
 
     public static List<Set<String>> getPlazasAccionTInvariantes(Rdp rdp) {
         List<Set<String>> plazasTInvariantes = getPlazasTInvariantes(rdp);
+        Map<String, Map<String, Integer>> matrizMap = rdp.getMatrizMap();
+
+        // Eliminar plazas recursos, idle y restricciones
+        plazasTInvariantes.forEach(plazas -> {
+
+        });
     }
 }

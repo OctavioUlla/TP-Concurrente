@@ -44,6 +44,7 @@ public class Comparador {
         double promediosProcesos = getPromedioMarcados(marcados);
         int maxHilosActivos = getMaxHilosActivos(marcados);
         List<Set<String>> tInvariantes = RdpHelper.getTInvariantes(rdp);
+        RdpHelper.getPInvariantes(rdp);
 
         System.out.println("Cantidad marcados posibles: " + marcados.size());
         System.out.println("Promedio tokens en plazas: " + promediosProcesos);

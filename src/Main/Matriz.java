@@ -1,8 +1,8 @@
 package Main;
 
 public class Matriz {
-    private final int N; // Columnas
-    private final int M; // Filas
+    public final int N; // Columnas
+    public final int M; // Filas
     public final double[][] data;
 
     public Matriz(int N, int M) {
@@ -47,7 +47,7 @@ public class Matriz {
         return C;
     }
 
-    public Matriz resolver() {
+    public Matriz resolver(boolean solucionPositiva) {
         // T index
         int k = 0;
         // P index
@@ -57,13 +57,21 @@ public class Matriz {
 
         while (k < N && l < M) {
             if (data[k][l] != 0) {
-                eliminarColumna(id, k, l);
+                if (solucionPositiva) {
+                    eliminarColumnaPositiva(id, k, l);
+                } else {
+                    eliminarColumna(id, k, l);
+                }
                 k++;
                 l++;
             } else if (isColumnaValoresRestantesCero(k, l) == false) {
                 intercambiarFila(id, k, l);
 
-                eliminarColumna(id, k, l);
+                if (solucionPositiva) {
+                    eliminarColumnaPositiva(id, k, l);
+                } else {
+                    eliminarColumna(id, k, l);
+                }
                 k++;
                 l++;
             } else {
@@ -100,6 +108,19 @@ public class Matriz {
     }
 
     private void eliminarColumna(Matriz id, int k, int l) {
+        for (int i = k + 1; i < N; i++) {
+            double f = data[i][l] / data[k][l];
+
+            for (int j = 0; j < M; j++) {
+                data[i][j] = data[i][j] - data[k][j] * f;
+                if (j < N) {
+                    id.data[i][j] = id.data[i][j] - id.data[k][j] * f;
+                }
+            }
+        }
+    }
+
+    private void eliminarColumnaPositiva(Matriz id, int k, int l) {
         // Si pivot es positivo
         if (data[k][l] > 0) {
             int negativo = encontrarNegativoColumna(k, l);
