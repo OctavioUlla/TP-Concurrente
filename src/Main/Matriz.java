@@ -61,21 +61,19 @@ public class Matriz {
     }
 
     /**
-     * Check if a matrix has a row that satisfies the cardinality condition 1.1.b
-     * of the algorithm.
+     * Chequea si la matriz tiene alguna fila con set positivos o negativos con
+     * cardinalidad 1 (Count == 1)
      * 
-     * @return True if the matrix satisfies the condition and linear combination
-     *         of columns followed by column elimination is required.
+     * @return Indice de la fila que tiene cardinalidad 1, -1 significa que ambos
+     *         sets tienen cardinalida != 1
+     * 
      */
-    public int cardinalityCondition() {
-        // a value >= 0 means either pPlus or pMinus have
-        // cardinality == 1 and it is the value of the row where this condition
-        // occurs -1 means that both pPlus and pMinus have cardinality != 1
-        List<Integer> positivos, negativos; // arrays containing the indices of +ve and -ve
+    public int filaConCardinalidadUno() {
+        List<Integer> positivos, negativos;
 
         for (int i = 0; i < m; i++) {
-            positivos = getIndicesPositivos(i); // get +ve indices of ith row
-            negativos = getIndicesNegativos(i); // get -ve indices of ith row
+            positivos = getIndicesPositivos(i);
+            negativos = getIndicesNegativos(i);
 
             if (positivos.size() == 1 || negativos.size() == 1) {
                 return i;
@@ -85,18 +83,16 @@ public class Matriz {
     }
 
     /**
-     * Find the column index of the element in the pPlus or pMinus set, where
-     * pPlus or pMinus has cardinality == 1.
+     * Encontrar el indice de la columna en el set que tiene cardinalidad 1
      * 
-     * @return The column index, -1 if unsuccessful (this shouldn't happen under
-     *         normal operation).
+     * @return El indice de la columa en el set con cardinalidad 1
      */
-    public int cardinalityOne() {
-        List<Integer> positivos, negativos; // arrays containing the indices of +ve and -ve
+    public int columnaCardinalidadUno() {
+        List<Integer> positivos, negativos;
 
         for (int i = 0; i < m; i++) {
-            positivos = getIndicesPositivos(i); // get +ve indices of ith row
-            negativos = getIndicesNegativos(i); // get -ve indices of ith row
+            positivos = getIndicesPositivos(i);
+            negativos = getIndicesNegativos(i);
 
             if (positivos.size() == 1) {
                 return positivos.get(0) - 1;
@@ -130,28 +126,20 @@ public class Matriz {
     }
 
     /**
-     * Find the comlumn indices to be changed by linear combination.
+     * Obtener indice de columnas a cambiar linealmente
      * 
-     * @return An array of integers, these are the indices increased by 1 each.
+     * @return Lista de indice de columnas a combinar linealmente
      */
-    public List<Integer> colsToUpdate() {
-        // An array of integers with the comlumn indices to be
-        // changed by linear combination.
-        // the col index of cardinality == 1 element
-
-        List<Integer> positivos, negativos; // arrays containing the indices of +ve and -ve
+    public List<Integer> columnasACombinarLinealmente() {
+        List<Integer> positivos, negativos;
 
         for (int i = 0; i < m; i++) {
-            positivos = getIndicesPositivos(i); // get +ve indices of ith row
-            negativos = getIndicesNegativos(i); // get -ve indices of ith row
+            positivos = getIndicesPositivos(i);
+            negativos = getIndicesNegativos(i);
 
-            // if pPlus has cardinality ==1 return all the elements in pMinus reduced by 1
-            // each
             if (positivos.size() == 1) {
                 return negativos;
             } else if (negativos.size() == 1) {
-                // if pMinus has cardinality ==1 return all the elements in pPlus reduced by 1
-                // each
                 return positivos;
             }
         }
@@ -159,27 +147,27 @@ public class Matriz {
     }
 
     /**
-     * Eliminate a column from the matrix, column index is toDelete
+     * Eliminar columna de la matriz
      * 
-     * @param toDelete The column number to delete.
-     * @return The matrix with the required row deleted.
+     * @param iColumna Indice de columna a eliminar
+     * @return Matriz con la respectiva columna eliminada
      */
-    public Matriz eliminateCol(int toDelete) {
-        Matriz reduced = new Matriz(m, n);
-        int[] cols = new int[n - 1]; // array of cols which will not be eliminated
+    public Matriz eliminarColumna(int iColumna) {
+        Matriz reducida = new Matriz(m, n);
+        // Array de columnas q no van a ser eliminadas
+        int[] cols = new int[n - 1];
         int count = 0;
 
-        // find the col numbers which will not be eliminated
+        // Encontrar los indices de las columnas q no van a ser eliminadas
         for (int i = 0; i < n; i++) {
-            // if an index will not be eliminated, keep it in the new array cols
-            if (i != toDelete) {
+            if (i != iColumna) {
                 cols[count++] = i;
             }
         }
 
-        reduced = getMatrix(0, m - 1, cols);
+        reducida = getMatriz(0, m - 1, cols);
 
-        return reduced;
+        return reducida;
     }
 
     /**
@@ -192,12 +180,11 @@ public class Matriz {
     }
 
     /**
-     * Find the first non-zero row of a matrix.
+     * Encontrar primera fila que no es todo ceros
      * 
-     * @return Row index (starting from 0 for 1st row) of the first row from top
-     *         that is not only zeros, -1 of there is no such row.
+     * @return Indice de la primer fila con valores distintos a cero
      */
-    public int firstNonZeroRowIndex() {
+    public int primeraFilaNoTodaCeros() {
         int h = -1;
 
         for (int i = 0; i < m; i++) {
@@ -211,17 +198,16 @@ public class Matriz {
     }
 
     /**
-     * Find the column index of the first non zero element of row h.
+     * Encontrar columna del primer elemento no cero en la fila
      * 
-     * @param h The row to look for the non-zero element in
-     * @return Column index (starting from 0 for 1st column) of the first
-     *         non-zero element of row h, -1 if there is no such column.
+     * @param iFila Indice de fila a buscar
+     * @return Indice de columna con valor no cero en la fila
      */
-    public int firstNonZeroElementIndex(int h) {
+    public int getPrimerElementoNoCero(int iFila) {
         int k = -1;
 
         for (int j = 0; j < n; j++) {
-            if (get(h, j) != 0) {
+            if (get(iFila, j) != 0) {
                 return j;
             }
         }
@@ -280,51 +266,51 @@ public class Matriz {
     }
 
     /**
-     * Get a submatrix.
+     * Obtener submatriz
      * 
-     * @param i0 Initial row index
-     * @param i1 Final row index
-     * @param j0 Initial column index
-     * @param j1 Final column index
-     * @return A(i0:i1,j0:j1)
-     * @exception ArrayIndexOutOfBoundsException Submatrix indices
+     * @param i0 Indice fila incial
+     * @param i1 Indice fial final
+     * @param j0 Indice columna inicial
+     * @param j1 Indice columna final
+     * @return Matriz(i0:i1,j0:j1)
+     * @exception ArrayIndexOutOfBoundsException
      */
-    public Matriz getMatrix(int i0, int i1, int j0, int j1) {
-        Matriz x = new Matriz(i1 - i0 + 1, j1 - j0 + 1);
-        int[][] B = x.getData();
+    public Matriz getMatriz(int i0, int i1, int j0, int j1) {
+        Matriz subMatriz = new Matriz(i1 - i0 + 1, j1 - j0 + 1);
+        int[][] subData = subMatriz.getData();
         try {
             for (int i = i0; i <= i1; i++) {
-                System.arraycopy(data[i], j0, B[i - i0], j0 - j0, j1 + 1 - j0);
+                System.arraycopy(data[i], j0, subData[i - i0], j0 - j0, j1 + 1 - j0);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            throw new ArrayIndexOutOfBoundsException("Submatrix indices");
+            throw new ArrayIndexOutOfBoundsException("Indices submatriz");
         }
-        return x;
+        return subMatriz;
     }
 
     /**
-     * Get a submatrix.
+     * Obtener submatriz
      * 
-     * @param i0 Initial row index
-     * @param i1 Final row index
-     * @param c  Array of column indices.
-     * @return A(i0:i1,c(:))
-     * @exception ArrayIndexOutOfBoundsException Submatrix indices
+     * @param i0 Indice fila incial
+     * @param i1 Indice fial final
+     * @param c  Array de indice columas
+     * @return Matriz(i0:i1,c(:))
+     * @exception ArrayIndexOutOfBoundsException
      */
-    Matriz getMatrix(int i0, int i1, int[] c) {
-        Matriz x = new Matriz(i1 - i0 + 1, c.length);
-        int[][] B = x.getData();
+    Matriz getMatriz(int i0, int i1, int[] c) {
+        Matriz subMatriz = new Matriz(i1 - i0 + 1, c.length);
+        int[][] subData = subMatriz.getData();
 
         try {
             for (int i = i0; i <= i1; i++) {
                 for (int j = 0; j < c.length; j++) {
-                    B[i - i0][j] = data[i][c[j]];
+                    subData[i - i0][j] = data[i][c[j]];
                 }
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            throw new ArrayIndexOutOfBoundsException("Submatrix indices");
+            throw new ArrayIndexOutOfBoundsException("Indices submatriz");
         }
-        return x;
+        return subMatriz;
     }
 
     /**
@@ -337,7 +323,7 @@ public class Matriz {
     public List<Integer> getIndicesNegativos(int rowNo) {
         try {
             // Obtiene submatriz de la fila indicada
-            Matriz a = getMatrix(rowNo, rowNo, 0, n - 1);
+            Matriz a = getMatriz(rowNo, rowNo, 0, n - 1);
 
             List<Integer> listaNegativos = new ArrayList<Integer>();
 
@@ -362,7 +348,7 @@ public class Matriz {
     public List<Integer> getIndicesPositivos(int rowNo) {
         try {
             // Obtiene submatriz de la fila indicada
-            Matriz a = getMatrix(rowNo, rowNo, 0, n - 1);
+            Matriz a = getMatriz(rowNo, rowNo, 0, n - 1);
 
             List<Integer> listaPositivos = new ArrayList<Integer>();
 
@@ -394,22 +380,20 @@ public class Matriz {
     }
 
     /**
-     * Add a linear combination of column k to columns in array j[].
+     * Sumar combinacion lineal de columna k a columnas en j
      * 
-     * @param k   Column index to add.
-     * @param chk Coefficient of col to add
-     * @param j   Array of column indices to add to.
-     * @param jC  Array of coefficients of column indices to add to.
+     * @param k   Indice de columna que se va a combinar linealmente
+     * @param chk Coeficiente a multiplicar la columna k
+     * @param j   Columnas a las cuales se va a sumar la combinacion lineal
+     * @param jC  Coeficientes a multiplicar columas a sumar
      * @exception ArrayIndexOutOfBoundsException
      */
-    public void linearlyCombine(int k, int chk, List<Integer> j, int[] jC) {
-        // k is column index of coefficient of col to add
-        // chj is coefficient of col to add
-        int chj = 0; // coefficient of column to add to
+    public void combinarLinealmente(int k, int chk, List<Integer> j, List<Integer> jC) {
+        int chj = 0;
 
         for (int i = 0; i < j.size(); i++) {
-            chj = jC[i];
-            // System.out.print("\nchk = " + chk + "\n");
+            chj = jC.get(i);
+
             for (int w = 0; w < m; w++) {
                 set(w, j.get(i) - 1, chj * get(w, k) + chk * get(w, j.get(i) - 1));
             }

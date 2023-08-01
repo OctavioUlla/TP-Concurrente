@@ -95,6 +95,7 @@ public class RdpHelper {
         Matriz B = Matriz.identidad(n, n);
 
         while (!(c.esTodaCeros())) {
+            // Si hay un set vacio se puede eliminar columna
             if (c.puedeEliminarColumna()) {
                 for (int i = 0; i < m; i++) {
                     List<Integer> iPositivos = c.getIndicesPositivos(i);
@@ -106,64 +107,57 @@ public class RdpHelper {
 
                         // Eliminar cada columna correspondiente a valores no ceros del set
                         for (Integer indice : iNoVacio) {
-                            c = c.eliminateCol(indice - 1);
-                            B = B.eliminateCol(indice - 1);
+                            c = c.eliminarColumna(indice - 1);
+                            B = B.eliminarColumna(indice - 1);
                             n--; // Reducir n ya que la nueva matriz es mas pequeña
                         }
                     }
                 }
-            } else if (c.cardinalityCondition() >= 0) {
-                while (c.cardinalityCondition() >= 0) {
-                    // while there is a row in the C matrix that satisfies the cardinality condition
-                    // do a linear combination of the appropriate columns and eliminate the
-                    // appropriate column.
-                    int cardRow = -1; // the row index where cardinality == 1
-                    cardRow = c.cardinalityCondition();
-                    // get the column index of the column to be eliminated
-                    int k = c.cardinalityOne();
-                    if (k == -1) {
-                        System.out.println("Error");
+            }
+            // Si no hay set vacios y alguno tiene cardinalidad 1
+            else if (c.filaConCardinalidadUno() >= 0) {
+                while (c.filaConCardinalidadUno() >= 0) {
+                    // Dada esta condicion se necesita hacer combinacion lineal antes de eliminar
+                    // columna
+                    int filaCardinalidadUno = c.filaConCardinalidadUno();
+                    // Obtener indice de la columna a eliminar
+                    int pivot = c.columnaCardinalidadUno();
+
+                    // Estas columnas son del set que tiene cardinalidad != 1
+                    List<Integer> j = c.columnasACombinarLinealmente();
+                    List<Integer> jCoef = new ArrayList<>(j.size());
+
+                    // Obtener coeficientes a multiplicar columnas j
+                    for (Integer i : j) {
+                        jCoef.add(Math.abs(c.get(filaCardinalidadUno, i - 1)));
                     }
 
-                    // get the comlumn indices to be changed by linear combination
-                    List<Integer> j = c.colsToUpdate();
+                    // Hacer combinación lineal
+                    c.combinarLinealmente(pivot, Math.abs(c.get(filaCardinalidadUno, pivot)), j, jCoef);
+                    B.combinarLinealmente(pivot, Math.abs(c.get(filaCardinalidadUno, pivot)), j, jCoef);
 
-                    // update columns with linear combinations in matrices C and B
-                    // first retrieve the coefficients
-                    int[] jCoef = new int[n];
-                    for (int i = 0; i < j.size(); i++) {
-                        if (j.get(i) != 0) {
-                            jCoef[i] = Math.abs(c.get(cardRow, (j.get(i) - 1)));
-                        }
-                    }
-
-                    // do the linear combination for C and B
-                    // k is the column to add, j is the array of cols to add to
-                    c.linearlyCombine(k, Math.abs(c.get(cardRow, k)), j, jCoef);
-                    B.linearlyCombine(k, Math.abs(c.get(cardRow, k)), j, jCoef);
-
-                    // eliminate column of cardinality == 1 in matrices C and B
-                    c = c.eliminateCol(k);
-                    B = B.eliminateCol(k);
-                    // reduce the number of columns since new matrix is smaller
+                    // Eliminar columna con cardinalidad 1
+                    c = c.eliminarColumna(pivot);
+                    B = B.eliminarColumna(pivot);
+                    // Reducir n ya que la nueva matriz es mas pequeña
                     n--;
                 }
-            } else {
-                // row annihilations (condition 1.1.b.2)
-                // operate only on non-zero rows of C (row index h)
-                // find index of first non-zero row of C (int h)
-                int h = c.firstNonZeroRowIndex();
-                while ((h = c.firstNonZeroRowIndex()) > -1) {
+            }
+            // No hay set vacios y ambos tienen cardinalidad > 1
+            else {
+                // Operar solo en filas que no son ceros (h)
+                int fila = c.primeraFilaNoTodaCeros();
+                while ((fila = c.primeraFilaNoTodaCeros()) > -1) {
 
                     // the column index of the first non zero element of row h
-                    int k = c.firstNonZeroElementIndex(h);
+                    int k = c.getPrimerElementoNoCero(fila);
 
                     // find first non-zero element at column k, chk
-                    int chk = c.get(h, k);
+                    int chk = c.get(fila, k);
 
                     // find all the other indices of non-zero elements in that row chj[]
                     int[] chj = new int[n - 1];
-                    chj = c.findRemainingNZIndices(h);
+                    chj = c.findRemainingNZIndices(fila);
 
                     while (!(isEmptySet(chj))) {
                         // chj empty only when there is just one nonzero element in the
@@ -172,7 +166,7 @@ public class RdpHelper {
                         // with just one nonzero element
 
                         // find all the corresponding elements in that row (coefficients jCoef[])
-                        int[] jCoef = c.findRemainingNZCoef(h);
+                        int[] jCoef = c.findRemainingNZCoef(fila);
 
                         // adjust linear combination coefficients according to sign
                         int[] alpha, beta; // adjusted coefficients for kth and remaining columns respectively
@@ -185,10 +179,10 @@ public class RdpHelper {
                         B.linearlyCombine(k, alpha, chj, beta);
 
                         // delete kth column
-                        c = c.eliminateCol(k);
-                        B = B.eliminateCol(k);
+                        c = c.eliminarColumna(k);
+                        B = B.eliminarColumna(k);
 
-                        chj = c.findRemainingNZIndices(h);
+                        chj = c.findRemainingNZIndices(fila);
                     }
                 }
             }
