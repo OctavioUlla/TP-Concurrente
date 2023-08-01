@@ -5,15 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.stream.Collectors;
 
 public class Rdp {
-    private final Map<String, Map<String, Integer>> matrizMap;
+    private final SortedMap<String, SortedMap<String, Integer>> matrizMap;
 
     private Map<String, Integer> marcado;
 
-    public Rdp(Map<String, Map<String, Integer>> matrizIncidencia, Map<String, Integer> marcadoInicial) {
-        this.matrizMap = Collections.unmodifiableMap(matrizIncidencia);
+    public Rdp(SortedMap<String, SortedMap<String, Integer>> matrizIncidencia, Map<String, Integer> marcadoInicial) {
+        this.matrizMap = Collections.unmodifiableSortedMap(matrizIncidencia);
         this.marcado = marcadoInicial;
     }
 
@@ -32,7 +33,7 @@ public class Rdp {
         return true;
     }
 
-    public Map<String, Map<String, Integer>> getMatrizMap() {
+    public SortedMap<String, SortedMap<String, Integer>> getMatrizMap() {
         return matrizMap;
     }
 
