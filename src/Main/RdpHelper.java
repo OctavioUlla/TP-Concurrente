@@ -15,7 +15,7 @@ public class RdpHelper {
 
     public static List<Set<String>> getTInvariantes(Rdp rdp) {
         // Resolver matriz indicencia W^T . X = 0 para obtener t invariantes
-        Matrix matrizTInvariantes = findVectors(rdp.getMatriz().transpose());
+        Matriz matrizTInvariantes = findVectors(rdp.getMatriz().transpose());
 
         // Transformar matriz resultante a lista de invariantes
         List<String> transiciones = rdp.getTrancisiones()
@@ -40,7 +40,7 @@ public class RdpHelper {
     public static List<Set<String>> getPInvariantes(Rdp rdp) {
         // Matriz matriz = rdp.getMatriz().traspuesta();
 
-        Matrix matrizPInvariantes = findVectors(rdp.getMatriz());
+        Matriz matrizPInvariantes = findVectors(rdp.getMatriz());
 
         // Transformar matriz resultante a lista de invariantes
         List<String> plazas = rdp.getPlazas()
@@ -92,7 +92,7 @@ public class RdpHelper {
      * }
      */
 
-    public static Matrix findVectors(Matrix c) {
+    public static Matriz findVectors(Matriz c) {
         /*
          * | Tests Invariant Analysis IModule
          * |
@@ -106,7 +106,7 @@ public class RdpHelper {
         int m = c.getRowDimension(), n = c.getColumnDimension();
 
         // generate the nxn identity matrix
-        Matrix B = Matrix.identity(n, n);
+        Matriz B = Matriz.identity(n, n);
 
         // arrays containing the indices of +ve and -ve elements in a row vector
         // respectively
@@ -219,126 +219,10 @@ public class RdpHelper {
                         chj = c.findRemainingNZIndices(h);
                     }
                 }
-                // show the result
-                // System.out.println("Pseudodiagonal positive basis of Ker C after phase 1:");
-                // B.print(2, 0);
-            }
-        }
-        // System.out.println("end of phase one");
-        // END OF PHASE ONE, now B contains a pseudodiagonal positive basis of Ker C
-        // --------------------------------------------------------------------------------------
-        // PHASE 2:
-        // --------------------------------------------------------------------------------------
-        // h is -1 at this point, make it equal to the row index that has a -ve element.
-        // rowWithNegativeElement with return -1 if there is no such row, and we exit
-        // the loop.
-        int h;
-        while ((h = B.rowWithNegativeElement()) > -1) {
-
-            pPlus = B.getPositiveIndices(h); // get +ve indices of hth row (1st col = index 1)
-            pMinus = B.getNegativeIndices(h); // get -ve indices of hth row (1st col = index 1)
-
-            // effective length is the number of non-zero elements
-            int pPlusLength = effectiveSetLength(pPlus);
-            int pMinusLength = effectiveSetLength(pMinus);
-
-            if (pPlusLength != 0) { // set of positive coef. indices must me non-empty
-                                    // form the cross product of pPlus and pMinus
-                                    // for each pair (j, k) in the cross product, operate a linear combination on
-                                    // the columns
-                                    // of indices j, k, in order to get a new col with a zero at the hth element
-                                    // The number of new cols obtained = the number of pairs (j, k)
-                for (int j = 0; j < pPlusLength; j++) {
-                    for (int k = 0; k < pMinusLength; k++) {
-                        // coefficients of row h, cols indexed j, k in pPlus, pMinus
-                        // respectively
-                        int jC = pPlus[j] - 1, kC = pMinus[k] - 1;
-
-                        // find coeficients for linear combination, just the abs values
-                        // of elements this is more efficient than finding the least
-                        // common multiple and it does not matter since later we will
-                        // find gcd of col and we will normalise with that the col
-                        // elements
-                        int a = -B.get(h, kC), b = B.get(h, jC);
-
-                        // create the linear combination a*jC-column + b*kC-column, an
-                        // IntMatrix mx1 where m = number of rows of B
-                        m = B.getRowDimension();
-                        Matrix v1 = new Matrix(m, 1); // column vector mx1 of zeros
-                        Matrix v2 = new Matrix(m, 1); // column vector mx1 of zeros
-                        v1 = B.getMatrix(0, m - 1, jC, jC);
-                        v2 = B.getMatrix(0, m - 1, kC, kC);
-                        v1.timesEquals(a);
-                        v2.timesEquals(b);
-                        v2.plusEquals(v1);
-
-                        // find the gcd of the elements in this new col
-                        int V2gcd = v2.gcd();
-
-                        // divide all the col elements by their gcd if gcd > 1
-                        if (V2gcd > 1) {
-                            v2.divideEquals(V2gcd);
-                        }
-
-                        // append the new col to B
-                        n = B.getColumnDimension();
-                        Matrix f = new Matrix(m, n + 1);
-                        f = B.appendVector(v2);
-                        B = f.copy();
-                    }
-                } // endfor (j,k) operations
-
-                // delete from B all cols with index in pMinus
-                for (int ww = 0; ww < pMinusLength; ww++) {
-                    B = B.eliminateCol(pMinus[ww] - 1);
-                }
-
-            } // endif
-        } // end while
-          // System.out.println("\nAfter column transformations in phase 2 (non-minimal
-          // generating set) B:");
-          // B.print(2, 0);
-
-        // delete from B all cols having non minimal support
-        // k is the index of column to be eliminated, if it is -1 then there is
-        // no col to be eliminated
-        int k = 0;
-        // form a matrix with columns the row indices of non-zero elements
-        Matrix bi = B.nonZeroIndices();
-
-        while (k > -1) {
-            k = bi.findNonMinimal();
-
-            if (k != -1) {
-                B = B.eliminateCol(k);
-                bi = B.nonZeroIndices();
             }
         }
 
-        // display the result
-        // System.out.println("Minimal generating set (after phase 2):");
-        // B.print(2, 0);
         return B;
-    }
-
-    /**
-     * find the number of non-zero elements in a set
-     *
-     * @param pSet The set count the number of non-zero elements.
-     * @return The number of non-zero elements.
-     */
-    private static int effectiveSetLength(int[] pSet) {
-        int effectiveLength = 0; // number of non-zero elements
-        int setLength = pSet.length;
-
-        for (int i = 0; i < setLength; i++) {
-            if (pSet[i] != 0) {
-                effectiveLength++;
-            } else {
-                return effectiveLength;
-            }
-        }
-        return effectiveLength;
     }
 
     /**

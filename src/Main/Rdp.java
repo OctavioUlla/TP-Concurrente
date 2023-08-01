@@ -37,7 +37,7 @@ public class Rdp {
         return matrizMap;
     }
 
-    public Matrix getMatriz() {
+    public Matriz getMatriz() {
         List<Map<String, Integer>> rows = matrizMap.entrySet().stream()
                 .map(x -> x.getValue())
                 .collect(Collectors.toList());
@@ -47,7 +47,7 @@ public class Rdp {
         // P count
         int m = rows.get(0).size();
 
-        Matrix matriz = new Matrix(n, m);
+        Matriz matriz = new Matriz(n, m);
         int i = 0;
 
         for (Map<String, Integer> row : rows) {
