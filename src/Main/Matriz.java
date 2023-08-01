@@ -8,14 +8,14 @@ public class Matriz {
      * 
      * @serial Tamaño fila
      */
-    private final int m;
+    public final int m;
 
     /**
      * Tamaño columna
      * 
      * @serial Tamaño columna
      */
-    private final int n;
+    public final int n;
 
     /**
      * Construir matriz M x N
@@ -65,12 +65,11 @@ public class Matriz {
      *         of columns followed by column elimination is required.
      */
     public int cardinalityCondition() {
-        int cardRow = -1; // a value >= 0 means either pPlus or pMinus have
+        // a value >= 0 means either pPlus or pMinus have
         // cardinality == 1 and it is the value of the row where this condition
         // occurs -1 means that both pPlus and pMinus have cardinality != 1
-        int pPlusCard = 0, pMinusCard = 0, countpPlus = 0, countpMinus = 0;
+        int countpPlus = 0, countpMinus = 0;
         int[] pPlus, pMinus; // arrays containing the indices of +ve and -ve
-        int m = getRowDimension(), n = getColumnDimension();
 
         for (int i = 0; i < m; i++) {
             countpPlus = 0;
@@ -91,7 +90,7 @@ public class Matriz {
                 return i;
             }
         }
-        return cardRow;
+        return -1;
     }
 
     /**
@@ -104,9 +103,8 @@ public class Matriz {
     public int cardinalityOne() {
         int k = -1; // the col index of cardinality == 1 element
 
-        int pPlusCard = 0, pMinusCard = 0, countpPlus = 0, countpMinus = 0;
+        int countpPlus = 0, countpMinus = 0;
         int[] pPlus, pMinus; // arrays containing the indices of +ve and -ve
-        int m = getRowDimension(), n = getColumnDimension();
 
         for (int i = 0; i < m; i++) {
             countpPlus = 0;
@@ -145,7 +143,6 @@ public class Matriz {
         // false means that both pPlus and pMinus are non-empty
         boolean pPlusEmpty = true, pMinusEmpty = true;
         int[] pPlus, pMinus; // arrays containing the indices of +ve and -ve
-        int m = getRowDimension();
 
         for (int i = 0; i < m; i++) {
             pPlusEmpty = true;
@@ -192,10 +189,8 @@ public class Matriz {
         // changed by linear combination.
         // the col index of cardinality == 1 element
 
-        int pPlusCard = 0, pMinusCard = 0, countpPlus = 0, countpMinus = 0;
+        int countpPlus = 0, countpMinus = 0;
         int[] pPlus, pMinus; // arrays containing the indices of +ve and -ve
-        int m = getRowDimension();
-        int n = getColumnDimension();
 
         for (int i = 0; i < m; i++) {
             countpPlus = 0;
@@ -232,7 +227,6 @@ public class Matriz {
      * @return The matrix with the required row deleted.
      */
     public Matriz eliminateCol(int toDelete) {
-        int m = getRowDimension(), n = getColumnDimension();
         Matriz reduced = new Matriz(m, n);
         int[] cols = new int[n - 1]; // array of cols which will not be eliminated
         int count = 0;
@@ -265,32 +259,12 @@ public class Matriz {
     }
 
     /**
-     * Get row dimension.
-     * 
-     * @return The number of rows.
-     */
-    public int getRowDimension() {
-        return m;
-    }
-
-    /**
-     * Get column dimension.
-     * 
-     * @return The number of columns.
-     */
-    public int getColumnDimension() {
-        return n;
-    }
-
-    /**
      * Find the first non-zero row of a matrix.
      * 
      * @return Row index (starting from 0 for 1st row) of the first row from top
      *         that is not only zeros, -1 of there is no such row.
      */
     public int firstNonZeroRowIndex() {
-        int m = getRowDimension();
-        int n = getColumnDimension();
         int h = -1;
 
         for (int i = 0; i < m; i++) {
@@ -311,7 +285,6 @@ public class Matriz {
      *         non-zero element of row h, -1 if there is no such column.
      */
     public int firstNonZeroElementIndex(int h) {
-        int n = getColumnDimension();
         int k = -1;
 
         for (int j = 0; j < n; j++) {
@@ -330,7 +303,6 @@ public class Matriz {
      *         of all but the first non-zero elements of row h.
      */
     public int[] findRemainingNZIndices(int h) {
-        int n = getColumnDimension();
         int[] k = new int[n];
         int count = 0; // increases as we add new indices in the array of ints
 
@@ -350,7 +322,6 @@ public class Matriz {
      *         elements of row h.
      */
     public int[] findRemainingNZCoef(int h) {
-        int n = getColumnDimension();
         int[] k = new int[n];
         int count = 0; // increases as we add new indices in the array of ints
         int anElement; // an element of the matrix
@@ -432,8 +403,6 @@ public class Matriz {
      * @exception ArrayIndexOutOfBoundsException Submatrix indices
      */
     public int[] getNegativeIndices(int rowNo) {
-        int n = getColumnDimension(); // find the number of columns
-
         // create the single row submatrix for the required row
         try {
             Matriz a = new Matriz(1, n);
@@ -464,8 +433,6 @@ public class Matriz {
      * @exception ArrayIndexOutOfBoundsException Submatrix indices
      */
     public int[] getPositiveIndices(int rowNo) {
-        int n = getColumnDimension(); // find the number of columns
-
         // create the single row submatrix for the required row
         try {
             Matriz a = new Matriz(1, n);
@@ -511,8 +478,8 @@ public class Matriz {
      */
     boolean isZeroRow(int r) {
         // TODO: optimize this!
-        Matriz a = new Matriz(1, getColumnDimension());
-        a = getMatrix(r, r, 0, getColumnDimension() - 1);
+        Matriz a = new Matriz(1, n);
+        a = getMatrix(r, r, 0, n - 1);
         return a.isZeroMatrix();
     }
 
@@ -529,7 +496,6 @@ public class Matriz {
         // k is column index of coefficient of col to add
         // chj is coefficient of col to add
         int chj = 0; // coefficient of column to add to
-        int m = getRowDimension();
 
         for (int i = 0; i < j.length; i++) {
             if (j[i] != 0) {
@@ -555,7 +521,7 @@ public class Matriz {
         // k is column index of coefficient of col to add
         // a is array of coefficients of col to add
         // int chk = 0; // coefficient of column to add to
-        int m = getRowDimension(), n = j.length;
+        int n = j.length;
 
         for (int i = 0; i < n; i++) {
             if (j[i] != 0) {

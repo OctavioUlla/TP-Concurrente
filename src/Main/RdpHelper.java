@@ -20,9 +20,9 @@ public class RdpHelper {
 
         List<Set<String>> tInvariantes = new ArrayList<Set<String>>();
 
-        for (int i = 0; i < matrizTInvariantes.getColumnDimension(); i++) {
+        for (int i = 0; i < matrizTInvariantes.n; i++) {
             Set<String> tInvariante = new HashSet<String>();
-            for (int j = 0; j < matrizTInvariantes.getRowDimension(); j++) {
+            for (int j = 0; j < matrizTInvariantes.m; j++) {
                 if (matrizTInvariantes.get(j, i) != 0) {
                     tInvariante.add(transiciones.get(j));
                 }
@@ -44,9 +44,9 @@ public class RdpHelper {
 
         List<Set<String>> pInvariantes = new ArrayList<Set<String>>();
 
-        for (int i = 0; i < matrizPInvariantes.getColumnDimension(); i++) {
+        for (int i = 0; i < matrizPInvariantes.n; i++) {
             Set<String> pInvariante = new HashSet<String>();
-            for (int j = 0; j < matrizPInvariantes.getRowDimension(); j++) {
+            for (int j = 0; j < matrizPInvariantes.m; j++) {
                 if (matrizPInvariantes.get(j, i) != 0) {
                     pInvariante.add(plazas.get(j));
                 }
@@ -98,7 +98,8 @@ public class RdpHelper {
          * | pMinus = integer array of -ve indices of a row.
          * | pPlusMinus = set union of the above integer arrays.
          */
-        int m = c.getRowDimension(), n = c.getColumnDimension();
+        int m = c.m;
+        int n = c.n;
 
         // generate the nxn identity matrix
         Matriz B = Matriz.identity(n, n);
