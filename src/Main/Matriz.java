@@ -1,5 +1,8 @@
 package Main;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Matriz {
     private final int[][] data;
 
@@ -68,25 +71,13 @@ public class Matriz {
         // a value >= 0 means either pPlus or pMinus have
         // cardinality == 1 and it is the value of the row where this condition
         // occurs -1 means that both pPlus and pMinus have cardinality != 1
-        int countpPlus = 0, countpMinus = 0;
-        int[] pPlus, pMinus; // arrays containing the indices of +ve and -ve
+        List<Integer> positivos, negativos; // arrays containing the indices of +ve and -ve
 
         for (int i = 0; i < m; i++) {
-            countpPlus = 0;
-            countpMinus = 0;
-            pPlus = getIndicesPositivos(i); // get +ve indices of ith row
-            pMinus = getIndicesNegativos(i); // get -ve indices of ith row
-            for (int j = 0; j < n; j++) {
-                if (pPlus[j] != 0) { // if there is nonzero element count it
-                    countpPlus++;
-                }
-            }
-            for (int j = 0; j < n; j++) {
-                if (pMinus[j] != 0) { // if there is nonzero element count it
-                    countpMinus++;
-                }
-            }
-            if (countpPlus == 1 || countpMinus == 1) {
+            positivos = getIndicesPositivos(i); // get +ve indices of ith row
+            negativos = getIndicesNegativos(i); // get -ve indices of ith row
+
+            if (positivos.size() == 1 || negativos.size() == 1) {
                 return i;
             }
         }
@@ -101,35 +92,21 @@ public class Matriz {
      *         normal operation).
      */
     public int cardinalityOne() {
-        int k = -1; // the col index of cardinality == 1 element
-
-        int countpPlus = 0, countpMinus = 0;
-        int[] pPlus, pMinus; // arrays containing the indices of +ve and -ve
+        List<Integer> positivos, negativos; // arrays containing the indices of +ve and -ve
 
         for (int i = 0; i < m; i++) {
-            countpPlus = 0;
-            countpMinus = 0;
-            pPlus = getIndicesPositivos(i); // get +ve indices of ith row
-            pMinus = getIndicesNegativos(i); // get -ve indices of ith row
-            for (int j = 0; j < n; j++) {
-                if (pPlus[j] != 0) { // if there is nonzero element count it
-                    countpPlus++;
-                }
+            positivos = getIndicesPositivos(i); // get +ve indices of ith row
+            negativos = getIndicesNegativos(i); // get -ve indices of ith row
+
+            if (positivos.size() == 1) {
+                return positivos.get(0) - 1;
             }
-            for (int j = 0; j < n; j++) {
-                if (pMinus[j] != 0) {// if there is nonzero element count it
-                    countpMinus++;
-                }
-            }
-            if (countpPlus == 1) {
-                return pPlus[0] - 1;
-            }
-            if (countpMinus == 1) {
-                return pMinus[0] - 1;
+            if (negativos.size() == 1) {
+                return negativos.get(0) - 1;
             }
         }
 
-        return k;
+        return -1;
     }
 
     /**
@@ -140,30 +117,12 @@ public class Matriz {
      * @return True si se cumple la condición y eliminación de columna es requerida
      */
     public boolean puedeEliminarColumna() {
-        // Falso significa que no hay ningun set de positivos o negativos vacios
-        boolean positivosVacio = true, negativosVacio = true;
-
         for (int i = 0; i < m; i++) {
-            positivosVacio = true;
-            negativosVacio = true;
-            int[] positivos = getIndicesPositivos(i);
-            int[] negativos = getIndicesNegativos(i);
-            int pLength = positivos.length, nLength = negativos.length;
+            List<Integer> positivos = getIndicesPositivos(i);
+            List<Integer> negativos = getIndicesNegativos(i);
 
-            for (int j = 0; j < pLength; j++) {
-                if (positivos[j] != 0) {
-                    // Si hay un valor distinto de cero el set no esta vacio
-                    positivosVacio = false;
-                }
-            }
-            for (int j = 0; j < nLength; j++) {
-                if (negativos[j] != 0) {
-                    // Si hay un valor distinto de cero el set no esta vacio
-                    negativosVacio = false;
-                }
-            }
             // Si hay un solo set vacio
-            if (positivosVacio ^ negativosVacio) {
+            if (positivos.isEmpty() ^ negativos.isEmpty()) {
                 return true;
             }
         }
@@ -175,40 +134,28 @@ public class Matriz {
      * 
      * @return An array of integers, these are the indices increased by 1 each.
      */
-    public int[] colsToUpdate() {
-        int js[] = null; // An array of integers with the comlumn indices to be
+    public List<Integer> colsToUpdate() {
+        // An array of integers with the comlumn indices to be
         // changed by linear combination.
         // the col index of cardinality == 1 element
 
-        int countpPlus = 0, countpMinus = 0;
-        int[] pPlus, pMinus; // arrays containing the indices of +ve and -ve
+        List<Integer> positivos, negativos; // arrays containing the indices of +ve and -ve
 
         for (int i = 0; i < m; i++) {
-            countpPlus = 0;
-            countpMinus = 0;
-            pPlus = getIndicesPositivos(i); // get +ve indices of ith row
-            pMinus = getIndicesNegativos(i); // get -ve indices of ith row
-            for (int j = 0; j < n; j++) {
-                if (pPlus[j] != 0) { // if there is nonzero element count it
-                    countpPlus++;
-                }
-            }
-            for (int j = 0; j < n; j++) {
-                if (pMinus[j] != 0) { // if there is nonzero element count it
-                    countpMinus++;
-                }
-            }
+            positivos = getIndicesPositivos(i); // get +ve indices of ith row
+            negativos = getIndicesNegativos(i); // get -ve indices of ith row
+
             // if pPlus has cardinality ==1 return all the elements in pMinus reduced by 1
             // each
-            if (countpPlus == 1) {
-                return pMinus;
-            } else if (countpMinus == 1) {
+            if (positivos.size() == 1) {
+                return negativos;
+            } else if (negativos.size() == 1) {
                 // if pMinus has cardinality ==1 return all the elements in pPlus reduced by 1
                 // each
-                return pPlus;
+                return positivos;
             }
         }
-        return js;
+        return null;
     }
 
     /**
@@ -384,23 +331,22 @@ public class Matriz {
      * Obtiene indices de valores negativos en la fila
      * 
      * @param rowNo Indice de la fila
-     * @return Array de indices que contienen valores negativos
+     * @return Lista de indices que contienen valores negativos
      * @exception ArrayIndexOutOfBoundsException
      */
-    public int[] getIndicesNegativos(int rowNo) {
+    public List<Integer> getIndicesNegativos(int rowNo) {
         try {
             // Obtiene submatriz de la fila indicada
             Matriz a = getMatrix(rowNo, rowNo, 0, n - 1);
 
-            int count = 0; // Cantidad de elementos positivos
-            int[] negativesArray = new int[n];
+            List<Integer> listaNegativos = new ArrayList<Integer>();
 
             for (int i = 0; i < n; i++) {
                 if (a.get(0, i) < 0)
-                    negativesArray[count++] = i + 1;
+                    listaNegativos.add(i + 1);
             }
 
-            return negativesArray;
+            return listaNegativos;
         } catch (ArrayIndexOutOfBoundsException e) {
             throw new ArrayIndexOutOfBoundsException("Indice submatrix");
         }
@@ -410,23 +356,22 @@ public class Matriz {
      * Obtiene indices de valores positivos en la fila
      * 
      * @param rowNo Indice de la fila
-     * @return Array de indices que contienen valores positivos
+     * @return Lista de indices que contienen valores positivos
      * @exception ArrayIndexOutOfBoundsException
      */
-    public int[] getIndicesPositivos(int rowNo) {
+    public List<Integer> getIndicesPositivos(int rowNo) {
         try {
             // Obtiene submatriz de la fila indicada
             Matriz a = getMatrix(rowNo, rowNo, 0, n - 1);
 
-            int count = 0; // Cantidad de elementos positivos
-            int[] arrayPositivos = new int[n];
+            List<Integer> listaPositivos = new ArrayList<Integer>();
 
             for (int i = 0; i < n; i++) {
                 if (a.get(0, i) > 0)
-                    arrayPositivos[count++] = i + 1;
+                    listaPositivos.add(i + 1);
             }
 
-            return arrayPositivos;
+            return listaPositivos;
         } catch (ArrayIndexOutOfBoundsException e) {
             throw new ArrayIndexOutOfBoundsException("Indice submatrix");
         }
@@ -457,18 +402,16 @@ public class Matriz {
      * @param jC  Array of coefficients of column indices to add to.
      * @exception ArrayIndexOutOfBoundsException
      */
-    public void linearlyCombine(int k, int chk, int[] j, int[] jC) {
+    public void linearlyCombine(int k, int chk, List<Integer> j, int[] jC) {
         // k is column index of coefficient of col to add
         // chj is coefficient of col to add
         int chj = 0; // coefficient of column to add to
 
-        for (int i = 0; i < j.length; i++) {
-            if (j[i] != 0) {
-                chj = jC[i];
-                // System.out.print("\nchk = " + chk + "\n");
-                for (int w = 0; w < m; w++) {
-                    set(w, j[i] - 1, chj * get(w, k) + chk * get(w, j[i] - 1));
-                }
+        for (int i = 0; i < j.size(); i++) {
+            chj = jC[i];
+            // System.out.print("\nchk = " + chk + "\n");
+            for (int w = 0; w < m; w++) {
+                set(w, j.get(i) - 1, chj * get(w, k) + chk * get(w, j.get(i) - 1));
             }
         }
     }

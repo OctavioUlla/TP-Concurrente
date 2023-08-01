@@ -112,19 +112,19 @@ public class RdpHelper {
             if (c.puedeEliminarColumna()) {
                 // check each row (case 1.1)
                 for (int i = 0; i < m; i++) {
-                    int[] pPlus = c.getIndicesPositivos(i); // get +ve indices of ith row
-                    int[] pMinus = c.getIndicesNegativos(i); // get -ve indices of ith row
-                    if (isEmptySet(pPlus) || isEmptySet(pMinus)) { // case-action 1.1.a
-                                                                   // this has to be done for all elements in the union
-                                                                   // pPlus U pMinus
-                                                                   // so first construct the union
-                        int[] pPlusMinus = uniteSets(pPlus, pMinus);
+                    List<Integer> pPlus = c.getIndicesPositivos(i); // get +ve indices of ith row
+                    List<Integer> pMinus = c.getIndicesNegativos(i); // get -ve indices of ith row
+                    if (pPlus.isEmpty() || pMinus.isEmpty()) { // case-action 1.1.a
+                                                               // this has to be done for all elements in the union
+                                                               // pPlus U pMinus
+                                                               // so first construct the union
+                        List<Integer> pPlusMinus = pPlus.isEmpty() ? pMinus : pPlus;
 
                         // eliminate each column corresponding to nonzero elements in pPlusMinus union
-                        for (int j = pPlusMinus.length - 1; j >= 0; j--) {
-                            if (pPlusMinus[j] != 0) {
-                                c = c.eliminateCol(pPlusMinus[j] - 1);
-                                B = B.eliminateCol(pPlusMinus[j] - 1);
+                        for (int j = pPlusMinus.size() - 1; j >= 0; j--) {
+                            if (pPlusMinus.get(j) != 0) {
+                                c = c.eliminateCol(pPlusMinus.get(j) - 1);
+                                B = B.eliminateCol(pPlusMinus.get(j) - 1);
                                 n--; // reduce the number of columns since new matrix is smaller
                             }
                         }
@@ -144,14 +144,14 @@ public class RdpHelper {
                     }
 
                     // get the comlumn indices to be changed by linear combination
-                    int j[] = c.colsToUpdate();
+                    List<Integer> j = c.colsToUpdate();
 
                     // update columns with linear combinations in matrices C and B
                     // first retrieve the coefficients
                     int[] jCoef = new int[n];
-                    for (int i = 0; i < j.length; i++) {
-                        if (j[i] != 0) {
-                            jCoef[i] = Math.abs(c.get(cardRow, (j[i] - 1)));
+                    for (int i = 0; i < j.size(); i++) {
+                        if (j.get(i) != 0) {
+                            jCoef[i] = Math.abs(c.get(cardRow, (j.get(i) - 1)));
                         }
                     }
 
@@ -255,34 +255,6 @@ public class RdpHelper {
             beta[i] = abschk;
         }
         return beta;
-    }
-
-    private static void resetArray(int[] a) {
-        for (int i = 0; i < a.length; i++) {
-            a[i] = 0;
-        }
-    }
-
-    /**
-     * Unite two sets (arrays of integers) so that if there is a common entry in
-     * the arrays it appears only once, and all the entries of each array appear
-     * in the union. The resulting array size is the same as the 2 arrays and
-     * they are both equal. We are only interested in non-zero elements. One of
-     * the 2 input arrays is always full of zeros.
-     *
-     * @param A The first set to unite.
-     * @param B The second set to unite.
-     * @return The union of the two input sets.
-     */
-    private static int[] uniteSets(int[] A, int[] B) {
-        int[] union = new int[A.length];
-
-        if (isEmptySet(A)) {
-            union = B;
-        } else {
-            union = A;
-        }
-        return union;
     }
 
     /**
