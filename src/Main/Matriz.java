@@ -60,6 +60,118 @@ public class Matriz {
         this.data = data;
     }
 
+    public Matriz kernel() {
+        Matriz r = new Matriz(this);
+        int nReducida = r.n;
+
+        // Generar matriz identidad nxn
+        Matriz B = Matriz.identidad(nReducida, nReducida);
+
+        while (!(r.esTodaCeros())) {
+            // Si hay un set vacio se puede eliminar columna
+            if (r.puedeEliminarColumna()) {
+                for (int i = 0; i < m; i++) {
+                    List<Integer> iPositivos = r.getIndicesPositivos(i);
+                    List<Integer> iNegativos = r.getIndicesNegativos(i);
+                    // Si hay un set vacio se puede eliminar esta columna
+                    if (iPositivos.isEmpty() || iNegativos.isEmpty()) {
+                        // Seleccionar set no vacio
+                        List<Integer> iNoVacio = iPositivos.isEmpty() ? iNegativos : iPositivos;
+
+                        // Eliminar cada columna correspondiente a valores no ceros del set
+                        for (Integer indice : iNoVacio) {
+                            r = r.eliminarColumna(indice - 1);
+                            B = B.eliminarColumna(indice - 1);
+                            nReducida--; // Reducir n ya que la nueva matriz es mas pequeña
+                        }
+                    }
+                }
+            }
+            // Si no hay set vacios y alguno tiene cardinalidad 1
+            else if (r.filaConCardinalidadUno() >= 0) {
+                while (r.filaConCardinalidadUno() >= 0) {
+                    // Dada esta condicion se necesita hacer combinacion lineal antes de eliminar
+                    // columna
+                    int filaCardinalidadUno = r.filaConCardinalidadUno();
+                    // Obtener indice de la columna a eliminar
+                    int pivot = r.columnaCardinalidadUno();
+
+                    // Estas columnas son del set que tiene cardinalidad != 1
+                    List<Integer> j = r.columnasACombinarLinealmente();
+                    List<Integer> jCoef = new ArrayList<>(j.size());
+
+                    // Obtener coeficientes a multiplicar columnas j
+                    for (Integer i : j) {
+                        jCoef.add(Math.abs(r.get(filaCardinalidadUno, i - 1)));
+                    }
+
+                    r.combinarLinealmente(pivot, Math.abs(r.get(filaCardinalidadUno, pivot)), j, jCoef);
+                    B.combinarLinealmente(pivot, Math.abs(r.get(filaCardinalidadUno, pivot)), j, jCoef);
+
+                    // Eliminar columna con cardinalidad 1
+                    r = r.eliminarColumna(pivot);
+                    B = B.eliminarColumna(pivot);
+                    // Reducir n ya que la nueva matriz es mas pequeña
+                    nReducida--;
+                }
+            }
+            // No hay set vacios y ambos tienen cardinalidad > 1
+            else {
+                // Operar solo en filas que no son ceros (h)
+                int fila = r.primeraFilaNoTodaCeros();
+                while ((fila = r.primeraFilaNoTodaCeros()) > -1) {
+
+                    int columna = r.getPrimerElementoNoCero(fila);
+
+                    int itemNoCero = r.get(fila, columna);
+
+                    // Encontar los elementos distintos de cero restantes
+                    List<Integer> itemsNoCeroRestantes = r.getElementosNoCeroRestantes(fila);
+
+                    while (!itemsNoCeroRestantes.isEmpty()) {
+                        List<Integer> jCoef = r.getCoeficientesElementosNoCero(fila);
+
+                        /*
+                         * Ajustar coeficientes dependiendo el signo
+                         * 
+                         * Si sign(jCoef) != sign(itemNoCero)
+                         * entonce alpha = abs(jCoef) beta = abs(itemNoCero)
+                         * 
+                         * Si sign(jCoef) == sign(itemNoCero)
+                         * Entonces alpha = -abs(jCoef) beta = abs(itemNoCero)
+                         */
+                        List<Integer> alpha = new ArrayList<Integer>();
+                        List<Integer> beta = new ArrayList<Integer>();
+                        // Alpha
+                        for (Integer i : jCoef) {
+                            if ((itemNoCero * i) < 0) {
+                                alpha.add(Math.abs(i));
+                            } else {
+                                alpha.add(-Math.abs(i));
+                            }
+                        }
+                        // Beta
+                        int absItemNoCero = Math.abs(itemNoCero);
+
+                        for (int i = 0; i < jCoef.size(); i++) {
+                            beta.add(absItemNoCero);
+                        }
+
+                        r.combinarLinealmente(columna, alpha, itemsNoCeroRestantes, beta);
+                        B.combinarLinealmente(columna, alpha, itemsNoCeroRestantes, beta);
+
+                        r = r.eliminarColumna(columna);
+                        B = B.eliminarColumna(columna);
+
+                        itemsNoCeroRestantes = r.getElementosNoCeroRestantes(fila);
+                    }
+                }
+            }
+        }
+
+        return B;
+    }
+
     /**
      * Chequea si la matriz tiene alguna fila con set positivos o negativos con
      * cardinalidad 1 (Count == 1)
@@ -198,10 +310,10 @@ public class Matriz {
     }
 
     /**
-     * Encontrar columna del primer elemento no cero en la fila
+     * Encontrar columna del primer elemento distinto a 0 en la fila
      * 
      * @param iFila Indice de fila a buscar
-     * @return Indice de columna con valor no cero en la fila
+     * @return Indice de columna con valor distinto a 0 en la fila
      */
     public int getPrimerElementoNoCero(int iFila) {
         int k = -1;
@@ -215,50 +327,47 @@ public class Matriz {
     }
 
     /**
-     * Find the column indices of all but the first non zero elements of row h.
+     * Encontrar columnas restantes con valores distintos a cero
      * 
-     * @param h The row to look for the non-zero element in
-     * @return Array of ints of column indices (starting from 0 for 1st column)
-     *         of all but the first non-zero elements of row h.
+     * @param iFila Fila en la que buscar elementos
+     * @return Lista de indices restantes de columnas con valor distinto a 0
      */
-    public int[] findRemainingNZIndices(int h) {
-        int[] k = new int[n];
-        int count = 0; // increases as we add new indices in the array of ints
+    public List<Integer> getElementosNoCeroRestantes(int iFila) {
+        List<Integer> k = new ArrayList<Integer>();
 
         for (int j = 1; j < n; j++) {
-            if (get(h, j) != 0)
-                k[count++] = j;
+            if (get(iFila, j) != 0)
+                k.add(j);
         }
         return k;
     }
 
     /**
-     * Find the coefficients corresponding to column indices of all but the first
-     * non zero elements of row h.
+     * Encontrar coeficientes correspondientes a los valores restantes en las
+     * columnas distintas de cero de la fila
      * 
-     * @param h The row to look for the non-zero coefficients in
-     * @return Array of ints of coefficients of all but the first non-zero
-     *         elements of row h.
+     * @param iFila Fila en la cual buscar coeficientes
+     * @return Lista de coeficientes de valores distintos a cero en la fila excepto
+     *         el primero
      */
-    public int[] findRemainingNZCoef(int h) {
-        int[] k = new int[n];
-        int count = 0; // increases as we add new indices in the array of ints
-        int anElement; // an element of the matrix
+    public List<Integer> getCoeficientesElementosNoCero(int iFila) {
+        List<Integer> k = new ArrayList<Integer>();
+        int elemento;
 
         for (int j = 1; j < n; j++) {
-            if ((anElement = get(h, j)) != 0) {
-                k[count++] = anElement;
+            if ((elemento = get(iFila, j)) != 0) {
+                k.add(elemento);
             }
         }
         return k;
     }
 
     /**
-     * Get a single element.
+     * Obtener elemento de matriz
      * 
-     * @param i Row index.
-     * @param j Column index.
-     * @return A(i,j)
+     * @param i Fila
+     * @param j Columna
+     * @return Matriz(i,j)
      * @exception ArrayIndexOutOfBoundsException
      */
     public int get(int i, int j) {
@@ -382,45 +491,38 @@ public class Matriz {
     /**
      * Sumar combinacion lineal de columna k a columnas en j
      * 
-     * @param k   Indice de columna que se va a combinar linealmente
-     * @param chk Coeficiente a multiplicar la columna k
-     * @param j   Columnas a las cuales se va a sumar la combinacion lineal
-     * @param jC  Coeficientes a multiplicar columas a sumar
+     * @param k        Indice de columna que se va a combinar linealmente
+     * @param chk      Coeficiente a multiplicar la columna k
+     * @param cols     Columnas a las cuales se va a sumar la combinacion lineal
+     * @param colsCoef Coeficientes a multiplicar columas a sumar
      * @exception ArrayIndexOutOfBoundsException
      */
-    public void combinarLinealmente(int k, int chk, List<Integer> j, List<Integer> jC) {
+    public void combinarLinealmente(int k, int chk, List<Integer> cols, List<Integer> colsCoef) {
         int chj = 0;
 
-        for (int i = 0; i < j.size(); i++) {
-            chj = jC.get(i);
+        for (int i = 0; i < cols.size(); i++) {
+            chj = colsCoef.get(i);
 
-            for (int w = 0; w < m; w++) {
-                set(w, j.get(i) - 1, chj * get(w, k) + chk * get(w, j.get(i) - 1));
+            for (int j = 0; j < m; j++) {
+                set(j, cols.get(i) - 1, chj * get(j, k) + chk * get(j, cols.get(i) - 1));
             }
         }
     }
 
     /**
-     * Add a linear combination of column k to columns in array j[].
+     * Sumar combinacion lineal de columna k a columnas en j
      * 
-     * @param k     Column index to add.
-     * @param alpha Array of coefficients of col to add
-     * @param j     Array of column indices to add to.
-     * @param beta  Array of coefficients of column indices to add to.
+     * @param k     Indice de columna que se va a combinar linealmente
+     * @param alpha Coeficientes a multiplicar la columna k
+     * @param cols  Columnas a las cuales se va a sumar la combinacion lineal
+     * @param beta  Coeficientes a multiplicar columas a sumar
      * @exception ArrayIndexOutOfBoundsException
      */
-    public void linearlyCombine(int k, int[] alpha, int[] j, int[] beta) {
-        // k is column index of coefficient of col to add
-        // a is array of coefficients of col to add
-        // int chk = 0; // coefficient of column to add to
-        int n = j.length;
-
-        for (int i = 0; i < n; i++) {
-            if (j[i] != 0) {
-                // chk = jC[i];
-                // System.out.print("\nchk = " + chk + "\n");
-                for (int w = 0; w < m; w++) { // for all the elements in a column
-                    set(w, j[i], alpha[i] * get(w, k) + beta[i] * get(w, j[i]));
+    public void combinarLinealmente(int k, List<Integer> alpha, List<Integer> cols, List<Integer> beta) {
+        for (int i = 0; i < cols.size(); i++) {
+            if (cols.get(i) != 0) {
+                for (int j = 0; j < m; j++) { // for all the elements in a column
+                    set(j, cols.get(i), alpha.get(i) * get(j, k) + beta.get(i) * get(j, cols.get(i)));
                 }
             }
         }
