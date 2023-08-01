@@ -44,12 +44,13 @@ public class Comparador {
         double promediosProcesos = getPromedioMarcados(marcados);
         int maxHilosActivos = getMaxHilosActivos(marcados);
         List<Set<String>> tInvariantes = RdpHelper.getTInvariantes(rdp);
-        RdpHelper.getPInvariantes(rdp);
+        List<Set<String>> pInvariantes = RdpHelper.getPInvariantes(rdp);
 
         System.out.println("Cantidad marcados posibles: " + marcados.size());
         System.out.println("Promedio tokens en plazas: " + promediosProcesos);
         System.out.println("Max cantidad hilos activos: " + maxHilosActivos);
         System.out.println("T Invariantes: " + tInvariantes);
+        System.out.println("P Invariantes: " + pInvariantes);
     }
 
     public static void searchMarcados(Rdp rdp, HashSet<List<Integer>> marcados) {

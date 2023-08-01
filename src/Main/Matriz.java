@@ -20,6 +20,15 @@ public class Matriz {
                 this.data[i][j] = data[i][j];
     }
 
+    public Matriz(double[][] data) {
+        N = data.length;
+        M = data[0].length;
+        this.data = new double[N][M];
+        for (int i = 0; i < N; i++)
+            for (int j = 0; j < M; j++)
+                this.data[i][j] = data[i][j];
+    }
+
     public static Matriz identity(int N) {
         Matriz I = new Matriz(N, N);
         for (int i = 0; i < N; i++)
