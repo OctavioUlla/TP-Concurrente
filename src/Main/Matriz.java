@@ -1,35 +1,5 @@
 package Main;
 
-/**
- * This support class provides many general matrix manipulation functions, as 
- * well as a number of specialised matrix operations pertaining to Petri net 
- * analysis.
- * @author Manos Papantoniou & Michael Camacho
- * @version February 2004
- *
- * Based on the Jama Matrix class, the PNMatrix class offers a small subset
- * of the operations, and is used for matrices of integers only, as required
- * by the petri net analyser project.
- *
- * <P>
- * This Class provides the fundamental operations of numerical linear algebra.  
- * Various constructors create Matrices from two dimensional arrays of integer 
- * numbers. 
- * Various "gets" and "sets" provide access to submatrices and matrix elements. 
- * Several methods implement basic matrix arithmetic, including matrix addition 
- * and multiplication, and element-by-element array operations.
- * Methods for reading and printing matrices are also included.
- * <P>
- * @author Edwin Chung a new boolean attribute was added (6th Feb 2007)
- * @author Pere Bonet (minor changes)
- */
-import java.io.ByteArrayOutputStream;
-import java.io.PrintWriter;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.util.Locale;
-
 public class Matriz {
     private final int[][] data;
 
@@ -646,80 +616,12 @@ public class Matriz {
         return a;
     }
 
-    /**
-     * Print the matrix to stdout. Line the elements up in columns
-     * with a Fortran-like 'Fw.d' style format.
-     * 
-     * @param w Column width.
-     * @param d Number of digits after the decimal.
-     */
-    public void print(int w, int d) {
-        print(new PrintWriter(System.out, true), w, d);
-    }
-
-    /**
-     * Print the matrix to the output stream. Line the elements up in
-     * columns with a Fortran-like 'Fw.d' style format.
-     * 
-     * @param output Output stream.
-     * @param w      Column width.
-     * @param d      Number of digits after the decimal.
-     */
-    void print(PrintWriter output, int w, int d) {
-        DecimalFormat format = new DecimalFormat();
-        format.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.UK));
-        format.setMinimumIntegerDigits(1);
-        format.setMaximumFractionDigits(d);
-        format.setMinimumFractionDigits(d);
-        format.setGroupingUsed(false);
-        print(output, format, w + 2);
-    }
-
-    /**
-     * Print the matrix to stdout. Line the elements up in columns.
-     * Use the format object, and right justify within columns of width
-     * characters.
-     * Note that if the matrix is to be read back in, you probably will want
-     * to use a NumberFormat that is set to UK Locale.
-     * 
-     * @param format A Formatting object for individual elements.
-     * @param width  Field width for each column.
-     * @see java.text.DecimalFormat#setDecimalFormatSymbols
-     */
-    public void print(NumberFormat format, int width) {
-        print(new PrintWriter(System.out, true), format, width);
-    }
-
-    // DecimalFormat is a little disappointing coming from Fortran or C's printf.
-    // Since it doesn't pad on the left, the elements will come out different
-    // widths. Consequently, we'll pass the desired column width in as an
-    // argument and do the extra padding ourselves.
-
-    /**
-     * Print the matrix to the output stream. Line the elements up in columns.
-     * Use the format object, and right justify within columns of width
-     * characters.
-     * Note that is the matrix is to be read back in, you probably will want
-     * to use a NumberFormat that is set to US Locale.
-     * 
-     * @param output the output stream.
-     * @param format A formatting object to format the matrix elements
-     * @param width  Column width.
-     * @see java.text.DecimalFormat#setDecimalFormatSymbols
-     */
-    void print(PrintWriter output, NumberFormat format, int width) {
-        output.println(); // start on new line.
+    public void print() {
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
-                String s = format.format(data[i][j]); // format the number
-                int padding = Math.max(1, width - s.length()); // At _least_ 1 space
-                for (int k = 0; k < padding; k++) {
-                    output.print(' ');
-                }
-                output.print(s);
+                System.out.printf("%d ", data[i][j]);
             }
-            output.println();
+            System.out.println();
         }
-        output.println(); // end with blank line.
     }
 }

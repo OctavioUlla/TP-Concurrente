@@ -39,7 +39,8 @@ public class Monitor {
 
                 // Si hay transiciones que se pueden disparar con hilos bloqueados
                 if (proximasTrancisiones.size() > 0) {
-                    String proximaTransicion = politica.getProximaTransicion(proximasTrancisiones);
+                    String proximaTransicion = politica
+                            .getProximaTransicion(proximasTrancisiones);
 
                     // Activar hilo y salir del monitor
                     colas.release(proximaTransicion);

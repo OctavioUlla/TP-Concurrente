@@ -19,8 +19,7 @@ public class Disparador implements Runnable {
     public void run() {
         while (true) {
             try {
-                String transicion = tIterator.next();
-                monitor.dispararTransicion(transicion);
+                monitor.dispararTransicion(tIterator.next());
             } catch (InterruptedException e) {
                 break;
             } catch (NoSuchElementException e) {

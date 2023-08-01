@@ -1,15 +1,11 @@
 package Main;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.stream.Collectors;
-
-import java.util.LinkedList;
 
 public class RdpHelper {
 
@@ -38,8 +34,7 @@ public class RdpHelper {
     }
 
     public static List<Set<String>> getPInvariantes(Rdp rdp) {
-        // Matriz matriz = rdp.getMatriz().traspuesta();
-
+        // Resolver matriz indicencia W . X = 0 para obtener t invariantes
         Matriz matrizPInvariantes = findVectors(rdp.getMatriz());
 
         // Transformar matriz resultante a lista de invariantes

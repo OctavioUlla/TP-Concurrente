@@ -79,7 +79,8 @@ public class Rdp {
     }
 
     public Set<String> getTransicionesSensibilizadas() {
-        return matrizMap.keySet().stream()
+        return getTrancisiones()
+                .stream()
                 .filter(t -> isSensibilizada(t))
                 .collect(Collectors.toSet());
     }
