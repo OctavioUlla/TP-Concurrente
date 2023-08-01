@@ -88,45 +88,27 @@ public class RdpHelper {
      */
 
     public static Matriz findVectors(Matriz c) {
-        /*
-         * | Tests Invariant Analysis IModule
-         * |
-         * | C = incidence matrix.
-         * | B = identity matrix with same number of columns as C.
-         * | Becomes the matrix of vectors in the end.
-         * | pPlus = integer array of +ve indices of a row.
-         * | pMinus = integer array of -ve indices of a row.
-         * | pPlusMinus = set union of the above integer arrays.
-         */
         int m = c.m;
         int n = c.n;
 
-        // generate the nxn identity matrix
+        // Generar matriz identidad nxn
         Matriz B = Matriz.identidad(n, n);
 
-        // while there are no zero elements in C do the steps of phase 1
-        // --------------------------------------------------------------------------------------
-        // PHASE 1:
-        // --------------------------------------------------------------------------------------
         while (!(c.esTodaCeros())) {
             if (c.puedeEliminarColumna()) {
-                // check each row (case 1.1)
                 for (int i = 0; i < m; i++) {
-                    List<Integer> pPlus = c.getIndicesPositivos(i); // get +ve indices of ith row
-                    List<Integer> pMinus = c.getIndicesNegativos(i); // get -ve indices of ith row
-                    if (pPlus.isEmpty() || pMinus.isEmpty()) { // case-action 1.1.a
-                                                               // this has to be done for all elements in the union
-                                                               // pPlus U pMinus
-                                                               // so first construct the union
-                        List<Integer> pPlusMinus = pPlus.isEmpty() ? pMinus : pPlus;
+                    List<Integer> iPositivos = c.getIndicesPositivos(i);
+                    List<Integer> iNegativos = c.getIndicesNegativos(i);
+                    // Si hay un set vacio se puede eliminar esta columna
+                    if (iPositivos.isEmpty() || iNegativos.isEmpty()) {
+                        // Seleccionar set no vacio
+                        List<Integer> iNoVacio = iPositivos.isEmpty() ? iNegativos : iPositivos;
 
-                        // eliminate each column corresponding to nonzero elements in pPlusMinus union
-                        for (int j = pPlusMinus.size() - 1; j >= 0; j--) {
-                            if (pPlusMinus.get(j) != 0) {
-                                c = c.eliminateCol(pPlusMinus.get(j) - 1);
-                                B = B.eliminateCol(pPlusMinus.get(j) - 1);
-                                n--; // reduce the number of columns since new matrix is smaller
-                            }
+                        // Eliminar cada columna correspondiente a valores no ceros del set
+                        for (Integer indice : iNoVacio) {
+                            c = c.eliminateCol(indice - 1);
+                            B = B.eliminateCol(indice - 1);
+                            n--; // Reducir n ya que la nueva matriz es mas pequeña
                         }
                     }
                 }
