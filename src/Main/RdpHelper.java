@@ -102,22 +102,18 @@ public class RdpHelper {
         int n = c.n;
 
         // generate the nxn identity matrix
-        Matriz B = Matriz.identity(n, n);
-
-        // arrays containing the indices of +ve and -ve elements in a row vector
-        // respectively
-        int[] pPlus, pMinus;
+        Matriz B = Matriz.identidad(n, n);
 
         // while there are no zero elements in C do the steps of phase 1
         // --------------------------------------------------------------------------------------
         // PHASE 1:
         // --------------------------------------------------------------------------------------
-        while (!(c.isZeroMatrix())) {
-            if (c.checkCase11()) {
+        while (!(c.esTodaCeros())) {
+            if (c.puedeEliminarColumna()) {
                 // check each row (case 1.1)
                 for (int i = 0; i < m; i++) {
-                    pPlus = c.getPositiveIndices(i); // get +ve indices of ith row
-                    pMinus = c.getNegativeIndices(i); // get -ve indices of ith row
+                    int[] pPlus = c.getIndicesPositivos(i); // get +ve indices of ith row
+                    int[] pMinus = c.getIndicesNegativos(i); // get -ve indices of ith row
                     if (isEmptySet(pPlus) || isEmptySet(pMinus)) { // case-action 1.1.a
                                                                    // this has to be done for all elements in the union
                                                                    // pPlus U pMinus
@@ -133,8 +129,6 @@ public class RdpHelper {
                             }
                         }
                     }
-                    resetArray(pPlus); // reset pPlus and pMinus to 0
-                    resetArray(pMinus);
                 }
             } else if (c.cardinalityCondition() >= 0) {
                 while (c.cardinalityCondition() >= 0) {

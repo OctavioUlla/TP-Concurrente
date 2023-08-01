@@ -74,8 +74,8 @@ public class Matriz {
         for (int i = 0; i < m; i++) {
             countpPlus = 0;
             countpMinus = 0;
-            pPlus = getPositiveIndices(i); // get +ve indices of ith row
-            pMinus = getNegativeIndices(i); // get -ve indices of ith row
+            pPlus = getIndicesPositivos(i); // get +ve indices of ith row
+            pMinus = getIndicesNegativos(i); // get -ve indices of ith row
             for (int j = 0; j < n; j++) {
                 if (pPlus[j] != 0) { // if there is nonzero element count it
                     countpPlus++;
@@ -109,8 +109,8 @@ public class Matriz {
         for (int i = 0; i < m; i++) {
             countpPlus = 0;
             countpMinus = 0;
-            pPlus = getPositiveIndices(i); // get +ve indices of ith row
-            pMinus = getNegativeIndices(i); // get -ve indices of ith row
+            pPlus = getIndicesPositivos(i); // get +ve indices of ith row
+            pMinus = getIndicesNegativos(i); // get -ve indices of ith row
             for (int j = 0; j < n; j++) {
                 if (pPlus[j] != 0) { // if there is nonzero element count it
                     countpPlus++;
@@ -133,50 +133,41 @@ public class Matriz {
     }
 
     /**
-     * Check if a matrix satisfies condition 1.1 of the algorithm.
+     * Chequear si la matriz contiene un set vacio de valores negativos o positivos
+     * en alguna fila. Si ambos set no estan vacios se necesita de combinacion
+     * lineal
      * 
-     * @return True if the matrix satisfies the condition and column elimination
-     *         is required.
+     * @return True si se cumple la condición y eliminación de columna es requerida
      */
-    public boolean checkCase11() {
-        boolean satisfies11 = false; // true means there is an empty set pPlus or pMinus
-        // false means that both pPlus and pMinus are non-empty
-        boolean pPlusEmpty = true, pMinusEmpty = true;
-        int[] pPlus, pMinus; // arrays containing the indices of +ve and -ve
+    public boolean puedeEliminarColumna() {
+        // Falso significa que no hay ningun set de positivos o negativos vacios
+        boolean positivosVacio = true, negativosVacio = true;
 
         for (int i = 0; i < m; i++) {
-            pPlusEmpty = true;
-            pMinusEmpty = true;
-            pPlus = getPositiveIndices(i); // get +ve indices of ith row
-            pMinus = getNegativeIndices(i); // get -ve indices of ith row
-            int pLength = pPlus.length, mLength = pMinus.length;
+            positivosVacio = true;
+            negativosVacio = true;
+            int[] positivos = getIndicesPositivos(i);
+            int[] negativos = getIndicesNegativos(i);
+            int pLength = positivos.length, nLength = negativos.length;
 
             for (int j = 0; j < pLength; j++) {
-                if (pPlus[j] != 0) {
-                    // if there is nonzero element then false (non-empty set)
-                    pPlusEmpty = false;
+                if (positivos[j] != 0) {
+                    // Si hay un valor distinto de cero el set no esta vacio
+                    positivosVacio = false;
                 }
             }
-            for (int j = 0; j < mLength; j++) {
-                if (pMinus[j] != 0) {
-                    // if there is nonzero element then false (non-empty set)
-                    pMinusEmpty = false;
+            for (int j = 0; j < nLength; j++) {
+                if (negativos[j] != 0) {
+                    // Si hay un valor distinto de cero el set no esta vacio
+                    negativosVacio = false;
                 }
             }
-            // if there is an empty set and it is not a zeros-only row then column
-            // elimination is possible
-            if ((pPlusEmpty || pMinusEmpty) && !isZeroRow(i)) {
+            // Si hay un solo set vacio
+            if (positivosVacio ^ negativosVacio) {
                 return true;
             }
-            // reset pPlus and pMinus to 0
-            for (int j = 0; j < pLength; j++) {
-                pPlus[j] = 0;
-            }
-            for (int j = 0; j < mLength; j++) {
-                pMinus[j] = 0;
-            }
         }
-        return satisfies11;
+        return false;
     }
 
     /**
@@ -195,8 +186,8 @@ public class Matriz {
         for (int i = 0; i < m; i++) {
             countpPlus = 0;
             countpMinus = 0;
-            pPlus = getPositiveIndices(i); // get +ve indices of ith row
-            pMinus = getNegativeIndices(i); // get -ve indices of ith row
+            pPlus = getIndicesPositivos(i); // get +ve indices of ith row
+            pMinus = getIndicesNegativos(i); // get -ve indices of ith row
             for (int j = 0; j < n; j++) {
                 if (pPlus[j] != 0) { // if there is nonzero element count it
                     countpPlus++;
@@ -238,13 +229,8 @@ public class Matriz {
                 cols[count++] = i;
             }
         }
-        // System.out.print("Eliminating column " + toDelete + " from matrix below...
-        // keeping columns ");
-        // printArray(cols);
-        // print(2, 0);
-        // System.out.println("Reduced matrix");
+
         reduced = getMatrix(0, m - 1, cols);
-        // reduced.print(2, 0);
 
         return reduced;
     }
@@ -395,23 +381,19 @@ public class Matriz {
     }
 
     /**
-     * For row rowNo of the matrix received return the column indices of all the
-     * negative elements
+     * Obtiene indices de valores negativos en la fila
      * 
-     * @param rowNo row iside the Matrix to check for -ve elements
-     * @return Integer array of indices of negative elements.
-     * @exception ArrayIndexOutOfBoundsException Submatrix indices
+     * @param rowNo Indice de la fila
+     * @return Array de indices que contienen valores negativos
+     * @exception ArrayIndexOutOfBoundsException
      */
-    public int[] getNegativeIndices(int rowNo) {
-        // create the single row submatrix for the required row
+    public int[] getIndicesNegativos(int rowNo) {
         try {
-            Matriz a = new Matriz(1, n);
-            a = getMatrix(rowNo, rowNo, 0, n - 1);
+            // Obtiene submatriz de la fila indicada
+            Matriz a = getMatrix(rowNo, rowNo, 0, n - 1);
 
-            int count = 0; // index of a negative element in the returned array
+            int count = 0; // Cantidad de elementos positivos
             int[] negativesArray = new int[n];
-            for (int i = 0; i < n; i++) // initialise to zero
-                negativesArray[i] = 0;
 
             for (int i = 0; i < n; i++) {
                 if (a.get(0, i) < 0)
@@ -420,46 +402,42 @@ public class Matriz {
 
             return negativesArray;
         } catch (ArrayIndexOutOfBoundsException e) {
-            throw new ArrayIndexOutOfBoundsException("Submatrix indices");
+            throw new ArrayIndexOutOfBoundsException("Indice submatrix");
         }
     }
 
     /**
-     * For row rowNo of the matrix received return the column indices of all the
-     * positive elements
+     * Obtiene indices de valores positivos en la fila
      * 
-     * @param rowNo row iside the Matrix to check for +ve elements
-     * @return The integer array of indices of all positive elements.
-     * @exception ArrayIndexOutOfBoundsException Submatrix indices
+     * @param rowNo Indice de la fila
+     * @return Array de indices que contienen valores positivos
+     * @exception ArrayIndexOutOfBoundsException
      */
-    public int[] getPositiveIndices(int rowNo) {
-        // create the single row submatrix for the required row
+    public int[] getIndicesPositivos(int rowNo) {
         try {
-            Matriz a = new Matriz(1, n);
-            a = getMatrix(rowNo, rowNo, 0, n - 1);
+            // Obtiene submatriz de la fila indicada
+            Matriz a = getMatrix(rowNo, rowNo, 0, n - 1);
 
-            int count = 0; // index of a positive element in the returned array
-            int[] positivesArray = new int[n];
-            for (int i = 0; i < n; i++) // initialise to zero
-                positivesArray[i] = 0;
+            int count = 0; // Cantidad de elementos positivos
+            int[] arrayPositivos = new int[n];
 
             for (int i = 0; i < n; i++) {
                 if (a.get(0, i) > 0)
-                    positivesArray[count++] = i + 1;
+                    arrayPositivos[count++] = i + 1;
             }
 
-            return positivesArray;
+            return arrayPositivos;
         } catch (ArrayIndexOutOfBoundsException e) {
-            throw new ArrayIndexOutOfBoundsException("Submatrix indices");
+            throw new ArrayIndexOutOfBoundsException("Indice submatrix");
         }
     }
 
     /**
-     * Check if a matrix is all zeros.
+     * Chequea si la matriz consiste de todos ceros
      * 
-     * @return true if all zeros, false otherwise
+     * @return true si contiene todos ceros
      */
-    public boolean isZeroMatrix() {
+    public boolean esTodaCeros() {
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
                 if (get(i, j) != 0) {
@@ -468,19 +446,6 @@ public class Matriz {
             }
         }
         return true;
-    }
-
-    /**
-     * isZeroRow returns true if the ith row is all zeros
-     * 
-     * @param r row to check for full zeros.
-     * @return true if the row is full of zeros.
-     */
-    boolean isZeroRow(int r) {
-        // TODO: optimize this!
-        Matriz a = new Matriz(1, n);
-        a = getMatrix(r, r, 0, n - 1);
-        return a.isZeroMatrix();
     }
 
     /**
@@ -535,21 +500,21 @@ public class Matriz {
     }
 
     /**
-     * Set a single element.
+     * Setear valor de elemento
      * 
-     * @param i Row index.
-     * @param j Column index.
-     * @param s A(i,j).
+     * @param i Indice fila
+     * @param j indice columna
+     * @param v valor
      * @exception ArrayIndexOutOfBoundsException
      */
-    public void set(int i, int j, int s) {
-        data[i][j] = s;
+    public void set(int i, int j, int v) {
+        data[i][j] = v;
     }
 
     /**
-     * Matrix transpose.
+     * Obtener matriz traspuesta
      * 
-     * @return A'
+     * @return Matriz traspuesta
      */
     public Matriz transpose() {
         Matriz t = new Matriz(n, m);
@@ -564,25 +529,27 @@ public class Matriz {
     }
 
     /**
-     * Generate identity matrix]
+     * Generar matriz identidad
      * 
-     * @param m Number of rows.
-     * @param n Number of colums.
-     * @return An m-by-n matrix with ones on the diagonal and zeros elsewhere.
+     * @param m Numero de filas
+     * @param n Numero de columnas
+     * @return Una matriz m x n con 1 en la diagonal
      */
-    public static Matriz identity(int m, int n) {
-        Matriz a = new Matriz(m, n);
+    public static Matriz identidad(int m, int n) {
+        Matriz identidad = new Matriz(m, n);
 
-        int[][] X = a.getData();
+        int[][] X = identidad.getData();
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
                 X[i][j] = (i == j ? 1 : 0);
             }
         }
-        return a;
+        return identidad;
     }
 
     public void print() {
+        System.out.println();
+
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
                 System.out.printf("%d ", data[i][j]);
