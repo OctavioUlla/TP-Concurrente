@@ -2,7 +2,7 @@ package Segmentos;
 
 import java.util.Iterator;
 
-public abstract class Segmento implements Iterable<String> {
+public class Segmento implements Iterable<String> {
 
     private final String[] transiciones;
 
