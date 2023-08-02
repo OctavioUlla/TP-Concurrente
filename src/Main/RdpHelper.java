@@ -112,7 +112,7 @@ public class RdpHelper {
                 .collect(Collectors.toList());
     }
 
-    public static List<SegmentoEjecucion> getSegmentos(Rdp rdp) {
+    public static List<LinkedHashSet<String>> getTransicionesSegmentos(Rdp rdp) {
         SortedMap<String, SortedMap<String, Integer>> matriz = rdp.getMatrizMap();
         Set<String> plazasAccion = getPlazasAccion(rdp);
 
@@ -181,7 +181,7 @@ public class RdpHelper {
             tSegmentos.add(nuevoSegmento);
         }
 
-        return null;
+        return tSegmentos;
     }
 
     private static Set<String> getForks(
