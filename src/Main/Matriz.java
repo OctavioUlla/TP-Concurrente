@@ -60,6 +60,28 @@ public class Matriz {
         this.data = data;
     }
 
+    /**
+     * Construir matriz a partir de array 2D
+     * 
+     * @param data 2D array
+     * @exception IllegalArgumentException Todas las filas deben tener el mismo
+     *                                     largo
+     */
+    public Matriz(Integer[][] data) {
+        m = data.length;
+        n = data[0].length;
+        this.data = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            if (data[i].length != n) {
+                throw new IllegalArgumentException(
+                        "Todas las filas deben tener el mismo largo");
+            }
+            for (int j = 0; j < n; j++) {
+                this.data[i][j] = data[i][j];
+            }
+        }
+    }
+
     public Matriz kernel() {
         Matriz r = new Matriz(this);
         int nReducida = r.n;

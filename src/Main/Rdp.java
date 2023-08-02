@@ -38,28 +38,11 @@ public class Rdp {
     }
 
     public Matriz getMatriz() {
-        List<Map<String, Integer>> rows = matrizMap.entrySet().stream()
-                .map(x -> x.getValue())
-                .collect(Collectors.toList());
+        Integer[][] matriz = matrizMap.entrySet().stream()
+                .map(x -> x.getValue().values().stream().toArray(n -> new Integer[n]))
+                .toArray(Integer[][]::new);
 
-        // T count
-        int n = rows.size();
-        // P count
-        int m = rows.get(0).size();
-
-        Matriz matriz = new Matriz(n, m);
-        int i = 0;
-
-        for (Map<String, Integer> row : rows) {
-            int j = 0;
-            for (Integer value : row.values()) {
-                matriz.set(i, j, value);
-                j++;
-            }
-            i++;
-        }
-
-        return matriz;
+        return new Matriz(matriz);
     }
 
     public Map<String, Integer> getMarcado() {
