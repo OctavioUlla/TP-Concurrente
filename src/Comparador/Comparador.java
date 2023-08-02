@@ -11,7 +11,7 @@ import Importador.IImportador;
 import Importador.ImportadorFactory;
 import Importador.TipoImportador;
 import Main.Rdp;
-import Main.RdpHelper;
+import Main.AnlizadorRdp;
 
 public class Comparador {
 
@@ -34,62 +34,21 @@ public class Comparador {
     public static void analizar(Rdp rdp) {
         HashSet<List<Integer>> marcados = new HashSet<List<Integer>>();
 
-        List<LinkedHashSet<String>> tInvariantes = RdpHelper.getTInvariantesOrdenados(rdp);
-        List<Set<String>> pInvariantes = RdpHelper.getPInvariantes(rdp);
-        Set<String> plazasAccion = RdpHelper.getPlazasAccion(rdp);
+        List<LinkedHashSet<String>> tInvariantes = AnlizadorRdp.getTInvariantesOrdenados(rdp);
+        List<Set<String>> pInvariantes = AnlizadorRdp.getPInvariantes(rdp);
+        Set<String> plazasAccion = AnlizadorRdp.getPlazasAccion(rdp);
 
         System.out.println("T Invariantes: " + tInvariantes);
         System.out.println("P Invariantes: " + pInvariantes);
         System.out.println("Plazas de Acción: " + plazasAccion);
 
-        searchMarcados(rdp, plazasAccion, marcados);
+        AnlizadorRdp.searchMarcados(rdp, plazasAccion, marcados);
 
-        double promediosProcesos = getPromedioMarcados(marcados);
-        int maxHilosActivos = getMaxHilosActivos(marcados);
-
-        RdpHelper.getSegmentos(rdp);
+        double promediosProcesos = AnlizadorRdp.getPromedioMarcados(marcados);
+        int maxHilosActivos = AnlizadorRdp.getMaxHilosActivos(marcados);
 
         System.out.println("Cantidad marcados posibles: " + marcados.size());
         System.out.println("Promedio tokens en plazas: " + promediosProcesos);
         System.out.println("Max cantidad hilos activos: " + maxHilosActivos);
-    }
-
-    public static void searchMarcados(Rdp rdp, Set<String> plazasAccion, HashSet<List<Integer>> marcados) {
-        // Deep copy
-        Map<String, Integer> marcado = rdp.getMarcado().entrySet().stream()
-                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
-
-        List<Integer> marcadoProcesos = marcado.entrySet().stream()
-                .filter(p -> plazasAccion.contains(p.getKey()))
-                .map(p -> p.getValue())
-                .collect(Collectors.toList());
-
-        if (!marcados.add(marcadoProcesos)) {
-            // Si se repite marcado volver
-            return;
-        }
-
-        rdp.getTransicionesSensibilizadas()
-                .forEach(t -> {
-                    rdp.disparar(t);
-                    searchMarcados(rdp, plazasAccion, marcados);
-                    rdp.setMarcado(marcado);
-                });
-    }
-
-    public static double getPromedioMarcados(HashSet<List<Integer>> marcados) {
-        return marcados.stream()
-                .map(toks -> toks.stream().mapToInt(Integer::intValue).sum())
-                .mapToInt(Integer::intValue)
-                .average()
-                .orElse(0);
-    }
-
-    public static int getMaxHilosActivos(HashSet<List<Integer>> marcados) {
-        return marcados.stream()
-                .map(toks -> toks.stream().mapToInt(Integer::intValue).sum())
-                .mapToInt(Integer::intValue)
-                .max()
-                .orElse(0);
     }
 }
