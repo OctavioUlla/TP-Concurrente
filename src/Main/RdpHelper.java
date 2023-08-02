@@ -118,18 +118,67 @@ public class RdpHelper {
 
         Set<String> transicionesFork = getForks(matriz, plazasAccion);
 
-        Set<String> transicionesjoin = getJoins(matriz, plazasAccion);
+        Set<String> transicionesJoin = getJoins(matriz, plazasAccion);
 
         // Comenzar con segmentos iguales a los tInvariantes
         List<LinkedHashSet<String>> tSegmentos = getTInvariantesOrdenados(rdp);
 
+        // Crear segmento nuevo por cada fork
         for (String fork : transicionesFork) {
+            LinkedHashSet<String> nuevoSegmento = null;
+
             for (LinkedHashSet<String> tSegmento : tSegmentos) {
                 // Si segmento contiene fork
                 if (tSegmento.contains(fork)) {
+                    int indice = 0;
+                    // Encontrar indice del fork en el segmento
+                    for (String t : tSegmento) {
+                        indice++;
+                        if (t == fork) {
+                            break;
+                        }
+                    }
 
+                    // Encontar transiciones que pertenecen al segmento nuevo
+                    nuevoSegmento = tSegmento.stream()
+                            .limit(indice)
+                            .collect(Collectors.toCollection(LinkedHashSet::new));
+
+                    // Eliminar transiciones que pertencen al nuevo segmento
+                    tSegmento.removeAll(nuevoSegmento);
                 }
             }
+
+            tSegmentos.add(nuevoSegmento);
+        }
+
+        // Crear segmento nuevo por cada join
+        for (String join : transicionesJoin) {
+            LinkedHashSet<String> nuevoSegmento = null;
+
+            for (LinkedHashSet<String> tSegmento : tSegmentos) {
+                // Si segmento contiene fork
+                if (tSegmento.contains(join)) {
+                    int indice = 0;
+                    // Encontrar indice del join en el segmento
+                    for (String t : tSegmento) {
+                        if (t == join) {
+                            break;
+                        }
+                        indice++;
+                    }
+
+                    // Encontar transiciones que pertenecen al segmento nuevo
+                    nuevoSegmento = tSegmento.stream()
+                            .skip(indice)
+                            .collect(Collectors.toCollection(LinkedHashSet::new));
+
+                    // Eliminar transiciones que pertencen al nuevo segmento
+                    tSegmento.removeAll(nuevoSegmento);
+                }
+            }
+
+            tSegmentos.add(nuevoSegmento);
         }
 
         return null;
