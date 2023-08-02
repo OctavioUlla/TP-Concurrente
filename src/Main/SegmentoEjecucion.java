@@ -1,12 +1,12 @@
-package Segmentos;
+package Main;
 
 import java.util.Iterator;
 
-public class Segmento implements Iterable<String> {
+public class SegmentoEjecucion implements Iterable<String> {
 
     private final String[] transiciones;
 
-    public Segmento(String... transiciones) {
+    public SegmentoEjecucion(String... transiciones) {
         this.transiciones = transiciones;
     }
 

@@ -1,6 +1,7 @@
 package Comparador;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +34,7 @@ public class Comparador {
     public static void analizar(Rdp rdp) {
         HashSet<List<Integer>> marcados = new HashSet<List<Integer>>();
 
-        List<Set<String>> tInvariantes = RdpHelper.getTInvariantes(rdp);
+        List<LinkedHashSet<String>> tInvariantes = RdpHelper.getTInvariantesOrdenados(rdp);
         List<Set<String>> pInvariantes = RdpHelper.getPInvariantes(rdp);
         Set<String> plazasAccion = RdpHelper.getPlazasAccion(rdp);
 
@@ -45,6 +46,8 @@ public class Comparador {
 
         double promediosProcesos = getPromedioMarcados(marcados);
         int maxHilosActivos = getMaxHilosActivos(marcados);
+
+        RdpHelper.getSegmentos(rdp);
 
         System.out.println("Cantidad marcados posibles: " + marcados.size());
         System.out.println("Promedio tokens en plazas: " + promediosProcesos);
