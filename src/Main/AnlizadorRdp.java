@@ -191,12 +191,12 @@ public class AnlizadorRdp {
                 .filter(p -> plazasAccion.contains(p.getKey()))
                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
 
-        List<Integer> marcadoProcesos = marcado.entrySet().stream()
+        List<Integer> marcadoAccion = marcado.entrySet().stream()
                 .filter(p -> plazasAccion.contains(p.getKey()))
                 .map(p -> p.getValue())
                 .collect(Collectors.toList());
 
-        if (!marcados.add(marcadoProcesos)) {
+        if (!marcados.add(marcadoAccion)) {
             // Si se repite marcado volver
             return;
         }
