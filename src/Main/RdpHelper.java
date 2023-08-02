@@ -58,22 +58,13 @@ public class RdpHelper {
     }
 
     public static List<Set<String>> getPlazasTInvariantes(Rdp rdp) {
-        List<Set<String>> plazasTInvariantes = new ArrayList<Set<String>>();
         SortedMap<String, SortedMap<String, Integer>> matrizMap = rdp.getMatrizMap();
 
-        getTInvariantes(rdp).forEach(tInvariante -> {
-
-            Set<String> plazasTInvariante = matrizMap.entrySet().stream()
-                    .filter(x -> tInvariante.contains(x.getKey())) // Filtrar transiciones en T Invariante
-                    .flatMap(x -> x.getValue().entrySet().stream()) // Select all plazas
-                    .filter(x -> x.getValue() != 0) // Filtrar plazas que afectan transicion
-                    .map(x -> x.getKey()) // Select plazas
-                    .collect(Collectors.toSet());
-
-            plazasTInvariantes.add(plazasTInvariante);
-        });
-
-        return plazasTInvariantes;
+        return getTInvariantes(rdp).stream().map(tInvariante -> tInvariante.stream()
+                .flatMap(t -> matrizMap.get(t).entrySet().stream()
+                        .filter(p -> p.getValue() != 0)
+                        .map(p -> p.getKey()))
+                .collect(Collectors.toSet())).collect(Collectors.toList());
     }
     /*
      * public static List<Set<String>> getPlazasAccionTInvariantes(Rdp rdp) {
