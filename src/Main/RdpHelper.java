@@ -60,21 +60,36 @@ public class RdpHelper {
     public static List<Set<String>> getPlazasTInvariantes(Rdp rdp) {
         SortedMap<String, SortedMap<String, Integer>> matrizMap = rdp.getMatrizMap();
 
-        return getTInvariantes(rdp).stream().map(tInvariante -> tInvariante.stream()
-                .flatMap(t -> matrizMap.get(t).entrySet().stream()
-                        .filter(p -> p.getValue() != 0)
-                        .map(p -> p.getKey()))
-                .collect(Collectors.toSet())).collect(Collectors.toList());
+        return getTInvariantes(rdp).stream()
+                // Por cada tInvariante encontrar plazas involucradas
+                .map(tInvariante -> tInvariante.stream()
+                        // Obtener plazas que interactuan con cada transicion (t)
+                        .flatMap(t -> matrizMap.get(t).entrySet().stream()
+                                .filter(p -> p.getValue() != 0)
+                                .map(p -> p.getKey()))
+                        .collect(Collectors.toSet()))
+                .collect(Collectors.toList());
     }
-    /*
-     * public static List<Set<String>> getPlazasAccionTInvariantes(Rdp rdp) {
-     * List<Set<String>> plazasTInvariantes = getPlazasTInvariantes(rdp);
-     * Map<String, Map<String, Integer>> matrizMap = rdp.getMatrizMap();
-     * 
-     * // Eliminar plazas recursos, idle y restricciones
-     * plazasTInvariantes.forEach(plazas -> {
-     * 
-     * });
-     * }
-     */
+
+    public static Set<String> getPlazasAccion(Rdp rdp) {
+        List<Set<String>> pInvariantes = getPInvariantes(rdp);
+        Set<String> plazasRecursosYIdle = new HashSet<String>();
+
+        // Plazas que se repiten en los pInvariantes son plazas de accion
+        return pInvariantes.stream()
+                .flatMap(pInvariante -> pInvariante.stream().filter(p -> !plazasRecursosYIdle.add(p)))
+                .collect(Collectors.toSet());
+    }
+
+    public static List<Set<String>> getPlazasAccionTInvariantes(Rdp rdp) {
+        List<Set<String>> plazasTInvariantes = getPlazasTInvariantes(rdp);
+        Set<String> plazasAccion = getPlazasAccion(rdp);
+
+        // Filtrar cada set de plazas de tInvariante
+        return plazasTInvariantes.stream()
+                .map(plazasTInvariante -> plazasTInvariante.stream()
+                        .filter(p -> plazasAccion.contains(p))
+                        .collect(Collectors.toSet()))
+                .collect(Collectors.toList());
+    }
 }

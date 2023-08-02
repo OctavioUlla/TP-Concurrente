@@ -1,7 +1,5 @@
 package Comparador;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +13,6 @@ import Main.Rdp;
 import Main.RdpHelper;
 
 public class Comparador {
-    final static Set<String> plazasProcesos = Collections
-            .unmodifiableSet(new HashSet<String>(
-                    Arrays.asList("P1", "P2", "P3", "P4", "P5", "P6", "P8", "P9", "P10")));
 
     public static void main(String[] args) {
 
@@ -38,28 +33,33 @@ public class Comparador {
     public static void analizar(Rdp rdp) {
         HashSet<List<Integer>> marcados = new HashSet<List<Integer>>();
 
-        searchMarcados(rdp, marcados);
+        List<Set<String>> tInvariantes = RdpHelper.getTInvariantes(rdp);
+        List<Set<String>> pInvariantes = RdpHelper.getPInvariantes(rdp);
+        List<Set<String>> plazasAccionTInvariantes = RdpHelper.getPlazasAccionTInvariantes(rdp);
+
+        System.out.println("T Invariantes: " + tInvariantes);
+        System.out.println("P Invariantes: " + pInvariantes);
+        System.out.println("Plazas de Acción de T Invariantes: " + plazasAccionTInvariantes);
+
+        Set<String> plazasAccion = RdpHelper.getPlazasAccion(rdp);
+
+        searchMarcados(rdp, plazasAccion, marcados);
 
         double promediosProcesos = getPromedioMarcados(marcados);
         int maxHilosActivos = getMaxHilosActivos(marcados);
-        List<Set<String>> tInvariantes = RdpHelper.getTInvariantes(rdp);
-        List<Set<String>> pInvariantes = RdpHelper.getPInvariantes(rdp);
-        System.out.println(RdpHelper.getPlazasTInvariantes(rdp));
 
         System.out.println("Cantidad marcados posibles: " + marcados.size());
         System.out.println("Promedio tokens en plazas: " + promediosProcesos);
         System.out.println("Max cantidad hilos activos: " + maxHilosActivos);
-        System.out.println("T Invariantes: " + tInvariantes);
-        System.out.println("P Invariantes: " + pInvariantes);
     }
 
-    public static void searchMarcados(Rdp rdp, HashSet<List<Integer>> marcados) {
+    public static void searchMarcados(Rdp rdp, Set<String> plazasAccion, HashSet<List<Integer>> marcados) {
         // Deep copy
         Map<String, Integer> marcado = rdp.getMarcado().entrySet().stream()
                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
 
         List<Integer> marcadoProcesos = marcado.entrySet().stream()
-                .filter(p -> plazasProcesos.contains(p.getKey()))
+                .filter(p -> plazasAccion.contains(p.getKey()))
                 .map(p -> p.getValue())
                 .collect(Collectors.toList());
 
@@ -71,7 +71,7 @@ public class Comparador {
         rdp.getTransicionesSensibilizadas()
                 .forEach(t -> {
                     rdp.disparar(t);
-                    searchMarcados(rdp, marcados);
+                    searchMarcados(rdp, plazasAccion, marcados);
                     rdp.setMarcado(marcado);
                 });
     }
