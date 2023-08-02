@@ -35,13 +35,11 @@ public class Comparador {
 
         List<Set<String>> tInvariantes = RdpHelper.getTInvariantes(rdp);
         List<Set<String>> pInvariantes = RdpHelper.getPInvariantes(rdp);
-        List<Set<String>> plazasAccionTInvariantes = RdpHelper.getPlazasAccionTInvariantes(rdp);
+        Set<String> plazasAccion = RdpHelper.getPlazasAccion(rdp);
 
         System.out.println("T Invariantes: " + tInvariantes);
         System.out.println("P Invariantes: " + pInvariantes);
-        System.out.println("Plazas de Acción de T Invariantes: " + plazasAccionTInvariantes);
-
-        Set<String> plazasAccion = RdpHelper.getPlazasAccion(rdp);
+        System.out.println("Plazas de Acción: " + plazasAccion);
 
         searchMarcados(rdp, plazasAccion, marcados);
 
