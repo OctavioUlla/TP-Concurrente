@@ -47,10 +47,11 @@ public class Comparador {
                 double promediosProcesos = AnalizadorRdp.getPromedioMarcados(marcados);
                 int maxHilosActivos = AnalizadorRdp.getMaxHilosActivos(marcados);
 
-                SegmentoEjecucion.getSegmentosEjecucion(rdp);
+                List<SegmentoEjecucion> segmentos = SegmentoEjecucion.getSegmentosEjecucion(rdp);
 
                 System.out.println("Cantidad marcados posibles: " + marcados.size());
                 System.out.println("Promedio tokens en plazas: " + promediosProcesos);
                 System.out.println("Max cantidad hilos activos: " + maxHilosActivos);
+                System.out.println("Segmentos: " + segmentos);
         }
 }

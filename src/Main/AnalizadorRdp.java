@@ -100,88 +100,6 @@ public class AnalizadorRdp {
                 .collect(Collectors.toList());
     }
 
-    public static List<Set<String>> getTransicionesSegmentos(Rdp rdp) {
-        SortedMap<String, SortedMap<String, Integer>> matriz = rdp.getMatrizMap();
-        Set<String> plazasAccion = getPlazasAccion(rdp);
-
-        Map<String, String> forks = getForks(matriz, plazasAccion);
-
-        Map<String, String> joins = getJoins(matriz, plazasAccion);
-
-        // Comenzar con segmentos iguales a los tInvariantes
-        List<Set<String>> tSegmentos = getTInvariantes(rdp);
-
-        // Crear segmento nuevo por cada fork
-        for (Entry<String, String> fork : forks.entrySet()) {
-            LinkedHashSet<String> nuevoSegmento = null;
-
-            for (Set<String> tSegmento : tSegmentos) {
-                // Si segmento contiene fork
-                if (tSegmento.contains(fork.getValue())) {
-                    int indice = 0;
-                    // Encontrar indice del fork en el segmento
-                    for (String t : tSegmento) {
-                        indice++;
-                        if (t == fork.getValue()) {
-                            break;
-                        }
-                    }
-
-                    // Encontar transiciones que pertenecen al segmento nuevo
-                    nuevoSegmento = tSegmento.stream()
-                            .limit(indice)
-                            .collect(Collectors.toCollection(LinkedHashSet::new));
-
-                    // Eliminar transiciones que pertencen al nuevo segmento
-                    tSegmento.removeAll(nuevoSegmento);
-                }
-            }
-
-            tSegmentos.add(nuevoSegmento);
-        }
-
-        // Crear segmento nuevo por cada join
-        for (Entry<String, String> join : joins.entrySet()) {
-            LinkedHashSet<String> nuevoSegmento = null;
-
-            for (Set<String> tSegmento : tSegmentos) {
-                // Si segmento contiene fork
-                if (tSegmento.contains(join.getValue())) {
-                    int indice = 0;
-                    // Encontrar indice del join en el segmento
-                    for (String t : tSegmento) {
-                        if (t == join.getValue()) {
-                            break;
-                        }
-                        indice++;
-                    }
-
-                    // Encontar transiciones que pertenecen al segmento nuevo
-                    nuevoSegmento = tSegmento.stream()
-                            .skip(indice)
-                            .collect(Collectors.toCollection(LinkedHashSet::new));
-
-                    // Eliminar transiciones que pertencen al nuevo segmento
-                    tSegmento.removeAll(nuevoSegmento);
-                }
-            }
-
-            tSegmentos.add(nuevoSegmento);
-        }
-
-        List<Set<String>> plazasSegmentos = AnalizadorRdp.getPlazasAccionTInvariantes(rdp, tSegmentos);
-
-        // Eliminar plazas correspodientes
-        for (int i = plazasSegmentos.size() - 1; i >= 0; i--) {
-            // Borrar plazas de los segmentos anteriores, para evitar repeticion
-            for (int j = i - 1; j >= 0; j--) {
-                plazasSegmentos.get(j).removeAll(plazasSegmentos.get(i));
-            }
-        }
-
-        return tSegmentos;
-    }
-
     public static void getMarcados(Rdp rdp, Set<String> plazasAccion, HashSet<Map<String, Integer>> marcados) {
         // Deep copy
         Map<String, Integer> marcado = rdp.getMarcado().entrySet().stream()
@@ -206,7 +124,7 @@ public class AnalizadorRdp {
 
     public static double getPromedioMarcados(HashSet<Map<String, Integer>> marcados) {
         return marcados.stream()
-                .map(toks -> toks.values().stream().mapToInt(Integer::intValue).sum())
+                .map(marcado -> marcado.values().stream().mapToInt(Integer::intValue).sum())
                 .mapToInt(Integer::intValue)
                 .average()
                 .orElse(0);
@@ -214,66 +132,10 @@ public class AnalizadorRdp {
 
     public static int getMaxHilosActivos(HashSet<Map<String, Integer>> marcados) {
         return marcados.stream()
-                .map(toks -> toks.values().stream().mapToInt(Integer::intValue).sum())
+                .map(marcado -> marcado.values().stream().mapToInt(Integer::intValue).sum())
                 .mapToInt(Integer::intValue)
                 .max()
                 .orElse(0);
-    }
-
-    private static Map<String, String> getForks(
-            SortedMap<String, SortedMap<String, Integer>> matriz,
-            Set<String> plazasAccion) {
-        Map<String, String> forks = new HashMap<String, String>();
-
-        // Buscar forks (si plaza tiene mas de un valor negativo en la matriz)
-        for (String plazaAccion : plazasAccion) {
-            int cantTrancicionesNegativas = 0;
-            String transicionPositiva = null;
-
-            for (Entry<String, SortedMap<String, Integer>> entry : matriz.entrySet()) {
-                Integer valorMatriz = entry.getValue().get(plazaAccion);
-
-                if (valorMatriz < 0) {
-                    cantTrancicionesNegativas++;
-                } else if (valorMatriz > 0) {
-                    transicionPositiva = entry.getKey();
-                }
-            }
-
-            if (cantTrancicionesNegativas > 1) {
-                forks.put(plazaAccion, transicionPositiva);
-            }
-        }
-
-        return forks;
-    }
-
-    private static Map<String, String> getJoins(
-            SortedMap<String, SortedMap<String, Integer>> matriz,
-            Set<String> plazasAccion) {
-        Map<String, String> joins = new HashMap<String, String>();
-
-        // Buscar forks (si plaza tiene mas de un valor positivo en la matriz)
-        for (String plazaAccion : plazasAccion) {
-            int cantTrancicionesPositivas = 0;
-            String transicionNegativa = null;
-
-            for (Entry<String, SortedMap<String, Integer>> entry : matriz.entrySet()) {
-                Integer valorMatriz = entry.getValue().get(plazaAccion);
-
-                if (valorMatriz > 0) {
-                    cantTrancicionesPositivas++;
-                } else if (valorMatriz < 0) {
-                    transicionNegativa = entry.getKey();
-                }
-            }
-
-            if (cantTrancicionesPositivas > 1) {
-                joins.put(plazaAccion, transicionNegativa);
-            }
-        }
-
-        return joins;
     }
 
     private static LinkedHashSet<String> ordenarTInvariante(
