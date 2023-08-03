@@ -33,14 +33,12 @@ public class Monitor {
                 Set<String> esperando = colas.getTransicionesEspera();
 
                 // Transiciones sensibilizadas y con hilos bloqueados
-                Set<String> proximasTrancisiones = sensibilizadas.stream()
-                        .filter(t -> esperando.contains(t))
-                        .collect(Collectors.toSet());
+                sensibilizadas.retainAll(esperando);
 
                 // Si hay transiciones que se pueden disparar con hilos bloqueados
-                if (proximasTrancisiones.size() > 0) {
+                if (sensibilizadas.size() > 0) {
                     String proximaTransicion = politica
-                            .getProximaTransicion(proximasTrancisiones);
+                            .getProximaTransicion(sensibilizadas);
 
                     // Activar hilo y salir del monitor
                     colas.release(proximaTransicion);
