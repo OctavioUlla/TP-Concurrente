@@ -22,12 +22,13 @@ public class Main {
 
         List<SegmentoEjecucion> segmentos = SegmentoEjecucion.getSegmentosEjecucion(rdp);
 
-        // Lanzar hilos para cada segmento
+        // Crear hilos necesarios por cada segmento
         List<Thread> hilos = segmentos.stream().flatMap(
                 s -> IntStream.range(0, s.getHilos())
                         .mapToObj(i -> new Thread(new Disparador(monitor, s), s.toString())))
                 .collect(Collectors.toList());
 
+        // Lanzar hilos
         hilos.forEach(h -> h.start());
 
         while (true) {
