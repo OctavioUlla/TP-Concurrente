@@ -5,12 +5,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import Importador.IImportador;
 import Importador.ImportadorFactory;
 import Importador.TipoImportador;
 import Main.Rdp;
+import Main.SegmentoEjecucion;
 import Main.AnalizadorRdp;
 
 public class Comparador {
@@ -34,7 +34,7 @@ public class Comparador {
         public static void analizar(Rdp rdp) {
                 HashSet<Map<String, Integer>> marcados = new HashSet<Map<String, Integer>>();
 
-                List<LinkedHashSet<String>> tInvariantes = AnalizadorRdp.getTInvariantesOrdenados(rdp);
+                List<Set<String>> tInvariantes = AnalizadorRdp.getTInvariantes(rdp);
                 List<Set<String>> pInvariantes = AnalizadorRdp.getPInvariantes(rdp);
                 Set<String> plazasAccion = AnalizadorRdp.getPlazasAccion(rdp);
 
@@ -47,7 +47,7 @@ public class Comparador {
                 double promediosProcesos = AnalizadorRdp.getPromedioMarcados(marcados);
                 int maxHilosActivos = AnalizadorRdp.getMaxHilosActivos(marcados);
 
-                AnalizadorRdp.getTransicionesSegmentos(rdp);
+                SegmentoEjecucion.getSegmentosEjecucion(rdp);
 
                 System.out.println("Cantidad marcados posibles: " + marcados.size());
                 System.out.println("Promedio tokens en plazas: " + promediosProcesos);

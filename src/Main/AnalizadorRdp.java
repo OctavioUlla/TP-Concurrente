@@ -1,6 +1,7 @@
 package Main;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -34,13 +35,8 @@ public class AnalizadorRdp {
             tInvariantes.add(tInvariante);
         }
 
-        return tInvariantes;
-    }
-
-    public static List<LinkedHashSet<String>> getTInvariantesOrdenados(Rdp rdp) {
-        // Comenzar con segmentos iguales o los tInvariantes
-        List<Set<String>> tInvariantes = getTInvariantes(rdp);
-        Iterator<Set<String>> iteradorPlazasAccionTInvariantes = getPlazasAccionTInvariantes(rdp).iterator();
+        Iterator<Set<String>> iteradorPlazasAccionTInvariantes = getPlazasAccionTInvariantes(rdp, tInvariantes)
+                .iterator();
 
         // Ordenar transiciones en tInvariante
         return tInvariantes.stream()
@@ -75,21 +71,6 @@ public class AnalizadorRdp {
         return pInvariantes;
     }
 
-    public static List<Set<String>> getPlazasTInvariantes(Rdp rdp) {
-        SortedMap<String, SortedMap<String, Integer>> matrizMap = rdp.getMatrizMap();
-
-        return getTInvariantes(rdp).stream()
-                // Por cada tInvariante encontrar plazas involucradas
-                .map(tInvariante -> tInvariante.stream()
-                        // Obtener plazas que interactuan con cada transicion (t)
-                        .flatMap(t -> matrizMap.get(t).entrySet().stream()
-                                // Si valor es distinto de cero significa que plaza esta conectada a transicion
-                                .filter(p -> p.getValue() != 0)
-                                .map(p -> p.getKey()))
-                        .collect(Collectors.toSet()))
-                .collect(Collectors.toList());
-    }
-
     public static Set<String> getPlazasAccion(Rdp rdp) {
         List<Set<String>> pInvariantes = getPInvariantes(rdp);
         Set<String> plazasRecursosYIdle = new HashSet<String>();
@@ -101,41 +82,47 @@ public class AnalizadorRdp {
                 .collect(Collectors.toSet());
     }
 
-    public static List<Set<String>> getPlazasAccionTInvariantes(Rdp rdp) {
-        List<Set<String>> plazasTInvariantes = getPlazasTInvariantes(rdp);
+    // Capaz se puede eliminar
+    public static List<Set<String>> getPlazasAccionTInvariantes(Rdp rdp, List<Set<String>> tInvariantes) {
+        SortedMap<String, SortedMap<String, Integer>> matrizMap = rdp.getMatrizMap();
         Set<String> plazasAccion = getPlazasAccion(rdp);
 
-        // Filtrar cada set de plazas de tInvariante
-        return plazasTInvariantes.stream()
-                .map(plazasTInvariante -> plazasTInvariante.stream()
-                        .filter(p -> plazasAccion.contains(p))
+        return tInvariantes.stream()
+                // Por cada tInvariante encontrar plazas involucradas
+                .map(tInvariante -> tInvariante.stream()
+                        // Obtener plazas que interactuan con cada transicion (t)
+                        .flatMap(t -> matrizMap.get(t).entrySet().stream()
+                                // Si valor es distinto de cero significa que plaza esta conectada a transicion
+                                .filter(p -> p.getValue() != 0)
+                                .filter(p -> plazasAccion.contains(p.getKey()))
+                                .map(p -> p.getKey()))
                         .collect(Collectors.toSet()))
                 .collect(Collectors.toList());
     }
 
-    public static List<LinkedHashSet<String>> getTransicionesSegmentos(Rdp rdp) {
+    public static List<Set<String>> getTransicionesSegmentos(Rdp rdp) {
         SortedMap<String, SortedMap<String, Integer>> matriz = rdp.getMatrizMap();
         Set<String> plazasAccion = getPlazasAccion(rdp);
 
-        Set<String> transicionesFork = getForks(matriz, plazasAccion);
+        Map<String, String> forks = getForks(matriz, plazasAccion);
 
-        Set<String> transicionesJoin = getJoins(matriz, plazasAccion);
+        Map<String, String> joins = getJoins(matriz, plazasAccion);
 
         // Comenzar con segmentos iguales a los tInvariantes
-        List<LinkedHashSet<String>> tSegmentos = getTInvariantesOrdenados(rdp);
+        List<Set<String>> tSegmentos = getTInvariantes(rdp);
 
         // Crear segmento nuevo por cada fork
-        for (String fork : transicionesFork) {
+        for (Entry<String, String> fork : forks.entrySet()) {
             LinkedHashSet<String> nuevoSegmento = null;
 
-            for (LinkedHashSet<String> tSegmento : tSegmentos) {
+            for (Set<String> tSegmento : tSegmentos) {
                 // Si segmento contiene fork
-                if (tSegmento.contains(fork)) {
+                if (tSegmento.contains(fork.getValue())) {
                     int indice = 0;
                     // Encontrar indice del fork en el segmento
                     for (String t : tSegmento) {
                         indice++;
-                        if (t == fork) {
+                        if (t == fork.getValue()) {
                             break;
                         }
                     }
@@ -154,16 +141,16 @@ public class AnalizadorRdp {
         }
 
         // Crear segmento nuevo por cada join
-        for (String join : transicionesJoin) {
+        for (Entry<String, String> join : joins.entrySet()) {
             LinkedHashSet<String> nuevoSegmento = null;
 
-            for (LinkedHashSet<String> tSegmento : tSegmentos) {
+            for (Set<String> tSegmento : tSegmentos) {
                 // Si segmento contiene fork
-                if (tSegmento.contains(join)) {
+                if (tSegmento.contains(join.getValue())) {
                     int indice = 0;
                     // Encontrar indice del join en el segmento
                     for (String t : tSegmento) {
-                        if (t == join) {
+                        if (t == join.getValue()) {
                             break;
                         }
                         indice++;
@@ -180,6 +167,16 @@ public class AnalizadorRdp {
             }
 
             tSegmentos.add(nuevoSegmento);
+        }
+
+        List<Set<String>> plazasSegmentos = AnalizadorRdp.getPlazasAccionTInvariantes(rdp, tSegmentos);
+
+        // Eliminar plazas correspodientes
+        for (int i = plazasSegmentos.size() - 1; i >= 0; i--) {
+            // Borrar plazas de los segmentos anteriores, para evitar repeticion
+            for (int j = i - 1; j >= 0; j--) {
+                plazasSegmentos.get(j).removeAll(plazasSegmentos.get(i));
+            }
         }
 
         return tSegmentos;
@@ -223,10 +220,10 @@ public class AnalizadorRdp {
                 .orElse(0);
     }
 
-    private static Set<String> getForks(
+    private static Map<String, String> getForks(
             SortedMap<String, SortedMap<String, Integer>> matriz,
             Set<String> plazasAccion) {
-        Set<String> transicionesFork = new HashSet<String>();
+        Map<String, String> forks = new HashMap<String, String>();
 
         // Buscar forks (si plaza tiene mas de un valor negativo en la matriz)
         for (String plazaAccion : plazasAccion) {
@@ -244,17 +241,17 @@ public class AnalizadorRdp {
             }
 
             if (cantTrancicionesNegativas > 1) {
-                transicionesFork.add(transicionPositiva);
+                forks.put(plazaAccion, transicionPositiva);
             }
         }
 
-        return transicionesFork;
+        return forks;
     }
 
-    private static Set<String> getJoins(
+    private static Map<String, String> getJoins(
             SortedMap<String, SortedMap<String, Integer>> matriz,
             Set<String> plazasAccion) {
-        Set<String> transicionesJoin = new HashSet<String>();
+        Map<String, String> joins = new HashMap<String, String>();
 
         // Buscar forks (si plaza tiene mas de un valor positivo en la matriz)
         for (String plazaAccion : plazasAccion) {
@@ -272,11 +269,11 @@ public class AnalizadorRdp {
             }
 
             if (cantTrancicionesPositivas > 1) {
-                transicionesJoin.add(transicionNegativa);
+                joins.put(plazaAccion, transicionNegativa);
             }
         }
 
-        return transicionesJoin;
+        return joins;
     }
 
     private static LinkedHashSet<String> ordenarTInvariante(
