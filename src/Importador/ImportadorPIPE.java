@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -45,7 +47,7 @@ public class ImportadorPIPE implements IImportador {
         Set<String> plazas = getPlazas(doc);
         Set<String> transiciones = getTransiciones(doc);
 
-        Map<String, Map<String, Integer>> matrizIncidencia = new HashMap<String, Map<String, Integer>>();
+        SortedMap<String, SortedMap<String, Integer>> matrizIncidencia = new TreeMap<String, SortedMap<String, Integer>>();
 
         rellenarMatriz(doc, matrizIncidencia, plazas, transiciones);
 
@@ -120,11 +122,16 @@ public class ImportadorPIPE implements IImportador {
 
     private void rellenarMatriz(
             Document doc,
-            Map<String, Map<String, Integer>> matrizIncidencia,
+            SortedMap<String, SortedMap<String, Integer>> matrizIncidencia,
             Set<String> plazas,
             Set<String> transiciones) {
 
-        transiciones.stream().forEach(t -> matrizIncidencia.put(t, new HashMap<String, Integer>()));
+        // Rellenar con ceros
+        transiciones.stream().forEach(t -> {
+            SortedMap<String, Integer> ceros = new TreeMap<String, Integer>();
+            plazas.forEach(p -> ceros.put(p, 0));
+            matrizIncidencia.put(t, ceros);
+        });
 
         NodeList arcos = doc.getElementsByTagName("arc");
 

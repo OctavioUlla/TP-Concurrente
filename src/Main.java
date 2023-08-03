@@ -1,8 +1,15 @@
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import Importador.IImportador;
 import Importador.ImportadorFactory;
 import Importador.TipoImportador;
+import Main.Disparador;
 import Main.Monitor;
 import Main.Rdp;
+import Main.SegmentoEjecucion;
 import Politicas.PoliticaPrimera;
 
 public class Main {
@@ -13,11 +20,19 @@ public class Main {
 
         Rdp rdp = importador.importar("./RedesDePetri/Red de petri sin deadlock.xml");
         Monitor monitor = new Monitor(rdp, new PoliticaPrimera());
-        monitor.dispararTransicion("T1");
-        System.out.println("Transicion T1 Disparada");
-        monitor.dispararTransicion("T2");
-        System.out.println("Transicion T2 Disparada");
-        monitor.dispararTransicion("T5");
-        System.out.println("Transicion T5 Disparada");
+
+        List<SegmentoEjecucion> segmentos = SegmentoEjecucion.getSegmentosEjecucion(rdp);
+
+        // Lanzar hilos para cada segmento
+        List<Thread> hilos = segmentos.stream().flatMap(
+                s -> IntStream.range(0, s.getHilos())
+                        .mapToObj(i -> new Thread(new Disparador(monitor, s), s.toString())))
+                .collect(Collectors.toList());
+
+        hilos.forEach(h -> h.start());
+
+        while (true) {
+
+        }
     }
 }

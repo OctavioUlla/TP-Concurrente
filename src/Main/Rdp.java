@@ -2,18 +2,18 @@ package Main;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.stream.Collectors;
 
 public class Rdp {
-    private final Map<String, Map<String, Integer>> matriz;
+    private final SortedMap<String, SortedMap<String, Integer>> matrizMap;
 
     private Map<String, Integer> marcado;
 
-    public Rdp(Map<String, Map<String, Integer>> matrizIncidencia, Map<String, Integer> marcadoInicial) {
-        this.matriz = Collections.unmodifiableMap(matrizIncidencia);
+    public Rdp(SortedMap<String, SortedMap<String, Integer>> matrizIncidencia, Map<String, Integer> marcadoInicial) {
+        this.matrizMap = Collections.unmodifiableSortedMap(matrizIncidencia);
         this.marcado = marcadoInicial;
     }
 
@@ -23,13 +23,25 @@ public class Rdp {
             return false;
         }
 
-        matriz.get(transicion)
+        matrizMap.get(transicion)
                 .entrySet()
                 .forEach(plazaTok -> marcado.merge(plazaTok.getKey(),
                         plazaTok.getValue(),
                         Integer::sum));
 
         return true;
+    }
+
+    public SortedMap<String, SortedMap<String, Integer>> getMatrizMap() {
+        return matrizMap;
+    }
+
+    public Matriz getMatriz() {
+        Integer[][] matriz = matrizMap.entrySet().stream()
+                .map(x -> x.getValue().values().stream().toArray(n -> new Integer[n]))
+                .toArray(Integer[][]::new);
+
+        return new Matriz(matriz);
     }
 
     public Map<String, Integer> getMarcado() {
@@ -41,17 +53,22 @@ public class Rdp {
     }
 
     public Set<String> getTrancisiones() {
-        return matriz.keySet();
+        return matrizMap.keySet();
+    }
+
+    public Set<String> getPlazas() {
+        return matrizMap.entrySet().iterator().next().getValue().keySet();
     }
 
     public Set<String> getTransicionesSensibilizadas() {
-        return matriz.keySet().stream()
+        return getTrancisiones()
+                .stream()
                 .filter(t -> isSensibilizada(t))
                 .collect(Collectors.toSet());
     }
 
     private boolean isSensibilizada(String transicion) {
-        return matriz.get(transicion).entrySet().stream()
+        return matrizMap.get(transicion).entrySet().stream()
                 .allMatch(
                         marcadoNecesario -> marcado.get(marcadoNecesario.getKey())
                                 + marcadoNecesario.getValue() >= 0);
