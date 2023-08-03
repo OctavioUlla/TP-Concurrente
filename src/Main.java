@@ -6,6 +6,7 @@ import Importador.IImportador;
 import Importador.ImportadorFactory;
 import Importador.TipoImportador;
 import Main.Disparador;
+import Main.Estadistica;
 import Main.Monitor;
 import Main.Rdp;
 import Main.SegmentoEjecucion;
@@ -18,7 +19,8 @@ public class Main {
         IImportador importador = importadorFactory.getImportador(TipoImportador.PIPE);
 
         Rdp rdp = importador.importar("./RedesDePetri/Red de petri sin deadlock.xml");
-        Monitor monitor = new Monitor(rdp, new PoliticaPrimera());
+        Estadistica estadistica = new Estadistica(rdp);
+        Monitor monitor = new Monitor(rdp, new PoliticaPrimera(), estadistica);
 
         List<SegmentoEjecucion> segmentos = SegmentoEjecucion.getSegmentosEjecucion(rdp);
 

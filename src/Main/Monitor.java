@@ -2,7 +2,6 @@ package Main;
 
 import java.util.Set;
 import java.util.concurrent.Semaphore;
-import java.util.stream.Collectors;
 
 import Politicas.IPolitica;
 
@@ -10,14 +9,17 @@ public class Monitor {
     private final Rdp rdp;
     private final Colas colas;
     private final Semaphore mutex = new Semaphore(1, false);
+
+    private Estadistica estadistica;
     private IPolitica politica;
 
     private boolean k = false;
 
-    public Monitor(Rdp redDePetri, IPolitica politica) {
+    public Monitor(Rdp redDePetri, IPolitica politica, Estadistica estadistica) {
         rdp = redDePetri;
         colas = new Colas(rdp.getTrancisiones());
         this.politica = politica;
+        this.estadistica = estadistica;
     }
 
     public void dispararTransicion(String transicion) throws InterruptedException {
