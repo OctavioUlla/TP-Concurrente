@@ -5,12 +5,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-public class RdpHelper {
+public class AnalizadorRdp {
 
     public static List<Set<String>> getTInvariantes(Rdp rdp) {
         // Resolver matriz indicencia W^T . X = 0 para obtener t invariantes
@@ -182,6 +183,45 @@ public class RdpHelper {
         }
 
         return tSegmentos;
+    }
+
+    public static void searchMarcados(Rdp rdp, Set<String> plazasAccion, HashSet<List<Integer>> marcados) {
+        // Deep copy
+        Map<String, Integer> marcado = rdp.getMarcado().entrySet().stream()
+                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+
+        List<Integer> marcadoProcesos = marcado.entrySet().stream()
+                .filter(p -> plazasAccion.contains(p.getKey()))
+                .map(p -> p.getValue())
+                .collect(Collectors.toList());
+
+        if (!marcados.add(marcadoProcesos)) {
+            // Si se repite marcado volver
+            return;
+        }
+
+        rdp.getTransicionesSensibilizadas()
+                .forEach(t -> {
+                    rdp.disparar(t);
+                    searchMarcados(rdp, plazasAccion, marcados);
+                    rdp.setMarcado(marcado);
+                });
+    }
+
+    public static double getPromedioMarcados(HashSet<List<Integer>> marcados) {
+        return marcados.stream()
+                .map(toks -> toks.stream().mapToInt(Integer::intValue).sum())
+                .mapToInt(Integer::intValue)
+                .average()
+                .orElse(0);
+    }
+
+    public static int getMaxHilosActivos(HashSet<List<Integer>> marcados) {
+        return marcados.stream()
+                .map(toks -> toks.stream().mapToInt(Integer::intValue).sum())
+                .mapToInt(Integer::intValue)
+                .max()
+                .orElse(0);
     }
 
     private static Set<String> getForks(
