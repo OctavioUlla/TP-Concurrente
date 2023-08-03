@@ -32,7 +32,7 @@ public class Comparador {
         }
 
         public static void analizar(Rdp rdp) {
-                HashSet<List<Integer>> marcados = new HashSet<List<Integer>>();
+                HashSet<Map<String, Integer>> marcados = new HashSet<Map<String, Integer>>();
 
                 List<LinkedHashSet<String>> tInvariantes = AnalizadorRdp.getTInvariantesOrdenados(rdp);
                 List<Set<String>> pInvariantes = AnalizadorRdp.getPInvariantes(rdp);

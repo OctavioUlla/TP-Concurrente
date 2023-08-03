@@ -185,15 +185,14 @@ public class AnalizadorRdp {
         return tSegmentos;
     }
 
-    public static void getMarcados(Rdp rdp, Set<String> plazasAccion, HashSet<List<Integer>> marcados) {
+    public static void getMarcados(Rdp rdp, Set<String> plazasAccion, HashSet<Map<String, Integer>> marcados) {
         // Deep copy
         Map<String, Integer> marcado = rdp.getMarcado().entrySet().stream()
                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
 
-        List<Integer> marcadoProcesos = marcado.entrySet().stream()
+        Map<String, Integer> marcadoProcesos = marcado.entrySet().stream()
                 .filter(p -> plazasAccion.contains(p.getKey()))
-                .map(p -> p.getValue())
-                .collect(Collectors.toList());
+                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
 
         if (!marcados.add(marcadoProcesos)) {
             // Si se repite marcado volver
@@ -208,17 +207,17 @@ public class AnalizadorRdp {
                 });
     }
 
-    public static double getPromedioMarcados(HashSet<List<Integer>> marcados) {
+    public static double getPromedioMarcados(HashSet<Map<String, Integer>> marcados) {
         return marcados.stream()
-                .map(toks -> toks.stream().mapToInt(Integer::intValue).sum())
+                .map(toks -> toks.values().stream().mapToInt(Integer::intValue).sum())
                 .mapToInt(Integer::intValue)
                 .average()
                 .orElse(0);
     }
 
-    public static int getMaxHilosActivos(HashSet<List<Integer>> marcados) {
+    public static int getMaxHilosActivos(HashSet<Map<String, Integer>> marcados) {
         return marcados.stream()
-                .map(toks -> toks.stream().mapToInt(Integer::intValue).sum())
+                .map(toks -> toks.values().stream().mapToInt(Integer::intValue).sum())
                 .mapToInt(Integer::intValue)
                 .max()
                 .orElse(0);
