@@ -15,11 +15,11 @@ public class Monitor {
 
     private boolean k = false;
 
-    public Monitor(Rdp redDePetri, IPolitica politica, Estadistica estadistica) {
+    public Monitor(Rdp redDePetri, IPolitica politica) {
         rdp = redDePetri;
         colas = new Colas(rdp.getTrancisiones());
         this.politica = politica;
-        this.estadistica = estadistica;
+        this.estadistica = new Estadistica(redDePetri);
     }
 
     public void dispararTransicion(String transicion) throws InterruptedException {
@@ -59,5 +59,9 @@ public class Monitor {
         }
 
         mutex.release();
+    }
+
+    public Estadistica getEstadistica() {
+        return estadistica;
     }
 }

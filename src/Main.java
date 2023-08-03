@@ -6,7 +6,6 @@ import Importador.IImportador;
 import Importador.ImportadorFactory;
 import Importador.TipoImportador;
 import Main.Disparador;
-import Main.Estadistica;
 import Main.Monitor;
 import Main.Rdp;
 import Main.SegmentoEjecucion;
@@ -19,8 +18,7 @@ public class Main {
         IImportador importador = importadorFactory.getImportador(TipoImportador.PIPE);
 
         Rdp rdp = importador.importar("./RedesDePetri/Red de petri sin deadlock.xml");
-        Estadistica estadistica = new Estadistica(rdp);
-        Monitor monitor = new Monitor(rdp, new PoliticaPrimera(), estadistica);
+        Monitor monitor = new Monitor(rdp, new PoliticaPrimera());
 
         List<SegmentoEjecucion> segmentos = SegmentoEjecucion.getSegmentosEjecucion(rdp);
 
@@ -33,8 +31,15 @@ public class Main {
         // Lanzar hilos
         hilos.forEach(h -> h.start());
 
-        while (true) {
+        // Esperar a que disparadores terminen
+        hilos.forEach(h -> {
+            try {
+                h.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
 
-        }
+        System.out.println("1000 invariantes completados!");
     }
 }
