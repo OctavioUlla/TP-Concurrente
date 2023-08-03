@@ -185,7 +185,7 @@ public class AnalizadorRdp {
         return tSegmentos;
     }
 
-    public static void searchMarcados(Rdp rdp, Set<String> plazasAccion, HashSet<List<Integer>> marcados) {
+    public static void getMarcados(Rdp rdp, Set<String> plazasAccion, HashSet<List<Integer>> marcados) {
         // Deep copy
         Map<String, Integer> marcado = rdp.getMarcado().entrySet().stream()
                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
@@ -203,7 +203,7 @@ public class AnalizadorRdp {
         rdp.getTransicionesSensibilizadas()
                 .forEach(t -> {
                     rdp.disparar(t);
-                    searchMarcados(rdp, plazasAccion, marcados);
+                    getMarcados(rdp, plazasAccion, marcados);
                     rdp.setMarcado(marcado);
                 });
     }
