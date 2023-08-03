@@ -8,7 +8,7 @@ import Politicas.IPolitica;
 public class Monitor {
     private final Rdp rdp;
     private final Colas colas;
-    private final Semaphore mutex = new Semaphore(1, false);
+    private final Semaphore mutex = new Semaphore(1, true);
 
     private Estadistica estadistica;
     private IPolitica politica;
@@ -31,6 +31,8 @@ public class Monitor {
             boolean disparoExitoso = rdp.disparar(transicion);
 
             if (disparoExitoso) {
+                estadistica.registrarDisparo(transicion);
+
                 Set<String> sensibilizadas = rdp.getTransicionesSensibilizadas();
                 Set<String> esperando = colas.getTransicionesEspera();
 
