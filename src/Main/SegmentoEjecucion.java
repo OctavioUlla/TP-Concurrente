@@ -4,10 +4,16 @@ import java.util.Iterator;
 
 public class SegmentoEjecucion implements Iterable<String> {
 
+    private final int hilos;
     private final String[] transiciones;
 
-    public SegmentoEjecucion(String... transiciones) {
+    public SegmentoEjecucion(int hilos, String... transiciones) {
+        this.hilos = hilos;
         this.transiciones = transiciones;
+    }
+
+    public int getHilos() {
+        return hilos;
     }
 
     @Override
