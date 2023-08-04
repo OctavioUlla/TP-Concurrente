@@ -62,7 +62,6 @@ public class Main {
                     .iterator();
 
             while (tInvariantesIncompletos.hasNext()) {
-                System.out.println(tRestantes);
                 Set<String> tInvarianteIncompleto = tInvariantesIncompletos.next();
                 // Obtener transiciones faltantes del invariante
                 if (tInvarianteIncompleto.removeAll(tRestantes)) {
