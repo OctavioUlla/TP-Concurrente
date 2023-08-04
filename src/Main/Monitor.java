@@ -47,12 +47,6 @@ public class Monitor {
                     // Activar hilo y salir del monitor
                     colas.release(proximaTransicion);
 
-                    if (Thread.interrupted()) {
-                        k = false;
-                        mutex.release();
-                        throw new InterruptedException();
-                    }
-
                     return;
                 } else {
                     k = false;
