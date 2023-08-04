@@ -1,5 +1,4 @@
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -50,8 +49,6 @@ public class Main {
         });
 
         System.out.println("1000 invariantes completados!");
-
-        monitor.fixMutex();
 
         // Terminar invariantes incompletos}
         List<String> tRestantes = estadistica.getTInvariantesIncompletos();

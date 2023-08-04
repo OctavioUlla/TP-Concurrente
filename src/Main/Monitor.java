@@ -47,6 +47,12 @@ public class Monitor {
                     // Activar hilo y salir del monitor
                     colas.release(proximaTransicion);
 
+                    if (Thread.interrupted()) {
+                        k = false;
+                        mutex.release();
+                        throw new InterruptedException();
+                    }
+
                     return;
                 } else {
                     k = false;
@@ -59,16 +65,6 @@ public class Monitor {
         }
 
         mutex.release();
-    }
-
-    /**
-     * Metodo para release mutex del monitor. Al terminar la ejeccion de los 1000
-     * invariantes puede que un hilo sea interrupido sin liberar el mutex
-     */
-    public void fixMutex() {
-        if (!mutex.hasQueuedThreads() && mutex.availablePermits() == 0) {
-            mutex.release();
-        }
     }
 
     public void setPolitica(IPolitica politica) {
