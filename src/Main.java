@@ -34,7 +34,7 @@ public class Main {
 
         hilos.forEach(h -> h.interrupt());
 
-        // Esperar a que disparadores terminen
+        // Esperar a que disparadores mueran
         hilos.forEach(h -> {
             try {
                 h.join();
@@ -44,5 +44,8 @@ public class Main {
         });
 
         System.out.println("1000 invariantes completados!");
+
+        // Terminar invariantes incompletos
+
     }
 }
