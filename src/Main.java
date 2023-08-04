@@ -28,8 +28,11 @@ public class Main {
                         .mapToObj(i -> new Thread(new Disparador(monitor, s), s.toString())))
                 .collect(Collectors.toList());
 
-        // Lanzar hilos
         hilos.forEach(h -> h.start());
+
+        monitor.getEstadistica().wait1000TInvariantes();
+
+        hilos.forEach(h -> h.interrupt());
 
         // Esperar a que disparadores terminen
         hilos.forEach(h -> {
