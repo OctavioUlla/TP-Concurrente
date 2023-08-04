@@ -10,7 +10,6 @@ public class Monitor {
     private final Rdp rdp;
     private final Colas colas;
     private final Semaphore mutex = new Semaphore(1, true);
-    private final Estadistica estadistica;
 
     private IPolitica politica;
     private boolean k = false;
@@ -19,7 +18,6 @@ public class Monitor {
         rdp = redDePetri;
         colas = new Colas(rdp.getTrancisiones());
         this.politica = new PoliticaPrimera();
-        this.estadistica = new Estadistica(redDePetri);
     }
 
     public void dispararTransicion(String transicion) throws InterruptedException {
@@ -31,8 +29,6 @@ public class Monitor {
             boolean disparoExitoso = rdp.disparar(transicion);
 
             if (disparoExitoso) {
-                estadistica.registrarDisparo(transicion);
-
                 Set<String> sensibilizadas = rdp.getTransicionesSensibilizadas();
                 Set<String> esperando = colas.getTransicionesEspera();
 
@@ -63,9 +59,5 @@ public class Monitor {
 
     public void setPolitica(IPolitica politica) {
         this.politica = politica;
-    }
-
-    public Estadistica getEstadistica() {
-        return estadistica;
     }
 }

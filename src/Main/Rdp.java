@@ -9,12 +9,15 @@ import java.util.stream.Collectors;
 
 public class Rdp {
     private final SortedMap<String, SortedMap<String, Integer>> matrizMap;
-
     private Map<String, Integer> marcado;
+
+    private final Estadistica estadistica;
+    private boolean estadisticaActivada;
 
     public Rdp(SortedMap<String, SortedMap<String, Integer>> matrizIncidencia, Map<String, Integer> marcadoInicial) {
         this.matrizMap = Collections.unmodifiableSortedMap(matrizIncidencia);
         this.marcado = marcadoInicial;
+        this.estadistica = new Estadistica(this);
     }
 
     public boolean disparar(String transicion) {
@@ -28,6 +31,10 @@ public class Rdp {
                 .forEach(plazaTok -> marcado.merge(plazaTok.getKey(),
                         plazaTok.getValue(),
                         Integer::sum));
+
+        if (estadisticaActivada) {
+            estadistica.registrarDisparo(transicion);
+        }
 
         return true;
     }
@@ -72,5 +79,13 @@ public class Rdp {
                 .allMatch(
                         marcadoNecesario -> marcado.get(marcadoNecesario.getKey())
                                 + marcadoNecesario.getValue() >= 0);
+    }
+
+    public Estadistica getEstadistica() {
+        return estadistica;
+    }
+
+    public void activarEstadisticas(boolean activarEstadistica) {
+        this.estadisticaActivada = activarEstadistica;
     }
 }

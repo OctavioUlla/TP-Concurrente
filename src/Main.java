@@ -23,7 +23,7 @@ public class Main {
 
         Rdp rdp = importador.importar("./RedesDePetri/Red de petri sin deadlock.xml");
         Monitor monitor = new Monitor(rdp);
-        Estadistica estadistica = monitor.getEstadistica();
+        Estadistica estadistica = rdp.getEstadistica();
 
         List<SegmentoEjecucion> segmentos = SegmentoEjecucion.getSegmentosEjecucion(rdp);
 
@@ -32,6 +32,8 @@ public class Main {
                 s -> IntStream.range(0, s.getHilos())
                         .mapToObj(i -> new Thread(new Disparador(monitor, s), s.toString())))
                 .collect(Collectors.toList());
+
+        rdp.activarEstadisticas(true);
 
         hilos.forEach(h -> h.start());
 
@@ -65,15 +67,7 @@ public class Main {
                 // Obtener transiciones faltantes del invariante
                 if (tInvarianteIncompleto.removeAll(tRestantes)) {
                     // Disparar transiciones restantes para completar invariante
-                    tInvarianteIncompleto.forEach(t -> {
-                        if (rdp.isSensibilizada(t)) {
-                            try {
-                                monitor.dispararTransicion(t);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
+                    tInvarianteIncompleto.forEach(t -> rdp.disparar(t));
                 }
             }
         }
