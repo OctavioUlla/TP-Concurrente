@@ -73,6 +73,7 @@ public class SegmentoEjecucion implements Iterable<String> {
             // Borrar plazas de los segmentos anteriores, para evitar repeticion
             for (int j = i - 1; j >= 0; j--) {
                 plazasSegmentos.get(j).removeAll(plazasSegmentos.get(i));
+                plazasSegmentos.get(i).removeAll(plazasSegmentos.get(j));
             }
         }
 

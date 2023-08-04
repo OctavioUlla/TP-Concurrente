@@ -2,22 +2,22 @@ package Main;
 
 import java.util.Set;
 import java.util.concurrent.Semaphore;
-import java.util.stream.Collectors;
 
 import Politicas.IPolitica;
+import Politicas.PoliticaPrimera;
 
 public class Monitor {
     private final Rdp rdp;
     private final Colas colas;
-    private final Semaphore mutex = new Semaphore(1, false);
-    private IPolitica politica;
+    private final Semaphore mutex = new Semaphore(1, true);
 
+    private IPolitica politica;
     private boolean k = false;
 
-    public Monitor(Rdp redDePetri, IPolitica politica) {
+    public Monitor(Rdp redDePetri) {
         rdp = redDePetri;
         colas = new Colas(rdp.getTrancisiones());
-        this.politica = politica;
+        this.politica = new PoliticaPrimera();
     }
 
     public void dispararTransicion(String transicion) throws InterruptedException {
@@ -33,14 +33,12 @@ public class Monitor {
                 Set<String> esperando = colas.getTransicionesEspera();
 
                 // Transiciones sensibilizadas y con hilos bloqueados
-                Set<String> proximasTrancisiones = sensibilizadas.stream()
-                        .filter(t -> esperando.contains(t))
-                        .collect(Collectors.toSet());
+                sensibilizadas.retainAll(esperando);
 
                 // Si hay transiciones que se pueden disparar con hilos bloqueados
-                if (proximasTrancisiones.size() > 0) {
+                if (sensibilizadas.size() > 0) {
                     String proximaTransicion = politica
-                            .getProximaTransicion(proximasTrancisiones);
+                            .getProximaTransicion(sensibilizadas);
 
                     // Activar hilo y salir del monitor
                     colas.release(proximaTransicion);
@@ -57,5 +55,9 @@ public class Monitor {
         }
 
         mutex.release();
+    }
+
+    public void setPolitica(IPolitica politica) {
+        this.politica = politica;
     }
 }

@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class Disparador implements Runnable {
-
     private final Monitor monitor;
     private final Iterator<String> tIterator;
 
