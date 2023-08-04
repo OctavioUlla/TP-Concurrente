@@ -1,15 +1,20 @@
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import Importador.IImportador;
 import Importador.ImportadorFactory;
 import Importador.TipoImportador;
+import Main.AnalizadorRdp;
 import Main.Disparador;
+import Main.Estadistica;
 import Main.Monitor;
 import Main.Rdp;
 import Main.SegmentoEjecucion;
-import Politicas.PoliticaPrimera;
 
 public class Main {
 
@@ -18,7 +23,8 @@ public class Main {
         IImportador importador = importadorFactory.getImportador(TipoImportador.PIPE);
 
         Rdp rdp = importador.importar("./RedesDePetri/Red de petri sin deadlock.xml");
-        Monitor monitor = new Monitor(rdp, new PoliticaPrimera());
+        Monitor monitor = new Monitor(rdp);
+        Estadistica estadistica = monitor.getEstadistica();
 
         List<SegmentoEjecucion> segmentos = SegmentoEjecucion.getSegmentosEjecucion(rdp);
 
@@ -30,7 +36,7 @@ public class Main {
 
         hilos.forEach(h -> h.start());
 
-        monitor.getEstadistica().wait1000TInvariantes();
+        estadistica.wait1000TInvariantes();
 
         hilos.forEach(h -> h.interrupt());
 
@@ -45,7 +51,36 @@ public class Main {
 
         System.out.println("1000 invariantes completados!");
 
-        // Terminar invariantes incompletos
+        monitor.fixMutex();
 
+        // Terminar invariantes incompletos}
+        List<String> tRestantes = estadistica.getTInvariantesIncompletos();
+
+        while (!tRestantes.isEmpty()) {
+            // Obtener invariantes incompletos
+            Iterator<Set<String>> tInvariantesIncompletos = AnalizadorRdp.getTInvariantes(rdp).stream()
+                    .filter(tInvariente -> !Collections.disjoint(tInvariente, tRestantes))
+                    .iterator();
+
+            while (tInvariantesIncompletos.hasNext()) {
+                System.out.println(tRestantes);
+                Set<String> tInvarianteIncompleto = tInvariantesIncompletos.next();
+                // Obtener transiciones faltantes del invariante
+                if (tInvarianteIncompleto.removeAll(tRestantes)) {
+                    // Disparar transiciones restantes para completar invariante
+                    tInvarianteIncompleto.forEach(t -> {
+                        if (rdp.isSensibilizada(t)) {
+                            try {
+                                monitor.dispararTransicion(t);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        System.out.println("TInvariantes incompletos completados");
     }
 }

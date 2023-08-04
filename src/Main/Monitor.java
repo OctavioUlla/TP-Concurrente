@@ -4,21 +4,21 @@ import java.util.Set;
 import java.util.concurrent.Semaphore;
 
 import Politicas.IPolitica;
+import Politicas.PoliticaPrimera;
 
 public class Monitor {
     private final Rdp rdp;
     private final Colas colas;
     private final Semaphore mutex = new Semaphore(1, true);
+    private final Estadistica estadistica;
 
-    private Estadistica estadistica;
     private IPolitica politica;
-
     private boolean k = false;
 
-    public Monitor(Rdp redDePetri, IPolitica politica) {
+    public Monitor(Rdp redDePetri) {
         rdp = redDePetri;
         colas = new Colas(rdp.getTrancisiones());
-        this.politica = politica;
+        this.politica = new PoliticaPrimera();
         this.estadistica = new Estadistica(redDePetri);
     }
 
@@ -59,6 +59,20 @@ public class Monitor {
         }
 
         mutex.release();
+    }
+
+    /**
+     * Metodo para release mutex del monitor. Al terminar la ejeccion de los 1000
+     * invariantes puede que un hilo sea interrupido sin liberar el mutex
+     */
+    public void fixMutex() {
+        if (!mutex.hasQueuedThreads() && mutex.availablePermits() == 0) {
+            mutex.release();
+        }
+    }
+
+    public void setPolitica(IPolitica politica) {
+        this.politica = politica;
     }
 
     public Estadistica getEstadistica() {

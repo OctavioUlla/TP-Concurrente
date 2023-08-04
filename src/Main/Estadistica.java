@@ -2,15 +2,15 @@ package Main;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class Estadistica {
     private final List<Set<String>> tInvariantes;
-    private final Set<String> tInvarianteIncompleto = new HashSet<String>();
+    private final List<String> tInvarianteIncompleto = new ArrayList<String>();
     private final Map<Set<String>, Integer> tInvariantesCount = new HashMap<Set<String>, Integer>();
 
     private FileWriter logger;
@@ -42,7 +42,7 @@ public class Estadistica {
         for (Set<String> tInvariante : tInvariantes) {
             // Si un invariante esta en el set es pq se completo uno
             if (tInvarianteIncompleto.containsAll(tInvariante)) {
-                tInvarianteIncompleto.removeAll(tInvariante);
+                tInvariante.forEach(t -> tInvarianteIncompleto.remove(tInvarianteIncompleto.indexOf(t)));
                 // Aumentar cuenta tInvariante
                 tInvariantesCount.merge(tInvariante, 1, Integer::sum);
 
@@ -61,11 +61,15 @@ public class Estadistica {
         }
     }
 
+    public List<String> getTInvariantesIncompletos() {
+        return tInvarianteIncompleto;
+    }
+
     private boolean llegoTInvarianteLimite() {
         int count = tInvariantesCount.values().stream()
                 .mapToInt(x -> x.intValue())
                 .sum();
 
-        return count >= 1000;
+        return count == 1000;
     }
 }

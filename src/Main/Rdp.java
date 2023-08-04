@@ -67,7 +67,7 @@ public class Rdp {
                 .collect(Collectors.toSet());
     }
 
-    private boolean isSensibilizada(String transicion) {
+    public boolean isSensibilizada(String transicion) {
         return matrizMap.get(transicion).entrySet().stream()
                 .allMatch(
                         marcadoNecesario -> marcado.get(marcadoNecesario.getKey())
