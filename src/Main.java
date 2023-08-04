@@ -33,7 +33,7 @@ public class Main {
                         .mapToObj(i -> new Thread(new Disparador(monitor, s), s.toString())))
                 .collect(Collectors.toList());
 
-        rdp.activarEstadisticas(true);
+        rdp.startEstadisticas();
 
         hilos.forEach(h -> h.start());
 
@@ -71,6 +71,8 @@ public class Main {
                 }
             }
         }
+
+        rdp.stopEstadisticas();
 
         System.out.println("TInvariantes incompletos completados");
     }

@@ -1,5 +1,6 @@
 package Main;
 
+import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,16 +14,10 @@ public class Estadistica {
     private final List<String> tInvarianteIncompleto = new ArrayList<String>();
     private final Map<Set<String>, Integer> tInvariantesCount = new HashMap<Set<String>, Integer>();
 
-    private FileWriter logger;
+    private BufferedWriter writer;
     private final Object notificador = new Object();
 
     public Estadistica(Rdp rdp) {
-        try {
-            logger = new FileWriter("log.txt");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         tInvariantes = AnalizadorRdp.getTInvariantes(rdp);
         // Inicializas cuenta de tInvariantes en 0
         tInvariantes.forEach(tInvariante -> tInvariantesCount.put(tInvariante, 0));
@@ -31,7 +26,7 @@ public class Estadistica {
     public void registrarDisparo(String transicion) {
         // Log transicion
         try {
-            logger.write(transicion + "-");
+            writer.write(transicion + "-");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -63,6 +58,22 @@ public class Estadistica {
 
     public List<String> getTInvariantesIncompletos() {
         return tInvarianteIncompleto;
+    }
+
+    public void start() {
+        try {
+            writer = new BufferedWriter(new FileWriter("log.txt"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void stop() {
+        try {
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean llegoTInvarianteLimite() {

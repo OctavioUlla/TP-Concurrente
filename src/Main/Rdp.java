@@ -85,7 +85,13 @@ public class Rdp {
         return estadistica;
     }
 
-    public void activarEstadisticas(boolean activarEstadistica) {
-        this.estadisticaActivada = activarEstadistica;
+    public void startEstadisticas() {
+        this.estadisticaActivada = true;
+        estadistica.start();
+    }
+
+    public void stopEstadisticas() {
+        this.estadisticaActivada = false;
+        estadistica.stop();
     }
 }
