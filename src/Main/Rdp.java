@@ -12,7 +12,6 @@ public class Rdp {
     private Map<String, Integer> marcado;
 
     private final Estadistica estadistica;
-    private boolean estadisticaActivada;
 
     public Rdp(SortedMap<String, SortedMap<String, Integer>> matrizIncidencia, Map<String, Integer> marcadoInicial) {
         this.matrizMap = Collections.unmodifiableSortedMap(matrizIncidencia);
@@ -32,9 +31,7 @@ public class Rdp {
                         plazaTok.getValue(),
                         Integer::sum));
 
-        if (estadisticaActivada) {
-            estadistica.registrarDisparo(transicion);
-        }
+        estadistica.tryRegistrarDisparo(transicion);
 
         return true;
     }
@@ -83,15 +80,5 @@ public class Rdp {
 
     public Estadistica getEstadistica() {
         return estadistica;
-    }
-
-    public void startEstadisticas() {
-        this.estadisticaActivada = true;
-        estadistica.start();
-    }
-
-    public void stopEstadisticas() {
-        this.estadisticaActivada = false;
-        estadistica.stop();
     }
 }

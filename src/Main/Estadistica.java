@@ -13,9 +13,9 @@ public class Estadistica {
     private final List<Set<String>> tInvariantes;
     private final List<String> tInvarianteIncompleto = new ArrayList<String>();
     private final Map<Set<String>, Integer> tInvariantesCount = new HashMap<Set<String>, Integer>();
-
-    private BufferedWriter writer;
     private final Object notificador = new Object();
+    private BufferedWriter writer;
+    private boolean activada = false;
 
     public Estadistica(Rdp rdp) {
         tInvariantes = AnalizadorRdp.getTInvariantes(rdp);
@@ -23,7 +23,11 @@ public class Estadistica {
         tInvariantes.forEach(tInvariante -> tInvariantesCount.put(tInvariante, 0));
     }
 
-    public void registrarDisparo(String transicion) {
+    public void tryRegistrarDisparo(String transicion) {
+        if (!activada) {
+            return;
+        }
+
         // Log transicion
         try {
             writer.write(transicion + "-");
@@ -70,9 +74,13 @@ public class Estadistica {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        activada = true;
     }
 
     public void stop() {
+        activada = false;
+
         try {
             writer.close();
         } catch (IOException e) {
