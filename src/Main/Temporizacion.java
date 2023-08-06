@@ -15,6 +15,10 @@ public class Temporizacion {
         this.timeStamp = timeStamp;
     }
 
+    public long getEspera() {
+        return timeStamp + alpha - System.currentTimeMillis();
+    }
+
     public boolean isEnVentana() {
         long timeStampActual = System.currentTimeMillis();
 

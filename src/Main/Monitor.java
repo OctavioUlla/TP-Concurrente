@@ -29,7 +29,7 @@ public class Monitor {
             boolean disparoExitoso = rdp.disparar(transicion);
 
             if (disparoExitoso) {
-                Set<String> sensibilizadas = rdp.getTransicionesSensibilizadas();
+                Set<String> sensibilizadas = rdp.getTransicionesMarcadosNecesarios();
                 Set<String> esperando = colas.getTransicionesEspera();
 
                 // Transiciones sensibilizadas y con hilos bloqueados
@@ -48,9 +48,19 @@ public class Monitor {
                     k = false;
                 }
             } else {
-                // Bloquear hilo, a espera de que la transicion se sensibilize
-                mutex.release();
-                colas.acquire(transicion);
+                // Si es temporal y tiene marcados necesarios significa que
+                // todavia no se llego a alfa, esperar hasta alfa
+                if (rdp.isTemporal(transicion) && rdp.hasMarcadoNecesario(transicion)) {
+                    mutex.release();
+                    Thread.sleep(rdp.getEsperaTemporal(transicion));
+                    mutex.acquire();
+                    k = true;
+                }
+                // Si no es temporal esperar a marcado necesario
+                else {
+                    mutex.release();
+                    colas.acquire(transicion);
+                }
             }
         }
 

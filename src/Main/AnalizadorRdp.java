@@ -112,7 +112,7 @@ public class AnalizadorRdp {
             return;
         }
 
-        rdp.getTransicionesSensibilizadas()
+        rdp.getTransicionesMarcadosNecesarios()
                 .forEach(t -> {
                     rdp.disparar(t);
                     getMarcados(rdp, plazasAccion, marcados);

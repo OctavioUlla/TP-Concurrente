@@ -40,8 +40,6 @@ public class Rdp {
 
         updateTimeStamps();
 
-        System.out.println(transicion);
-
         estadistica.tryRegistrarDisparo(transicion);
 
         return true;
@@ -75,10 +73,10 @@ public class Rdp {
         return matrizMap.entrySet().iterator().next().getValue().keySet();
     }
 
-    public Set<String> getTransicionesSensibilizadas() {
+    public Set<String> getTransicionesMarcadosNecesarios() {
         return getTrancisiones()
                 .stream()
-                .filter(t -> isSensibilizada(t))
+                .filter(t -> hasMarcadoNecesario(t))
                 .collect(Collectors.toSet());
     }
 
@@ -86,32 +84,40 @@ public class Rdp {
         return estadistica;
     }
 
-    private void updateTimeStamps() {
-        long timeStampActual = System.currentTimeMillis();
-
-        // Actualizar time stamp de todas las transiciones sensibilizadas y temporales
-        transicionesTemporizadas.entrySet().stream()
-                .filter(e -> getTransicionesSensibilizadas().contains(e.getKey()))
-                .forEach(e -> e.getValue().setTimeStamp(timeStampActual));
+    public boolean isTemporal(String transicion) {
+        return transicionesTemporizadas.containsKey(transicion);
     }
 
-    private boolean isSensibilizada(String transicion) {
-        if (isTemporal(transicion) &&
-                !transicionesTemporizadas.get(transicion).isEnVentana()) {
-            return false;
-        }
-
-        return hasMarcadoNecesario(transicion);
-    }
-
-    private boolean hasMarcadoNecesario(String transicion) {
+    public boolean hasMarcadoNecesario(String transicion) {
         return matrizMap.get(transicion).entrySet().stream()
                 .allMatch(
                         marcadoNecesario -> marcado.get(marcadoNecesario.getKey())
                                 + marcadoNecesario.getValue() >= 0);
     }
 
-    private boolean isTemporal(String transicion) {
-        return transicionesTemporizadas.containsKey(transicion);
+    public long getEsperaTemporal(String transicion) {
+        return transicionesTemporizadas.get(transicion).getEspera();
+    }
+
+    private void updateTimeStamps() {
+        long timeStampActual = System.currentTimeMillis();
+
+        // Actualizar time stamp de todas las transiciones con marcado necesarios y
+        // temporales
+        transicionesTemporizadas.entrySet().stream()
+                .filter(e -> hasMarcadoNecesario(e.getKey()))
+                .forEach(e -> e.getValue().setTimeStamp(timeStampActual));
+    }
+
+    private boolean isSensibilizada(String transicion) {
+        if (isTemporal(transicion) && !isEnVentana(transicion)) {
+            return false;
+        }
+
+        return hasMarcadoNecesario(transicion);
+    }
+
+    private boolean isEnVentana(String transicion) {
+        return transicionesTemporizadas.get(transicion).isEnVentana();
     }
 }
