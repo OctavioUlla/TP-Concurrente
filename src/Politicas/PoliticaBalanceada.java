@@ -1,10 +1,8 @@
 package Politicas;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import Main.Estadistica;
 
@@ -24,11 +22,10 @@ public class PoliticaBalanceada implements IPolitica {
                 .findFirst()
                 .get();
 
-        List<String> transicionesSensibilizadasOrdenadas = transicionesSensibilizadas.stream()
+        return transicionesSensibilizadas.stream()
                 .sorted(Comparator.comparingInt(x -> tInvariantePrioridad.contains(x) ? 0 : 1))
-                .collect(Collectors.toList());
-
-        return transicionesSensibilizadasOrdenadas.get(0);
+                .findFirst()
+                .get();
     }
 
 }
