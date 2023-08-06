@@ -60,6 +60,10 @@ public class Estadistica {
         return tInvarianteIncompleto;
     }
 
+    public Map<Set<String>, Integer> getTInvariantesCount() {
+        return tInvariantesCount;
+    }
+
     public void start() {
         try {
             writer = new BufferedWriter(new FileWriter("log.txt"));
@@ -74,6 +78,14 @@ public class Estadistica {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void printEstadisticas() {
+        tInvariantesCount.forEach((tInvariante, count) -> {
+            System.out.printf("Invariante %s: %d", tInvariante, count);
+            System.out.println();
+        });
+
     }
 
     private boolean llegoTInvarianteLimite() {

@@ -14,7 +14,7 @@ import Main.Estadistica;
 import Main.Monitor;
 import Main.Rdp;
 import Main.SegmentoEjecucion;
-import Politicas.PoliticaRandom;
+import Politicas.PoliticaBalanceada;
 
 public class Main {
 
@@ -25,7 +25,7 @@ public class Main {
         Rdp rdp = importador.importar("./RedesDePetri/Red de petri sin deadlock.xml");
         Monitor monitor = new Monitor(rdp);
         Estadistica estadistica = rdp.getEstadistica();
-        monitor.setPolitica(new PoliticaRandom());
+        monitor.setPolitica(new PoliticaBalanceada(estadistica));
 
         List<SegmentoEjecucion> segmentos = SegmentoEjecucion.getSegmentosEjecucion(rdp);
 
@@ -74,6 +74,7 @@ public class Main {
         }
 
         rdp.stopEstadisticas();
+        estadistica.printEstadisticas();
 
         System.out.println("TInvariantes incompletos completados");
     }
