@@ -15,6 +15,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -64,7 +65,9 @@ public class ImportadorPetrinator implements IImportador {
 
             Element plaza = (Element) plazasNodes.item(i);
 
-            String plazaId = plaza.getAttribute("id");
+            String plazaId = plaza.getElementsByTagName("id")
+                    .item(0)
+                    .getTextContent();
 
             plazas.add(plazaId);
         }
@@ -81,9 +84,13 @@ public class ImportadorPetrinator implements IImportador {
 
             Element plaza = (Element) plazasNodes.item(i);
 
-            String plazaName = plaza.getAttribute("id");
+            String plazaName = plaza.getElementsByTagName("id")
+                    .item(0)
+                    .getTextContent();
 
-            int tokens = Integer.parseInt(plaza.getAttribute("tokens"));
+            int tokens = Integer.parseInt(plaza.getElementsByTagName("tokens")
+                    .item(0)
+                    .getTextContent());
 
             estado.put(plazaName, tokens);
         }
@@ -100,7 +107,9 @@ public class ImportadorPetrinator implements IImportador {
 
             Element transicion = (Element) transicionesNodes.item(i);
 
-            String transicionId = transicion.getAttribute("id");
+            String transicionId = transicion.getElementsByTagName("id")
+                    .item(0)
+                    .getTextContent();
 
             transiciones.add(transicionId);
         }
@@ -123,12 +132,17 @@ public class ImportadorPetrinator implements IImportador {
 
             Element arco = (Element) arcos.item(i);
 
-            String source = arco.getAttribute("sourceId");
+            String source = arco.getElementsByTagName("sourceId")
+                    .item(0)
+                    .getTextContent();
 
-            String target = arco.getAttribute("destinationId");
+            String target = arco.getElementsByTagName("destinationId")
+                    .item(0)
+                    .getTextContent();
 
-            int weight = Integer.parseInt(arco
-                    .getAttribute("multiplicity"));
+            int weight = Integer.parseInt(arco.getElementsByTagName("multiplicity")
+                    .item(0)
+                    .getTextContent());
 
             String plaza;
             String transicion;
