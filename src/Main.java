@@ -74,6 +74,7 @@ public class Main {
         }
 
         rdp.stopEstadisticas();
+        estadistica.printEstadisticas();
 
         System.out.println("TInvariantes incompletos completados");
     }

@@ -76,6 +76,14 @@ public class Estadistica {
         }
     }
 
+    public void printEstadisticas() {
+        tInvariantesCount.forEach((tInvariante, count) -> {
+            System.out.printf("Invariante %s: %d", tInvariante, count);
+            System.out.println();
+        });
+
+    }
+
     private boolean llegoTInvarianteLimite() {
         int count = tInvariantesCount.values().stream()
                 .mapToInt(x -> x.intValue())
