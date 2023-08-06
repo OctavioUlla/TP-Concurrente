@@ -19,6 +19,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import Main.Rdp;
+import Main.Temporizacion;
 
 public class ImportadorPIPE implements IImportador {
 
@@ -53,7 +54,7 @@ public class ImportadorPIPE implements IImportador {
 
         Map<String, Integer> estadoInicial = getEstadoInicial(doc);
 
-        return new Rdp(matrizIncidencia, estadoInicial);
+        return new Rdp(matrizIncidencia, estadoInicial, new HashMap<String, Temporizacion>());
     }
 
     private Set<String> getPlazas(Document doc) {
