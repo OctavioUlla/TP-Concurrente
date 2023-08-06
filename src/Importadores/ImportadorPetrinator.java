@@ -19,6 +19,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import Main.Rdp;
+import Main.Temporizacion;
 
 public class ImportadorPetrinator implements IImportador {
 
@@ -45,6 +46,7 @@ public class ImportadorPetrinator implements IImportador {
 
         Set<String> plazas = getPlazas(doc);
         Set<String> transiciones = getTransiciones(doc);
+        SortedMap<String, Temporizacion> transicionesTemporizadas = getTransicionesTemporizadas(doc);
 
         SortedMap<String, SortedMap<String, Integer>> matrizIncidencia = new TreeMap<String, SortedMap<String, Integer>>();
 
@@ -52,7 +54,7 @@ public class ImportadorPetrinator implements IImportador {
 
         Map<String, Integer> estadoInicial = getEstadoInicial(doc);
 
-        return new Rdp(matrizIncidencia, estadoInicial);
+        return new Rdp(matrizIncidencia, estadoInicial, transicionesTemporizadas);
     }
 
     private Set<String> getPlazas(Document doc) {
@@ -114,6 +116,25 @@ public class ImportadorPetrinator implements IImportador {
         }
 
         return transiciones;
+    }
+
+    private SortedMap<String, Temporizacion> getTransicionesTemporizadas(Document doc) {
+        Set<String> transicionesTemp = new HashSet<String>();
+
+        NodeList transicionesNodes = doc.getElementsByTagName("transition");
+
+        for (int i = 0; i < transicionesNodes.getLength(); i++) {
+
+            Element transicion = (Element) transicionesNodes.item(i);
+
+            String transicionId = transicion.getElementsByTagName("id")
+                    .item(0)
+                    .getTextContent();
+
+            transicionesTemp.add(transicionId);
+        }
+
+        return transicionesTemp;
     }
 
     private void rellenarMatriz(Document doc, SortedMap<String, SortedMap<String, Integer>> matrizIncidencia,

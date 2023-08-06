@@ -139,7 +139,7 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Exponential" labelVar1="Rate (λ)" labelVar2=" " var1="1.0" var2="1.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
         </transition>
         <transition>
             <id>T2</id>
@@ -152,7 +152,7 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Exponential" labelVar1="Rate (λ)" labelVar2=" " var1="1.0" var2="1.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
         </transition>
         <transition>
             <id>T3</id>
@@ -165,7 +165,7 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Exponential" labelVar1="Rate (λ)" labelVar2=" " var1="1.0" var2="1.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
         </transition>
         <transition>
             <id>T4</id>
@@ -178,7 +178,7 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Exponential" labelVar1="Rate (λ)" labelVar2=" " var1="1.0" var2="1.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
         </transition>
         <transition>
             <id>T5</id>
@@ -191,7 +191,7 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Exponential" labelVar1="Rate (λ)" labelVar2=" " var1="1.0" var2="1.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
         </transition>
         <transition>
             <id>T6</id>
@@ -204,7 +204,7 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Exponential" labelVar1="Rate (λ)" labelVar2=" " var1="1.0" var2="1.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>>
         </transition>
         <transition>
             <id>T7</id>
@@ -217,7 +217,7 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Exponential" labelVar1="Rate (λ)" labelVar2=" " var1="1.0" var2="1.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>>
         </transition>
         <transition>
             <id>T8</id>
@@ -230,7 +230,7 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Exponential" labelVar1="Rate (λ)" labelVar2=" " var1="1.0" var2="1.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
         </transition>
         <transition>
             <id>T9</id>
@@ -243,7 +243,7 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Exponential" labelVar1="Rate (λ)" labelVar2=" " var1="1.0" var2="1.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
         </transition>
         <transition>
             <id>T10</id>
@@ -256,7 +256,7 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Exponential" labelVar1="Rate (λ)" labelVar2=" " var1="1.0" var2="1.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
         </transition>
         <transition>
             <id>T11</id>
@@ -269,7 +269,7 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Exponential" labelVar1="Rate (λ)" labelVar2=" " var1="1.0" var2="1.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
         </transition>
         <transition>
             <id>T12</id>
@@ -282,7 +282,7 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Exponential" labelVar1="Rate (λ)" labelVar2=" " var1="1.0" var2="1.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
         </transition>
         <arc>
             <type>regular</type>

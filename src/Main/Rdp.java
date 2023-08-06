@@ -9,12 +9,19 @@ import java.util.stream.Collectors;
 
 public class Rdp {
     private final SortedMap<String, SortedMap<String, Integer>> matrizMap;
+    private final SortedMap<String, Temporizacion> transicionesTemporizadas;
     private Map<String, Integer> marcado;
 
     private final Estadistica estadistica;
 
-    public Rdp(SortedMap<String, SortedMap<String, Integer>> matrizIncidencia, Map<String, Integer> marcadoInicial) {
-        this.matrizMap = Collections.unmodifiableSortedMap(matrizIncidencia);
+    public Rdp(
+            SortedMap<String, SortedMap<String, Integer>> matrizIncidencia,
+            Map<String, Integer> marcadoInicial,
+            SortedMap<String, Temporizacion> transicionesTemporizadas) {
+        this.matrizMap = Collections
+                .unmodifiableSortedMap(matrizIncidencia);
+        this.transicionesTemporizadas = Collections
+                .unmodifiableSortedMap(transicionesTemporizadas);
         this.marcado = marcadoInicial;
         this.estadistica = new Estadistica(this);
     }
