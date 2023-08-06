@@ -119,7 +119,7 @@ public class ImportadorPetrinator implements IImportador {
     }
 
     private SortedMap<String, Temporizacion> getTransicionesTemporizadas(Document doc) {
-        Set<String> transicionesTemp = new HashSet<String>();
+        SortedMap<String, Temporizacion> transicionesTemp = new TreeMap<String, Temporizacion>();
 
         NodeList transicionesNodes = doc.getElementsByTagName("transition");
 
@@ -131,7 +131,21 @@ public class ImportadorPetrinator implements IImportador {
                     .item(0)
                     .getTextContent();
 
-            transicionesTemp.add(transicionId);
+            Boolean temporal = Boolean.parseBoolean(transicion.getElementsByTagName("id")
+                    .item(0)
+                    .getTextContent());
+
+            if (temporal) {
+                Element propiedadesEstocasticas = (Element) transicion.getElementsByTagName("stochasticProperties")
+                        .item(0);
+
+                if (propiedadesEstocasticas.getAttribute("distribution") == "Uniform") {
+                    long alpha = Long.parseLong(propiedadesEstocasticas.getAttribute("var1"));
+                    long beta = Long.parseLong(propiedadesEstocasticas.getAttribute("var2"));
+
+                    transicionesTemp.put(transicionId, new Temporizacion(alpha, beta));
+                }
+            }
         }
 
         return transicionesTemp;
