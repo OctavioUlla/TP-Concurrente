@@ -48,9 +48,9 @@ public class Monitor {
                     k = false;
                 }
             } else {
-                // Si es temporal y tiene marcados necesarios significa que
-                // todavia no se llego a alfa, esperar hasta alfa
-                if (rdp.isTemporal(transicion) && rdp.hasMarcadoNecesario(transicion)) {
+                // Si tiene marcados necesarios significa que es temporal y todavia no se llego
+                // a alfa, esperar hasta alfa
+                if (rdp.hasMarcadoNecesario(transicion)) {
                     mutex.release();
                     Thread.sleep(rdp.getEsperaTemporal(transicion));
                     mutex.acquire();
