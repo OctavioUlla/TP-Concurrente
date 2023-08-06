@@ -131,7 +131,7 @@ public class ImportadorPetrinator implements IImportador {
                     .item(0)
                     .getTextContent();
 
-            Boolean temporal = Boolean.parseBoolean(transicion.getElementsByTagName("id")
+            Boolean temporal = Boolean.parseBoolean(transicion.getElementsByTagName("timed")
                     .item(0)
                     .getTextContent());
 
@@ -139,9 +139,9 @@ public class ImportadorPetrinator implements IImportador {
                 Element propiedadesEstocasticas = (Element) transicion.getElementsByTagName("stochasticProperties")
                         .item(0);
 
-                if (propiedadesEstocasticas.getAttribute("distribution") == "Uniform") {
-                    long alpha = Long.parseLong(propiedadesEstocasticas.getAttribute("var1"));
-                    long beta = Long.parseLong(propiedadesEstocasticas.getAttribute("var2"));
+                if (propiedadesEstocasticas.getAttribute("distribution").equals("Uniform")) {
+                    long alpha = (long) Float.parseFloat(propiedadesEstocasticas.getAttribute("var1"));
+                    long beta = (long) Float.parseFloat(propiedadesEstocasticas.getAttribute("var2"));
 
                     transicionesTemp.put(transicionId, new Temporizacion(alpha, beta));
                 }
