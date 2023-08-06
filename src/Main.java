@@ -14,6 +14,7 @@ import Main.Estadistica;
 import Main.Monitor;
 import Main.Rdp;
 import Main.SegmentoEjecucion;
+import Politicas.PoliticaRandom;
 
 public class Main {
 
@@ -24,6 +25,7 @@ public class Main {
         Rdp rdp = importador.importar("./RedesDePetri/Red de petri sin deadlock.xml");
         Monitor monitor = new Monitor(rdp);
         Estadistica estadistica = rdp.getEstadistica();
+        monitor.setPolitica(new PoliticaRandom());
 
         List<SegmentoEjecucion> segmentos = SegmentoEjecucion.getSegmentosEjecucion(rdp);
 
