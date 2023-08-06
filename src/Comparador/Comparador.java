@@ -6,8 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import Importadores.IImportador;
-import Importadores.ImportadorFactory;
-import Importadores.TipoImportador;
+import Importadores.ImportadorPetrinator;
 import Main.Rdp;
 import Main.SegmentoEjecucion;
 import Main.AnalizadorRdp;
@@ -15,13 +14,11 @@ import Main.AnalizadorRdp;
 public class Comparador {
 
         public static void main(String[] args) {
+                IImportador importador = new ImportadorPetrinator();
 
-                ImportadorFactory importadorFactory = new ImportadorFactory();
-                IImportador importador = importadorFactory.getImportador(TipoImportador.PIPE);
+                Rdp rdpConDeadlock = importador.importar("./RedesDePetri/Red de petri.pflow");
 
-                Rdp rdpConDeadlock = importador.importar("./RedesDePetri/Red de petri.xml");
-
-                Rdp rdpSinDeadlock = importador.importar("./RedesDePetri/Red de petri sin deadlock.xml");
+                Rdp rdpSinDeadlock = importador.importar("./RedesDePetri/Red de petri sin deadlock.pflow");
 
                 System.out.println("Red de Petri Sin desbloquear:");
                 analizar(rdpConDeadlock);
