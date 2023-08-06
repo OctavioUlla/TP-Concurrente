@@ -1,4 +1,4 @@
-package Importador;
+package Importadores;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,11 +20,10 @@ import org.xml.sax.SAXException;
 
 import Main.Rdp;
 
-public class ImportadorPIPE implements IImportador {
+public class ImportadorPetrinator implements IImportador {
 
     @Override
     public Rdp importar(String filename) {
-
         File xmlFile = new File(filename);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
@@ -57,7 +56,6 @@ public class ImportadorPIPE implements IImportador {
     }
 
     private Set<String> getPlazas(Document doc) {
-
         Set<String> plazas = new HashSet<String>();
 
         NodeList plazasNodes = doc.getElementsByTagName("place");
@@ -66,7 +64,9 @@ public class ImportadorPIPE implements IImportador {
 
             Element plaza = (Element) plazasNodes.item(i);
 
-            String plazaId = plaza.getAttribute("id");
+            String plazaId = plaza.getElementsByTagName("id")
+                    .item(0)
+                    .getTextContent();
 
             plazas.add(plazaId);
         }
@@ -75,7 +75,6 @@ public class ImportadorPIPE implements IImportador {
     }
 
     private Map<String, Integer> getEstadoInicial(Document doc) {
-
         Map<String, Integer> estado = new HashMap<String, Integer>();
 
         NodeList plazasNodes = doc.getElementsByTagName("place");
@@ -84,17 +83,13 @@ public class ImportadorPIPE implements IImportador {
 
             Element plaza = (Element) plazasNodes.item(i);
 
-            String plazaName = plaza.getAttribute("id");
-
-            Element initialMarking = (Element) plaza
-                    .getElementsByTagName("initialMarking")
-                    .item(0);
-
-            int tokens = Integer.parseInt(initialMarking
-                    .getElementsByTagName("value")
+            String plazaName = plaza.getElementsByTagName("id")
                     .item(0)
-                    .getTextContent()
-                    .split(",")[1]);
+                    .getTextContent();
+
+            int tokens = Integer.parseInt(plaza.getElementsByTagName("tokens")
+                    .item(0)
+                    .getTextContent());
 
             estado.put(plazaName, tokens);
         }
@@ -103,7 +98,6 @@ public class ImportadorPIPE implements IImportador {
     }
 
     private Set<String> getTransiciones(Document doc) {
-
         Set<String> transiciones = new HashSet<String>();
 
         NodeList transicionesNodes = doc.getElementsByTagName("transition");
@@ -112,7 +106,9 @@ public class ImportadorPIPE implements IImportador {
 
             Element transicion = (Element) transicionesNodes.item(i);
 
-            String transicionId = transicion.getAttribute("id");
+            String transicionId = transicion.getElementsByTagName("id")
+                    .item(0)
+                    .getTextContent();
 
             transiciones.add(transicionId);
         }
@@ -120,12 +116,8 @@ public class ImportadorPIPE implements IImportador {
         return transiciones;
     }
 
-    private void rellenarMatriz(
-            Document doc,
-            SortedMap<String, SortedMap<String, Integer>> matrizIncidencia,
-            Set<String> plazas,
-            Set<String> transiciones) {
-
+    private void rellenarMatriz(Document doc, SortedMap<String, SortedMap<String, Integer>> matrizIncidencia,
+            Set<String> plazas, Set<String> transiciones) {
         // Rellenar con ceros
         transiciones.stream().forEach(t -> {
             SortedMap<String, Integer> ceros = new TreeMap<String, Integer>();
@@ -139,19 +131,17 @@ public class ImportadorPIPE implements IImportador {
 
             Element arco = (Element) arcos.item(i);
 
-            String source = arco.getAttribute("source");
-
-            String target = arco.getAttribute("target");
-
-            Element inscription = (Element) arco
-                    .getElementsByTagName("inscription")
-                    .item(0);
-
-            int weight = Integer.parseInt(inscription
-                    .getElementsByTagName("value")
+            String source = arco.getElementsByTagName("sourceId")
                     .item(0)
-                    .getTextContent()
-                    .split(",")[1]);
+                    .getTextContent();
+
+            String target = arco.getElementsByTagName("destinationId")
+                    .item(0)
+                    .getTextContent();
+
+            int weight = Integer.parseInt(arco.getElementsByTagName("multiplicity")
+                    .item(0)
+                    .getTextContent());
 
             String plaza;
             String transicion;

@@ -5,9 +5,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import Importador.IImportador;
-import Importador.ImportadorFactory;
-import Importador.TipoImportador;
+import Importadores.IImportador;
+import Importadores.ImportadorPetrinator;
 import Main.AnalizadorRdp;
 import Main.Disparador;
 import Main.Estadistica;
@@ -19,10 +18,9 @@ import Politicas.PoliticaBalanceada;
 public class Main {
 
     public static void main(String[] args) throws InterruptedException {
-        ImportadorFactory importadorFactory = new ImportadorFactory();
-        IImportador importador = importadorFactory.getImportador(TipoImportador.PIPE);
+        IImportador importador = new ImportadorPetrinator();
 
-        Rdp rdp = importador.importar("./RedesDePetri/Red de petri sin deadlock.xml");
+        Rdp rdp = importador.importar("./RedesDePetri/Red de petri sin deadlock.pflow");
         Monitor monitor = new Monitor(rdp);
         Estadistica estadistica = rdp.getEstadistica();
         monitor.setPolitica(new PoliticaBalanceada(estadistica));
