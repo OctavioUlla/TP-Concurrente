@@ -4,7 +4,7 @@ import java.util.Set;
 import java.util.concurrent.Semaphore;
 
 import Politicas.IPolitica;
-import Politicas.PoliticaPrimera;
+import Politicas.PoliticaRandom;
 
 public class Monitor {
     private final Rdp rdp;
@@ -17,7 +17,7 @@ public class Monitor {
     public Monitor(Rdp redDePetri) {
         rdp = redDePetri;
         colas = new Colas(rdp.getTrancisiones());
-        this.politica = new PoliticaPrimera();
+        this.politica = new PoliticaRandom();
     }
 
     public void dispararTransicion(String transicion) throws InterruptedException {
