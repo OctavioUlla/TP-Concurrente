@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import Importador.IImportador;
-import Importador.ImportadorFactory;
-import Importador.TipoImportador;
+import Importadores.IImportador;
+import Importadores.ImportadorFactory;
+import Importadores.TipoImportador;
 import Main.Rdp;
 import Main.SegmentoEjecucion;
 import Main.AnalizadorRdp;

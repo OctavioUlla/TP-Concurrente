@@ -5,9 +5,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import Importador.IImportador;
-import Importador.ImportadorFactory;
-import Importador.TipoImportador;
+import Importadores.IImportador;
+import Importadores.ImportadorFactory;
+import Importadores.TipoImportador;
 import Main.AnalizadorRdp;
 import Main.Disparador;
 import Main.Estadistica;
