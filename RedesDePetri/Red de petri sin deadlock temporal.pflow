@@ -149,39 +149,39 @@
             <x>-532</x>
             <y>-881</y>
             <label>T1</label>
-            <timed>true</timed>
+            <timed>false</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T2</id>
             <x>-694</x>
             <y>-651</y>
             <label>T2</label>
-            <timed>true</timed>
+            <timed>false</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T3</id>
             <x>-421</x>
             <y>-659</y>
             <label>T3</label>
-            <timed>true</timed>
+            <timed>false</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T4</id>
@@ -194,7 +194,7 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T5</id>
@@ -207,7 +207,7 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T6</id>
@@ -220,7 +220,7 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T7</id>
@@ -233,7 +233,7 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T8</id>
@@ -246,20 +246,20 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T9</id>
             <x>79</x>
             <y>90</y>
             <label>T9</label>
-            <timed>true</timed>
+            <timed>false</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T10</id>
@@ -272,7 +272,7 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T11</id>
@@ -285,7 +285,7 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T12</id>
@@ -298,7 +298,7 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <arc>
             <type>regular</type>

@@ -133,7 +133,7 @@
             <x>-532</x>
             <y>-881</y>
             <label>T1</label>
-            <timed>true</timed>
+            <timed>false</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
@@ -146,7 +146,7 @@
             <x>-694</x>
             <y>-651</y>
             <label>T2</label>
-            <timed>true</timed>
+            <timed>false</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
@@ -159,7 +159,7 @@
             <x>-421</x>
             <y>-659</y>
             <label>T3</label>
-            <timed>true</timed>
+            <timed>false</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
@@ -172,7 +172,7 @@
             <x>-691</x>
             <y>-401</y>
             <label>T4</label>
-            <timed>true</timed>
+            <timed>false</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
@@ -185,7 +185,7 @@
             <x>-407</x>
             <y>-414</y>
             <label>T5</label>
-            <timed>true</timed>
+            <timed>false</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
@@ -198,7 +198,7 @@
             <x>-692</x>
             <y>-150</y>
             <label>T6</label>
-            <timed>true</timed>
+            <timed>false</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
@@ -211,7 +211,7 @@
             <x>-407</x>
             <y>-139</y>
             <label>T7</label>
-            <timed>true</timed>
+            <timed>false</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
@@ -224,7 +224,7 @@
             <x>-545</x>
             <y>101</y>
             <label>T8</label>
-            <timed>true</timed>
+            <timed>false</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
@@ -237,7 +237,7 @@
             <x>79</x>
             <y>90</y>
             <label>T9</label>
-            <timed>true</timed>
+            <timed>false</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
@@ -250,7 +250,7 @@
             <x>67</x>
             <y>-192</y>
             <label>T10</label>
-            <timed>true</timed>
+            <timed>false</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
@@ -263,7 +263,7 @@
             <x>58</x>
             <y>-468</y>
             <label>T11</label>
-            <timed>true</timed>
+            <timed>false</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
@@ -276,7 +276,7 @@
             <x>51</x>
             <y>-733</y>
             <label>T12</label>
-            <timed>true</timed>
+            <timed>false</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>

@@ -20,11 +20,12 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         IImportador importador = new ImportadorPetrinator();
 
-        Rdp rdp = importador.importar("./RedesDePetri/Red de petri sin deadlock temporal.pflow");
-        Monitor monitor = new Monitor(rdp);
-        Estadistica estadistica = rdp.getEstadistica();
+        Rdp rdpTemporal = importador.importar("./RedesDePetri/Red de petri sin deadlock temporal.pflow");
+        Monitor monitor = new Monitor(rdpTemporal);
+        Estadistica estadistica = rdpTemporal.getEstadistica();
         monitor.setPolitica(new PoliticaBalanceada(estadistica));
 
+        Rdp rdp = importador.importar("./RedesDePetri/Red de petri sin deadlock.pflow");
         List<SegmentoEjecucion> segmentos = SegmentoEjecucion.getSegmentosEjecucion(rdp);
 
         // Crear hilos necesarios por cada segmento
@@ -57,7 +58,7 @@ public class Main {
 
         while (!tRestantes.isEmpty()) {
             // Obtener invariantes incompletos
-            Iterator<Set<String>> tInvariantesIncompletos = AnalizadorRdp.getTInvariantes(rdp).stream()
+            Iterator<Set<String>> tInvariantesIncompletos = AnalizadorRdp.getTInvariantes(rdpTemporal).stream()
                     .filter(tInvariente -> !Collections.disjoint(tInvariente, tRestantes))
                     .iterator();
 
@@ -66,7 +67,7 @@ public class Main {
                 // Obtener transiciones faltantes del invariante
                 if (tInvarianteIncompleto.removeAll(tRestantes)) {
                     // Disparar transiciones restantes para completar invariante
-                    tInvarianteIncompleto.forEach(t -> rdp.disparar(t));
+                    tInvarianteIncompleto.forEach(t -> rdpTemporal.disparar(t));
                 }
             }
         }
