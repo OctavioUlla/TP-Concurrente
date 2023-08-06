@@ -60,6 +60,10 @@ public class Estadistica {
         return tInvarianteIncompleto;
     }
 
+    public Map<Set<String>, Integer> getTInvariantesCount() {
+        return tInvariantesCount;
+    }
+
     public void start() {
         try {
             writer = new BufferedWriter(new FileWriter("log.txt"));
