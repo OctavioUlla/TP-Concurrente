@@ -51,7 +51,7 @@ public class Main {
             }
         });
 
-        completarTInvariantes(rdp);
+        completarTInvariantes(rdpTemporal);
 
         estadistica.stop();
         estadistica.printEstadisticas();
