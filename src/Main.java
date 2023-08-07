@@ -20,11 +20,12 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         IImportador importador = new ImportadorPetrinator();
 
-        Rdp rdp = importador.importar("./RedesDePetri/Red de petri sin deadlock.pflow");
-        Monitor monitor = new Monitor(rdp);
-        Estadistica estadistica = rdp.getEstadistica();
+        Rdp rdpTemporal = importador.importar("./RedesDePetri/Red de petri sin deadlock temporal.pflow");
+        Monitor monitor = new Monitor(rdpTemporal);
+        Estadistica estadistica = rdpTemporal.getEstadistica();
         monitor.setPolitica(new PoliticaBalanceada(estadistica));
 
+        Rdp rdp = importador.importar("./RedesDePetri/Red de petri sin deadlock.pflow");
         List<SegmentoEjecucion> segmentos = SegmentoEjecucion.getSegmentosEjecucion(rdp);
 
         // Crear hilos necesarios por cada segmento
@@ -33,7 +34,7 @@ public class Main {
                         .mapToObj(i -> new Thread(new Disparador(monitor, s), s.toString())))
                 .collect(Collectors.toList());
 
-        rdp.startEstadisticas();
+        estadistica.start();
 
         hilos.forEach(h -> h.start());
 
@@ -50,10 +51,14 @@ public class Main {
             }
         });
 
-        System.out.println("1000 invariantes completados!");
+        completarTInvariantes(rdp);
 
-        // Terminar invariantes incompletos}
-        List<String> tRestantes = estadistica.getTInvariantesIncompletos();
+        estadistica.stop();
+        estadistica.printEstadisticas();
+    }
+
+    private static void completarTInvariantes(Rdp rdp) {
+        List<String> tRestantes = rdp.getEstadistica().getTInvariantesIncompletos();
 
         while (!tRestantes.isEmpty()) {
             // Obtener invariantes incompletos
@@ -70,10 +75,5 @@ public class Main {
                 }
             }
         }
-
-        rdp.stopEstadisticas();
-        estadistica.printEstadisticas();
-
-        System.out.println("TInvariantes incompletos completados");
     }
 }

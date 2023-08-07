@@ -9,13 +9,19 @@ import java.util.stream.Collectors;
 
 public class Rdp {
     private final SortedMap<String, SortedMap<String, Integer>> matrizMap;
+    private final Map<String, Temporizacion> transicionesTemporizadas;
     private Map<String, Integer> marcado;
 
     private final Estadistica estadistica;
-    private boolean estadisticaActivada;
 
-    public Rdp(SortedMap<String, SortedMap<String, Integer>> matrizIncidencia, Map<String, Integer> marcadoInicial) {
-        this.matrizMap = Collections.unmodifiableSortedMap(matrizIncidencia);
+    public Rdp(
+            SortedMap<String, SortedMap<String, Integer>> matrizIncidencia,
+            Map<String, Integer> marcadoInicial,
+            Map<String, Temporizacion> transicionesTemporizadas) {
+        this.matrizMap = Collections
+                .unmodifiableSortedMap(matrizIncidencia);
+        this.transicionesTemporizadas = Collections
+                .unmodifiableMap(transicionesTemporizadas);
         this.marcado = marcadoInicial;
         this.estadistica = new Estadistica(this);
     }
@@ -32,9 +38,9 @@ public class Rdp {
                         plazaTok.getValue(),
                         Integer::sum));
 
-        if (estadisticaActivada) {
-            estadistica.registrarDisparo(transicion);
-        }
+        updateTimeStamps();
+
+        estadistica.tryRegistrarDisparo(transicion);
 
         return true;
     }
@@ -67,31 +73,51 @@ public class Rdp {
         return matrizMap.entrySet().iterator().next().getValue().keySet();
     }
 
-    public Set<String> getTransicionesSensibilizadas() {
+    public Set<String> getTransicionesMarcadosNecesarios() {
         return getTrancisiones()
                 .stream()
-                .filter(t -> isSensibilizada(t))
+                .filter(t -> hasMarcadoNecesario(t))
                 .collect(Collectors.toSet());
-    }
-
-    public boolean isSensibilizada(String transicion) {
-        return matrizMap.get(transicion).entrySet().stream()
-                .allMatch(
-                        marcadoNecesario -> marcado.get(marcadoNecesario.getKey())
-                                + marcadoNecesario.getValue() >= 0);
     }
 
     public Estadistica getEstadistica() {
         return estadistica;
     }
 
-    public void startEstadisticas() {
-        this.estadisticaActivada = true;
-        estadistica.start();
+    public boolean isTemporal(String transicion) {
+        return transicionesTemporizadas.containsKey(transicion);
     }
 
-    public void stopEstadisticas() {
-        this.estadisticaActivada = false;
-        estadistica.stop();
+    public boolean hasMarcadoNecesario(String transicion) {
+        return matrizMap.get(transicion).entrySet().stream()
+                .allMatch(
+                        marcadoNecesario -> marcado.get(marcadoNecesario.getKey())
+                                + marcadoNecesario.getValue() >= 0);
+    }
+
+    public long getEsperaTemporal(String transicion) {
+        return transicionesTemporizadas.get(transicion).getEspera();
+    }
+
+    private void updateTimeStamps() {
+        long timeStampActual = System.currentTimeMillis();
+
+        // Actualizar time stamp de todas las transiciones con marcado necesarios y
+        // temporales
+        transicionesTemporizadas.entrySet().stream()
+                .filter(e -> hasMarcadoNecesario(e.getKey()))
+                .forEach(e -> e.getValue().setTimeStamp(timeStampActual));
+    }
+
+    private boolean isSensibilizada(String transicion) {
+        if (isTemporal(transicion) && !isEnVentana(transicion)) {
+            return false;
+        }
+
+        return hasMarcadoNecesario(transicion);
+    }
+
+    private boolean isEnVentana(String transicion) {
+        return transicionesTemporizadas.get(transicion).isEnVentana();
     }
 }

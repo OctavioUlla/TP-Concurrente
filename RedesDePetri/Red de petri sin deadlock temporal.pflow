@@ -128,6 +128,22 @@
             <tokens>1</tokens>
             <isStatic>false</isStatic>
         </place>
+        <place>
+            <id>C1</id>
+            <x>-188</x>
+            <y>-901</y>
+            <label>C1</label>
+            <tokens>2</tokens>
+            <isStatic>false</isStatic>
+        </place>
+        <place>
+            <id>C2</id>
+            <x>-241</x>
+            <y>103</y>
+            <label>C2</label>
+            <tokens>3</tokens>
+            <isStatic>false</isStatic>
+        </place>
         <transition>
             <id>T1</id>
             <x>-532</x>
@@ -139,7 +155,7 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T2</id>
@@ -152,7 +168,7 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T3</id>
@@ -165,72 +181,72 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T4</id>
             <x>-691</x>
             <y>-401</y>
             <label>T4</label>
-            <timed>false</timed>
+            <timed>true</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T5</id>
             <x>-407</x>
             <y>-414</y>
             <label>T5</label>
-            <timed>false</timed>
+            <timed>true</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T6</id>
             <x>-692</x>
             <y>-150</y>
             <label>T6</label>
-            <timed>false</timed>
+            <timed>true</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T7</id>
             <x>-407</x>
             <y>-139</y>
             <label>T7</label>
-            <timed>false</timed>
+            <timed>true</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T8</id>
             <x>-545</x>
             <y>101</y>
             <label>T8</label>
-            <timed>false</timed>
+            <timed>true</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T9</id>
@@ -243,47 +259,135 @@
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T10</id>
             <x>67</x>
             <y>-192</y>
             <label>T10</label>
-            <timed>false</timed>
+            <timed>true</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T11</id>
             <x>58</x>
             <y>-468</y>
             <label>T11</label>
-            <timed>false</timed>
+            <timed>true</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
         <transition>
             <id>T12</id>
             <x>51</x>
             <y>-733</y>
             <label>T12</label>
-            <timed>false</timed>
+            <timed>true</timed>
             <rate>1.0</rate>
             <automatic>false</automatic>
             <informed>true</informed>
             <enableWhenTrue>false</enableWhenTrue>
             <guard>none</guard>
-            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="1000.0"/>
+            <stochasticProperties distribution="Uniform" labelVar1="lower" labelVar2="upper" var1="1.0" var2="99999999999.0"/>
         </transition>
+        <arc>
+            <type>regular</type>
+            <sourceId>T5</sourceId>
+            <destinationId>C2</destinationId>
+            <multiplicity>1</multiplicity>
+            <breakPoint>
+                <x>-340</x>
+                <y>-24</y>
+            </breakPoint>
+        </arc>
+        <arc>
+            <type>regular</type>
+            <sourceId>T4</sourceId>
+            <destinationId>C2</destinationId>
+            <multiplicity>1</multiplicity>
+            <breakPoint>
+                <x>-501</x>
+                <y>-311</y>
+            </breakPoint>
+            <breakPoint>
+                <x>-488</x>
+                <y>38</y>
+            </breakPoint>
+        </arc>
+        <arc>
+            <type>regular</type>
+            <sourceId>C2</sourceId>
+            <destinationId>T1</destinationId>
+            <multiplicity>1</multiplicity>
+            <breakPoint>
+                <x>-439</x>
+                <y>1</y>
+            </breakPoint>
+            <breakPoint>
+                <x>-463</x>
+                <y>-775</y>
+            </breakPoint>
+        </arc>
+        <arc>
+            <type>regular</type>
+            <sourceId>C2</sourceId>
+            <destinationId>T9</destinationId>
+            <multiplicity>1</multiplicity>
+        </arc>
+        <arc>
+            <type>regular</type>
+            <sourceId>T10</sourceId>
+            <destinationId>C2</destinationId>
+            <multiplicity>1</multiplicity>
+        </arc>
+        <arc>
+            <type>regular</type>
+            <sourceId>T11</sourceId>
+            <destinationId>C1</destinationId>
+            <multiplicity>1</multiplicity>
+        </arc>
+        <arc>
+            <type>regular</type>
+            <sourceId>C1</sourceId>
+            <destinationId>T9</destinationId>
+            <multiplicity>1</multiplicity>
+        </arc>
+        <arc>
+            <type>regular</type>
+            <sourceId>T3</sourceId>
+            <destinationId>C1</destinationId>
+            <multiplicity>1</multiplicity>
+            <breakPoint>
+                <x>-299</x>
+                <y>-741</y>
+            </breakPoint>
+        </arc>
+        <arc>
+            <type>regular</type>
+            <sourceId>T2</sourceId>
+            <destinationId>C1</destinationId>
+            <multiplicity>1</multiplicity>
+            <breakPoint>
+                <x>-381</x>
+                <y>-751</y>
+            </breakPoint>
+        </arc>
+        <arc>
+            <type>regular</type>
+            <sourceId>C1</sourceId>
+            <destinationId>T1</destinationId>
+            <multiplicity>1</multiplicity>
+        </arc>
         <arc>
             <type>regular</type>
             <sourceId>T10</sourceId>

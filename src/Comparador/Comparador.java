@@ -38,13 +38,16 @@ public class Comparador {
                 System.out.println("P Invariantes: " + pInvariantes);
                 System.out.println("Plazas de Acción: " + plazasAccion);
 
-                AnalizadorRdp.getMarcados(rdp, plazasAccion, marcados);
+                AnalizadorRdp.getMarcados(rdp, marcados);
 
-                double promediosProcesos = AnalizadorRdp.getPromedioMarcados(marcados);
-                int maxHilosActivos = AnalizadorRdp.getMaxHilosActivos(marcados);
+                double promediosProcesos = AnalizadorRdp.getPromedioMarcados(marcados, plazasAccion);
+                int maxHilosActivos = AnalizadorRdp.getMaxHilosActivos(marcados, plazasAccion);
 
                 List<SegmentoEjecucion> segmentos = SegmentoEjecucion.getSegmentosEjecucion(rdp);
 
+                boolean pInvariantesVerificados = AnalizadorRdp.verificarPInvariantes(marcados, pInvariantes);
+
+                System.out.println("PInvariantes verifican: " + pInvariantesVerificados);
                 System.out.println("Cantidad marcados posibles: " + marcados.size());
                 System.out.println("Promedio tokens en plazas: " + promediosProcesos);
                 System.out.println("Max cantidad hilos activos: " + maxHilosActivos);

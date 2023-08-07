@@ -4,7 +4,7 @@ import java.util.Set;
 import java.util.concurrent.Semaphore;
 
 import Politicas.IPolitica;
-import Politicas.PoliticaPrimera;
+import Politicas.PoliticaRandom;
 
 public class Monitor {
     private final Rdp rdp;
@@ -17,7 +17,7 @@ public class Monitor {
     public Monitor(Rdp redDePetri) {
         rdp = redDePetri;
         colas = new Colas(rdp.getTrancisiones());
-        this.politica = new PoliticaPrimera();
+        this.politica = new PoliticaRandom();
     }
 
     public void dispararTransicion(String transicion) throws InterruptedException {
@@ -29,7 +29,7 @@ public class Monitor {
             boolean disparoExitoso = rdp.disparar(transicion);
 
             if (disparoExitoso) {
-                Set<String> sensibilizadas = rdp.getTransicionesSensibilizadas();
+                Set<String> sensibilizadas = rdp.getTransicionesMarcadosNecesarios();
                 Set<String> esperando = colas.getTransicionesEspera();
 
                 // Transiciones sensibilizadas y con hilos bloqueados
@@ -48,9 +48,19 @@ public class Monitor {
                     k = false;
                 }
             } else {
-                // Bloquear hilo, a espera de que la transicion se sensibilize
-                mutex.release();
-                colas.acquire(transicion);
+                // Si tiene marcados necesarios significa que es temporal y todavia no se llego
+                // a alfa, esperar hasta alfa
+                if (rdp.hasMarcadoNecesario(transicion)) {
+                    mutex.release();
+                    Thread.sleep(rdp.getEsperaTemporal(transicion));
+                    mutex.acquire();
+                    k = true;
+                }
+                // Si no es temporal esperar a marcado necesario
+                else {
+                    mutex.release();
+                    colas.acquire(transicion);
+                }
             }
         }
 

@@ -1,6 +1,5 @@
 package Politicas;
 
-import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,14 +15,10 @@ public class PoliticaBalanceada implements IPolitica {
 
     @Override
     public String getProximaTransicion(Set<String> transicionesSensibilizadas) {
-        Set<String> tInvariantePrioridad = estadistica.getTInvariantesCount().entrySet().stream()
+        return estadistica.getTInvariantesCount().entrySet().stream()
                 .sorted(Map.Entry.comparingByValue())
-                .map(entry -> entry.getKey())
-                .findFirst()
-                .get();
-
-        return transicionesSensibilizadas.stream()
-                .sorted(Comparator.comparingInt(x -> tInvariantePrioridad.contains(x) ? 0 : 1))
+                .flatMap(entry -> entry.getKey().stream())
+                .filter(t -> transicionesSensibilizadas.contains(t))
                 .findFirst()
                 .get();
     }
