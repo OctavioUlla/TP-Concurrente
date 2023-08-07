@@ -77,7 +77,7 @@ public class SegmentoEjecucion implements Iterable<String> {
             }
         }
 
-        List<Integer> hilosSegmentos = getHilosSegmentos(rdp, plazasAccion, plazasSegmentos);
+        List<Integer> hilosSegmentos = getHilosSegmentos(rdp, plazasSegmentos);
 
         return tSegmentos.stream()
                 .map(tSegmento -> new SegmentoEjecucion(hilosSegmentos.get(tSegmentos.indexOf(tSegmento)), tSegmento))
@@ -86,11 +86,10 @@ public class SegmentoEjecucion implements Iterable<String> {
 
     private static List<Integer> getHilosSegmentos(
             Rdp rdp,
-            Set<String> plazasAccion,
             List<Set<String>> plazasSegmentos) {
 
         HashSet<Map<String, Integer>> marcados = new HashSet<Map<String, Integer>>();
-        AnalizadorRdp.getMarcados(rdp, plazasAccion, marcados);
+        AnalizadorRdp.getMarcados(rdp, marcados);
 
         // Calcular suma maxima de marcados en las plazas de cada segmento
         return plazasSegmentos.stream()

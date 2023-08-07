@@ -1,6 +1,7 @@
 package Main;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -98,16 +99,12 @@ public class AnalizadorRdp {
                 .collect(Collectors.toList());
     }
 
-    public static void getMarcados(Rdp rdp, Set<String> plazasAccion, HashSet<Map<String, Integer>> marcados) {
+    public static void getMarcados(Rdp rdp, HashSet<Map<String, Integer>> marcados) {
         // Deep copy
         Map<String, Integer> marcado = rdp.getMarcado().entrySet().stream()
                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
 
-        Map<String, Integer> marcadoProcesos = marcado.entrySet().stream()
-                .filter(p -> plazasAccion.contains(p.getKey()))
-                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
-
-        if (!marcados.add(marcadoProcesos)) {
+        if (!marcados.add(marcado)) {
             // Si se repite marcado volver
             return;
         }
@@ -115,25 +112,64 @@ public class AnalizadorRdp {
         rdp.getTransicionesMarcadosNecesarios()
                 .forEach(t -> {
                     rdp.disparar(t);
-                    getMarcados(rdp, plazasAccion, marcados);
+                    getMarcados(rdp, marcados);
                     rdp.setMarcado(marcado);
                 });
     }
 
-    public static double getPromedioMarcados(HashSet<Map<String, Integer>> marcados) {
-        return marcados.stream()
+    public static double getPromedioMarcados(HashSet<Map<String, Integer>> marcados, Set<String> plazasAccion) {
+
+        HashSet<Map<String, Integer>> marcadosAccion = new HashSet<Map<String, Integer>>();
+        for (Map<String, Integer> marcado : marcados) {
+            marcadosAccion.add(marcado.entrySet().stream().filter(p -> plazasAccion.contains(p.getKey()))
+                    .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue())));
+        }
+
+        return marcadosAccion.stream()
                 .map(marcado -> marcado.values().stream().mapToInt(Integer::intValue).sum())
                 .mapToInt(Integer::intValue)
                 .average()
                 .orElse(0);
     }
 
-    public static int getMaxHilosActivos(HashSet<Map<String, Integer>> marcados) {
-        return marcados.stream()
+    public static int getMaxHilosActivos(HashSet<Map<String, Integer>> marcados, Set<String> plazasAccion) {
+
+        HashSet<Map<String, Integer>> marcadosAccion = new HashSet<Map<String, Integer>>();
+        for (Map<String, Integer> marcado : marcados) {
+            marcadosAccion.add(marcado.entrySet().stream().filter(p -> plazasAccion.contains(p.getKey()))
+                    .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue())));
+        }
+
+        return marcadosAccion.stream()
                 .map(marcado -> marcado.values().stream().mapToInt(Integer::intValue).sum())
                 .mapToInt(Integer::intValue)
                 .max()
                 .orElse(0);
+    }
+
+    public static boolean verificarPInvariantes(HashSet<Map<String, Integer>> marcados,
+            List<Set<String>> pInvariantes) {
+
+        Map<Set<String>, Integer> pInvariantesSumas = new HashMap<Set<String>, Integer>();
+
+        for (Set<String> pInvariante : pInvariantes) {
+            for (Map<String, Integer> marcado : marcados) {
+                int sumaPInvariante = marcado.entrySet().stream()
+                        .filter(p -> pInvariante.contains(p.getKey()))
+                        .map(p -> p.getValue())
+                        .reduce(0, Integer::sum);
+
+                if (pInvariantesSumas.containsKey(pInvariante)) {
+                    if (sumaPInvariante != pInvariantesSumas.get(pInvariante)) {
+                        return false;
+                    }
+                }
+
+                pInvariantesSumas.put(pInvariante, sumaPInvariante);
+            }
+        }
+
+        return true;
     }
 
     private static LinkedHashSet<String> ordenarTInvariante(
