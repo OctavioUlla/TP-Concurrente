@@ -51,14 +51,18 @@ public class Main {
             }
         });
 
-        System.out.println("1000 invariantes completados!");
+        completarTInvariantes(rdp);
 
-        // Terminar invariantes incompletos}
-        List<String> tRestantes = estadistica.getTInvariantesIncompletos();
+        estadistica.stop();
+        estadistica.printEstadisticas();
+    }
+
+    private static void completarTInvariantes(Rdp rdp) {
+        List<String> tRestantes = rdp.getEstadistica().getTInvariantesIncompletos();
 
         while (!tRestantes.isEmpty()) {
             // Obtener invariantes incompletos
-            Iterator<Set<String>> tInvariantesIncompletos = AnalizadorRdp.getTInvariantes(rdpTemporal).stream()
+            Iterator<Set<String>> tInvariantesIncompletos = AnalizadorRdp.getTInvariantes(rdp).stream()
                     .filter(tInvariente -> !Collections.disjoint(tInvariente, tRestantes))
                     .iterator();
 
@@ -67,14 +71,9 @@ public class Main {
                 // Obtener transiciones faltantes del invariante
                 if (tInvarianteIncompleto.removeAll(tRestantes)) {
                     // Disparar transiciones restantes para completar invariante
-                    tInvarianteIncompleto.forEach(t -> rdpTemporal.disparar(t));
+                    tInvarianteIncompleto.forEach(t -> rdp.disparar(t));
                 }
             }
         }
-
-        estadistica.stop();
-        estadistica.printEstadisticas();
-
-        System.out.println("TInvariantes incompletos completados");
     }
 }
