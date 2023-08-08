@@ -3,9 +3,7 @@ package Importadores;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -44,8 +42,9 @@ public class ImportadorPetrinator implements IImportador {
             return null;
         }
 
-        Set<String> plazas = getPlazas(doc);
-        Set<String> transiciones = getTransiciones(doc);
+        // Plazas tienen id y label, pueden ser distintas
+        Map<String, String> plazas = getPlazas(doc);
+        Map<String, String> transiciones = getTransiciones(doc);
         SortedMap<String, Temporizacion> transicionesTemporizadas = getTransicionesTemporizadas(doc);
 
         SortedMap<String, SortedMap<String, Integer>> matrizIncidencia = new TreeMap<String, SortedMap<String, Integer>>();
@@ -57,8 +56,8 @@ public class ImportadorPetrinator implements IImportador {
         return new Rdp(matrizIncidencia, estadoInicial, transicionesTemporizadas);
     }
 
-    private Set<String> getPlazas(Document doc) {
-        Set<String> plazas = new HashSet<String>();
+    private Map<String, String> getPlazas(Document doc) {
+        Map<String, String> plazas = new HashMap<String, String>();
 
         NodeList plazasNodes = doc.getElementsByTagName("place");
 
@@ -70,7 +69,11 @@ public class ImportadorPetrinator implements IImportador {
                     .item(0)
                     .getTextContent();
 
-            plazas.add(plazaId);
+            String plazaLabel = plaza.getElementsByTagName("label")
+                    .item(0)
+                    .getTextContent();
+
+            plazas.put(plazaId, plazaLabel);
         }
 
         return plazas;
@@ -85,7 +88,7 @@ public class ImportadorPetrinator implements IImportador {
 
             Element plaza = (Element) plazasNodes.item(i);
 
-            String plazaName = plaza.getElementsByTagName("id")
+            String plazaName = plaza.getElementsByTagName("label")
                     .item(0)
                     .getTextContent();
 
@@ -99,8 +102,8 @@ public class ImportadorPetrinator implements IImportador {
         return estado;
     }
 
-    private Set<String> getTransiciones(Document doc) {
-        Set<String> transiciones = new HashSet<String>();
+    private Map<String, String> getTransiciones(Document doc) {
+        Map<String, String> transiciones = new HashMap<String, String>();
 
         NodeList transicionesNodes = doc.getElementsByTagName("transition");
 
@@ -112,7 +115,11 @@ public class ImportadorPetrinator implements IImportador {
                     .item(0)
                     .getTextContent();
 
-            transiciones.add(transicionId);
+            String transicionLabel = transicion.getElementsByTagName("label")
+                    .item(0)
+                    .getTextContent();
+
+            transiciones.put(transicionId, transicionLabel);
         }
 
         return transiciones;
@@ -127,7 +134,7 @@ public class ImportadorPetrinator implements IImportador {
 
             Element transicion = (Element) transicionesNodes.item(i);
 
-            String transicionId = transicion.getElementsByTagName("id")
+            String transicionLabel = transicion.getElementsByTagName("label")
                     .item(0)
                     .getTextContent();
 
@@ -143,7 +150,7 @@ public class ImportadorPetrinator implements IImportador {
                     long alpha = (long) Float.parseFloat(propiedadesEstocasticas.getAttribute("var1"));
                     long beta = (long) Float.parseFloat(propiedadesEstocasticas.getAttribute("var2"));
 
-                    transicionesTemp.put(transicionId, new Temporizacion(alpha, beta));
+                    transicionesTemp.put(transicionLabel, new Temporizacion(alpha, beta));
                 }
             }
         }
@@ -152,12 +159,12 @@ public class ImportadorPetrinator implements IImportador {
     }
 
     private void rellenarMatriz(Document doc, SortedMap<String, SortedMap<String, Integer>> matrizIncidencia,
-            Set<String> plazas, Set<String> transiciones) {
+            Map<String, String> plazas, Map<String, String> transiciones) {
         // Rellenar con ceros
-        transiciones.stream().forEach(t -> {
+        transiciones.forEach((tId, tLabel) -> {
             SortedMap<String, Integer> ceros = new TreeMap<String, Integer>();
-            plazas.forEach(p -> ceros.put(p, 0));
-            matrizIncidencia.put(t, ceros);
+            plazas.forEach((pId, pLabel) -> ceros.put(pLabel, 0));
+            matrizIncidencia.put(tLabel, ceros);
         });
 
         NodeList arcos = doc.getElementsByTagName("arc");
@@ -183,17 +190,17 @@ public class ImportadorPetrinator implements IImportador {
 
             // Si source es una plaza, es una plaza de entrada
             // Y target una transicion
-            if (plazas.contains(source)) {
-                plaza = source;
-                transicion = target;
+            if (plazas.keySet().contains(source)) {
+                plaza = plazas.get(source);
+                transicion = transiciones.get(target);
                 // Signo negativo porque es plaza de entrada
                 weight *= -1;
             }
             // Source es una transicion,
             // Target es plaza de salida
             else {
-                plaza = target;
-                transicion = source;
+                plaza = plazas.get(target);
+                transicion = transiciones.get(source);
             }
 
             matrizIncidencia.get(transicion).put(plaza, weight);

@@ -15,19 +15,22 @@ public class Estadistica {
     private final Map<Set<String>, Integer> tInvariantesCount = new HashMap<Set<String>, Integer>();
     private final Object notificador = new Object();
     private BufferedWriter writer;
-    private boolean activada = false;
+    private long startTime;
+    private long stopTime;
 
     public Estadistica(Rdp rdp) {
         tInvariantes = AnalizadorRdp.getTInvariantes(rdp);
         // Inicializas cuenta de tInvariantes en 0
         tInvariantes.forEach(tInvariante -> tInvariantesCount.put(tInvariante, 0));
+
+        try {
+            writer = new BufferedWriter(new FileWriter("log.txt"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void tryRegistrarDisparo(String transicion) {
-        if (!activada) {
-            return;
-        }
-
+    public void registrarDisparo(String transicion) {
         // Log transicion
         try {
             writer.write(transicion + "-");
@@ -68,24 +71,18 @@ public class Estadistica {
         return tInvariantesCount;
     }
 
-    public void start() {
-        try {
-            writer = new BufferedWriter(new FileWriter("log.txt"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        activada = true;
+    public void startTimer() {
+        startTime = System.currentTimeMillis();
     }
 
     public void stop() {
-        activada = false;
-
         try {
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        stopTime = System.currentTimeMillis();
     }
 
     public void printEstadisticas() {
@@ -94,6 +91,7 @@ public class Estadistica {
             System.out.println();
         });
 
+        System.out.printf("Tiempo de ejecución: %dms\n", stopTime - startTime);
     }
 
     private boolean llegoTInvarianteLimite() {
