@@ -53,6 +53,7 @@ public class Main {
         completarTInvariantes(rdp);
 
         estadistica.stop();
+        System.out.printf("Marcado final: %s\n", rdp.getMarcado());
         estadistica.printEstadisticas();
     }
 
