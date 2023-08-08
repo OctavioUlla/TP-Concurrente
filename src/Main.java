@@ -20,12 +20,11 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         IImportador importador = new ImportadorPetrinator();
 
-        Rdp rdpTemporal = importador.importar("./RedesDePetri/Red de petri sin deadlock temporal.pflow");
-        Monitor monitor = new Monitor(rdpTemporal);
-        Estadistica estadistica = rdpTemporal.getEstadistica();
+        Rdp rdp = importador.importar("./RedesDePetri/Red de petri sin deadlock temporal.pflow");
+        Monitor monitor = new Monitor(rdp);
+        Estadistica estadistica = rdp.getEstadistica();
         monitor.setPolitica(new PoliticaBalanceada(estadistica));
 
-        Rdp rdp = importador.importar("./RedesDePetri/Red de petri sin deadlock.pflow");
         List<SegmentoEjecucion> segmentos = SegmentoEjecucion.getSegmentosEjecucion(rdp);
 
         // Crear hilos necesarios por cada segmento
@@ -51,7 +50,7 @@ public class Main {
             }
         });
 
-        completarTInvariantes(rdpTemporal);
+        completarTInvariantes(rdp);
 
         estadistica.stop();
         estadistica.printEstadisticas();

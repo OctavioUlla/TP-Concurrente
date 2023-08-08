@@ -61,10 +61,6 @@ public class Rdp {
         return marcado;
     }
 
-    public void setMarcado(Map<String, Integer> estado) {
-        marcado = new HashMap<String, Integer>(estado);
-    }
-
     public Set<String> getTrancisiones() {
         return matrizMap.keySet();
     }
