@@ -99,7 +99,7 @@ public class AnalizadorRdp {
                 .collect(Collectors.toList());
     }
 
-    public static void getMarcados(
+    public static void getAllMarcados(
             Rdp rdp,
             Map<String, Integer> marcadoInicial,
             HashSet<Map<String, Integer>> marcados) {
@@ -117,16 +117,17 @@ public class AnalizadorRdp {
                 .collect(Collectors.toSet());
 
         for (String t : transicionesSensibilizadas) {
-            Map<String, Integer> marcado2 = new HashMap<String, Integer>();
-            marcado2.putAll(marcadoInicial);
+            // Copy marcado
+            Map<String, Integer> marcado = new HashMap<String, Integer>();
+            marcado.putAll(marcadoInicial);
             // Simular disparo
             rdp.getMatrizMap().get(t)
                     .entrySet()
-                    .forEach(plazaTok -> marcado2.merge(plazaTok.getKey(),
+                    .forEach(plazaTok -> marcado.merge(plazaTok.getKey(),
                             plazaTok.getValue(),
                             Integer::sum));
 
-            getMarcados(rdp, marcado2, marcados);
+            getAllMarcados(rdp, marcado, marcados);
         }
     }
 

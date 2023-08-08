@@ -89,7 +89,7 @@ public class SegmentoEjecucion implements Iterable<String> {
             List<Set<String>> plazasSegmentos) {
 
         HashSet<Map<String, Integer>> marcados = new HashSet<Map<String, Integer>>();
-        AnalizadorRdp.getMarcados(rdp, rdp.getMarcado(), marcados);
+        AnalizadorRdp.getAllMarcados(rdp, rdp.getMarcado(), marcados);
 
         // Calcular suma maxima de marcados en las plazas de cada segmento
         return plazasSegmentos.stream()
