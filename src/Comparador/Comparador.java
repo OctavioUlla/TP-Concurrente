@@ -38,7 +38,7 @@ public class Comparador {
                 System.out.println("P Invariantes: " + pInvariantes);
                 System.out.println("Plazas de Acción: " + plazasAccion);
 
-                AnalizadorRdp.getMarcados(rdp, marcados);
+                AnalizadorRdp.getMarcados(rdp, rdp.getMarcado(), marcados);
 
                 double promediosProcesos = AnalizadorRdp.getPromedioMarcados(marcados, plazasAccion);
                 int maxHilosActivos = AnalizadorRdp.getMaxHilosActivos(marcados, plazasAccion);

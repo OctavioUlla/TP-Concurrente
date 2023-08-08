@@ -99,22 +99,35 @@ public class AnalizadorRdp {
                 .collect(Collectors.toList());
     }
 
-    public static void getMarcados(Rdp rdp, HashSet<Map<String, Integer>> marcados) {
-        // Deep copy
-        Map<String, Integer> marcado = rdp.getMarcado().entrySet().stream()
-                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+    public static void getMarcados(
+            Rdp rdp,
+            Map<String, Integer> marcadoInicial,
+            HashSet<Map<String, Integer>> marcados) {
 
-        if (!marcados.add(marcado)) {
+        if (!marcados.add(marcadoInicial)) {
             // Si se repite marcado volver
             return;
         }
 
-        rdp.getTransicionesMarcadosNecesarios()
-                .forEach(t -> {
-                    rdp.disparar(t);
-                    getMarcados(rdp, marcados);
-                    rdp.setMarcado(marcado);
-                });
+        Set<String> transicionesSensibilizadas = rdp.getTrancisiones().stream()
+                .filter(t -> rdp.getMatrizMap().get(t).entrySet().stream()
+                        .allMatch(
+                                marcadoNecesario -> marcadoInicial.get(marcadoNecesario.getKey())
+                                        + marcadoNecesario.getValue() >= 0))
+                .collect(Collectors.toSet());
+
+        for (String t : transicionesSensibilizadas) {
+            Map<String, Integer> marcado2 = new HashMap<String, Integer>();
+            marcado2.putAll(marcadoInicial);
+            // Simular disparo
+            rdp.getMatrizMap().get(t)
+                    .entrySet()
+                    .forEach(plazaTok -> marcado2.merge(plazaTok.getKey(),
+                            plazaTok.getValue(),
+                            Integer::sum));
+
+            getMarcados(rdp, marcado2, marcados);
+        }
     }
 
     public static double getPromedioMarcados(HashSet<Map<String, Integer>> marcados, Set<String> plazasAccion) {
