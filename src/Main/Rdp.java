@@ -11,7 +11,7 @@ public class Rdp {
     private final Map<String, Temporizacion> transicionesTemporizadas;
     private Map<String, Integer> marcado;
 
-    private final Estadistica estadistica;
+    private Estadistica estadistica;
 
     public Rdp(
             SortedMap<String, SortedMap<String, Integer>> matrizIncidencia,
@@ -22,7 +22,15 @@ public class Rdp {
         this.transicionesTemporizadas = Collections
                 .unmodifiableMap(transicionesTemporizadas);
         this.marcado = marcadoInicial;
-        this.estadistica = new Estadistica(this);
+    }
+
+    public Estadistica crearEstadisticas() {
+        estadistica = new Estadistica(this);
+        return estadistica;
+    }
+
+    public Estadistica getEstadistica() {
+        return estadistica;
     }
 
     public boolean disparar(String transicion) {
@@ -39,7 +47,9 @@ public class Rdp {
 
         updateTimeStamps();
 
-        estadistica.tryRegistrarDisparo(transicion);
+        if (estadistica != null) {
+            estadistica.registrarDisparo(transicion);
+        }
 
         return true;
     }
@@ -73,10 +83,6 @@ public class Rdp {
                 .stream()
                 .filter(t -> hasMarcadoNecesario(t))
                 .collect(Collectors.toSet());
-    }
-
-    public Estadistica getEstadistica() {
-        return estadistica;
     }
 
     public boolean isTemporal(String transicion) {

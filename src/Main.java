@@ -22,7 +22,7 @@ public class Main {
 
         Rdp rdp = importador.importar("./RedesDePetri/Red de petri sin deadlock temporal.pflow");
         Monitor monitor = new Monitor(rdp);
-        Estadistica estadistica = rdp.getEstadistica();
+        Estadistica estadistica = rdp.crearEstadisticas();
         monitor.setPolitica(new PoliticaBalanceada(estadistica));
 
         List<SegmentoEjecucion> segmentos = SegmentoEjecucion.getSegmentosEjecucion(rdp);
@@ -33,7 +33,7 @@ public class Main {
                         .mapToObj(i -> new Thread(new Disparador(monitor, s), s.toString())))
                 .collect(Collectors.toList());
 
-        estadistica.start();
+        estadistica.startTimer();
 
         hilos.forEach(h -> h.start());
 
