@@ -39,13 +39,15 @@ public class Rdp {
             return false;
         }
 
+        Set<String> tSensibilizadas = getTransicionesMarcadosNecesarios();
+
         matrizMap.get(transicion)
                 .entrySet()
                 .forEach(plazaTok -> marcado.merge(plazaTok.getKey(),
                         plazaTok.getValue(),
                         Integer::sum));
 
-        updateTimeStamps();
+        updateTimeStamps(tSensibilizadas);
 
         if (estadistica != null) {
             estadistica.registrarDisparo(transicion);
@@ -100,13 +102,17 @@ public class Rdp {
         return transicionesTemporizadas.get(transicion).getEspera();
     }
 
-    private void updateTimeStamps() {
+    private void updateTimeStamps(Set<String> tSensibilizadasAnt) {
         long timeStampActual = System.currentTimeMillis();
 
-        // Actualizar time stamp de todas las transiciones con marcado necesarios y
-        // temporales
+        // Encontrar transiciones sensibilizadas con este disparo
+        Set<String> tSensibilizadasNuevas = getTransicionesMarcadosNecesarios();
+        tSensibilizadasNuevas.removeAll(tSensibilizadasAnt);
+
+        // Actualizar time stamp de todas las transiciones sensibilizadas nuevas que
+        // sean temporales
         transicionesTemporizadas.entrySet().stream()
-                .filter(e -> hasMarcadoNecesario(e.getKey()))
+                .filter(e -> tSensibilizadasNuevas.contains(e.getKey()))
                 .forEach(e -> e.getValue().setTimeStamp(timeStampActual));
     }
 

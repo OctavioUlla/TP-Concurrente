@@ -99,6 +99,6 @@ public class Estadistica {
                 .mapToInt(x -> x.intValue())
                 .sum();
 
-        return count == 1000;
+        return count == 3000;
     }
 }
