@@ -12,7 +12,7 @@ public class Colas {
     public Colas(Set<String> transiciones) {
         semaforos = Collections.unmodifiableMap(transiciones.stream()
                 .collect(Collectors
-                        .toMap(x -> x, x -> new Semaphore(0, true))));
+                        .toMap(x -> x, x -> new Semaphore(0))));
     }
 
     public Set<String> getTransicionesEspera() {
