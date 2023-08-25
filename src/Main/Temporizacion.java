@@ -16,7 +16,7 @@ public class Temporizacion {
     }
 
     public long getEspera() {
-        return timeStamp + alpha - System.currentTimeMillis();
+        return Math.max(0, timeStamp + alpha - System.currentTimeMillis());
     }
 
     public boolean isEnVentana() {

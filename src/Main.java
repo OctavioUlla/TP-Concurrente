@@ -20,7 +20,7 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         IImportador importador = new ImportadorPetrinator();
 
-        Rdp rdp = importador.importar("./RedesDePetri/Red de petri sin deadlock temporal.pflow");
+        Rdp rdp = importador.importar("./RedesDePetri/Red de petri sin deadlock.pflow");
         Monitor monitor = new Monitor(rdp);
         Estadistica estadistica = rdp.crearEstadisticas();
         monitor.setPolitica(new PoliticaBalanceada(estadistica));
