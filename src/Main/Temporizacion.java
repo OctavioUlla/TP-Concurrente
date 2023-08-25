@@ -22,7 +22,7 @@ public class Temporizacion {
     public boolean isEnVentana() {
         long timeStampActual = System.currentTimeMillis();
 
-        return timeStamp + alpha <= timeStampActual
-                && timeStampActual <= timeStamp + beta;
+        return timeStamp <= timeStampActual - alpha
+                && timeStampActual - beta <= timeStamp;
     }
 }
