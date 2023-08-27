@@ -1,3 +1,6 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -17,7 +20,7 @@ import Politicas.PoliticaBalanceada;
 
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
         IImportador importador = new ImportadorPetrinator();
 
         Rdp rdp = importador.importar("./RedesDePetri/Red de petri sin deadlock temporal.pflow");
@@ -52,10 +55,12 @@ public class Main {
 
         completarTInvariantes(rdp);
 
-        System.out.println("Fin Disparos!");
+        System.out.println("\nFin Disparos!\n");
 
         estadistica.stop();
         estadistica.printEstadisticas();
+
+        runTInvarianteAnalizador();
     }
 
     private static void completarTInvariantes(Rdp rdp) {
@@ -76,5 +81,14 @@ public class Main {
                 }
             }
         }
+    }
+
+    private static void runTInvarianteAnalizador() throws IOException {
+        Process process = Runtime.getRuntime().exec("python Analizador.py");
+        String buffer;
+        BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        while ((buffer = stdInput.readLine()) != null)
+            System.out.println(buffer);
+        process.destroy();
     }
 }
