@@ -29,6 +29,8 @@ public class Monitor {
             boolean disparoExitoso = rdp.disparar(transicion);
 
             if (disparoExitoso) {
+                System.out.printf("%s Disparada\n", transicion);
+
                 Set<String> sensibilizadas = rdp.getTransicionesMarcadosNecesarios();
                 Set<String> esperando = colas.getTransicionesEspera();
 

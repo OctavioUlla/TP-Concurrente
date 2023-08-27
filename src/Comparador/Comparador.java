@@ -18,7 +18,7 @@ public class Comparador {
 
                 Rdp rdpConDeadlock = importador.importar("./RedesDePetri/Red de petri.pflow");
 
-                Rdp rdpSinDeadlock = importador.importar("./RedesDePetri/Red de petri sin deadlock.pflow");
+                Rdp rdpSinDeadlock = importador.importar("./RedesDePetri/Red de petri sin deadlock temporal.pflow");
 
                 System.out.println("Red de Petri Sin desbloquear:");
                 analizar(rdpConDeadlock);
