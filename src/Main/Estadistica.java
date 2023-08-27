@@ -31,6 +31,8 @@ public class Estadistica {
     }
 
     public void registrarDisparo(String transicion) {
+        System.out.printf("%s Disparada\n", transicion);
+
         // Log transicion
         try {
             writer.write(transicion + "-");

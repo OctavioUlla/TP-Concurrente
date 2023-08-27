@@ -52,6 +52,8 @@ public class Main {
 
         completarTInvariantes(rdp);
 
+        System.out.println("Fin Disparos!");
+
         estadistica.stop();
         estadistica.printEstadisticas();
     }
