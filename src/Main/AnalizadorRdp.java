@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 public class AnalizadorRdp {
@@ -131,19 +132,30 @@ public class AnalizadorRdp {
         }
     }
 
-    public static double getPromedioMarcados(HashSet<Map<String, Integer>> marcados, Set<String> plazasAccion) {
-
-        HashSet<Map<String, Integer>> marcadosAccion = new HashSet<Map<String, Integer>>();
+    public static Map<String, Double> getPromedioPlazas(HashSet<Map<String, Integer>> marcados,
+            Set<String> plazas) {
+        HashSet<Map<String, Integer>> marcadosPlazas = new HashSet<Map<String, Integer>>();
         for (Map<String, Integer> marcado : marcados) {
-            marcadosAccion.add(marcado.entrySet().stream().filter(p -> plazasAccion.contains(p.getKey()))
+            marcadosPlazas.add(marcado.entrySet().stream().filter(p -> plazas.contains(p.getKey()))
                     .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue())));
         }
 
-        return marcadosAccion.stream()
-                .map(marcado -> marcado.values().stream().mapToInt(Integer::intValue).sum())
-                .mapToInt(Integer::intValue)
-                .average()
-                .orElse(0);
+        Map<String, Double> promedioPlazas = new HashMap<String, Double>();
+
+        for (Map<String, Integer> map : marcadosPlazas) {
+            for (Entry<String, Integer> e : map.entrySet()) {
+                promedioPlazas.merge(e.getKey(), Double.valueOf(e.getValue()), Double::sum);
+            }
+        }
+
+        return promedioPlazas.entrySet().stream()
+                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue() / marcadosPlazas.size()));
+    }
+
+    public static double getPromedioGeneral(Map<String, Double> marcadosPromedio) {
+        return marcadosPromedio.entrySet().stream()
+                .mapToDouble(x -> x.getValue())
+                .sum();
     }
 
     public static int getMaxHilosActivos(HashSet<Map<String, Integer>> marcados, Set<String> plazasAccion) {
