@@ -77,6 +77,9 @@ public class AnalizadorRdp {
         Set<String> plazasRecursosYIdle = new HashSet<String>();
 
         // Plazas que se repiten en los pInvariantes son plazas de accion
+        // Solo funciona para redes en las que todas las plazas de accion esten
+        // limitadas por plazas de recurso
+        // TO DO: cubrir mas casos
         return pInvariantes.stream()
                 .flatMap(pInvariante -> pInvariante.stream()
                         .filter(p -> !plazasRecursosYIdle.add(p)))
@@ -132,13 +135,21 @@ public class AnalizadorRdp {
         }
     }
 
-    public static Map<String, Double> getPromedioPlazas(HashSet<Map<String, Integer>> marcados,
+    public static HashSet<Map<String, Integer>> filtrarMarcadosPlazas(HashSet<Map<String, Integer>> marcados,
             Set<String> plazas) {
+
         HashSet<Map<String, Integer>> marcadosPlazas = new HashSet<Map<String, Integer>>();
         for (Map<String, Integer> marcado : marcados) {
             marcadosPlazas.add(marcado.entrySet().stream().filter(p -> plazas.contains(p.getKey()))
                     .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue())));
         }
+
+        return marcadosPlazas;
+    }
+
+    public static Map<String, Double> getPromedioPlazas(HashSet<Map<String, Integer>> marcados,
+            Set<String> plazas) {
+        HashSet<Map<String, Integer>> marcadosPlazas = filtrarMarcadosPlazas(marcados, plazas);
 
         Map<String, Double> promedioPlazas = new HashMap<String, Double>();
 
@@ -160,11 +171,7 @@ public class AnalizadorRdp {
 
     public static int getMaxHilosActivos(HashSet<Map<String, Integer>> marcados, Set<String> plazasAccion) {
 
-        HashSet<Map<String, Integer>> marcadosAccion = new HashSet<Map<String, Integer>>();
-        for (Map<String, Integer> marcado : marcados) {
-            marcadosAccion.add(marcado.entrySet().stream().filter(p -> plazasAccion.contains(p.getKey()))
-                    .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue())));
-        }
+        HashSet<Map<String, Integer>> marcadosAccion = filtrarMarcadosPlazas(marcados, plazasAccion);
 
         return marcadosAccion.stream()
                 .map(marcado -> marcado.values().stream().mapToInt(Integer::intValue).sum())
