@@ -69,7 +69,7 @@ public class SegmentoEjecucion implements Iterable<String> {
         crearSegmentosJoins(joins, tSegmentos);
 
         // Se tienen las transiciones de los segmentos pero se necesitan las plazas
-        List<Set<String>> plazasSegmentos = AnalizadorRdp.getPlazasAccionTInvariantes(rdp, tSegmentos);
+        List<Set<String>> plazasSegmentos = AnalizadorRdp.getPlazasAccionTInvariantes(rdp, tSegmentos, plazasAccion);
 
         // Eliminar plazas correspodientes
         for (int i = plazasSegmentos.size() - 1; i >= 0; i--) {

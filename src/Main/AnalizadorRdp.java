@@ -35,7 +35,8 @@ public class AnalizadorRdp {
             tInvariantes.add(tInvariante);
         }
 
-        Iterator<Set<String>> iteradorPlazasAccionTInvariantes = getPlazasAccionTInvariantes(rdp, tInvariantes)
+        Iterator<Set<String>> iteradorPlazasAccionTInvariantes = getPlazasAccionTInvariantes(rdp, tInvariantes,
+                AnalizadorRdp.getPlazasAccion(rdp))
                 .iterator();
 
         // Ordenar transiciones en tInvariante
@@ -82,10 +83,9 @@ public class AnalizadorRdp {
                 .collect(Collectors.toSet());
     }
 
-    // Capaz se puede eliminar
-    public static List<Set<String>> getPlazasAccionTInvariantes(Rdp rdp, List<Set<String>> tInvariantes) {
+    public static List<Set<String>> getPlazasAccionTInvariantes(Rdp rdp, List<Set<String>> tInvariantes,
+            Set<String> plazasAccion) {
         SortedMap<String, SortedMap<String, Integer>> matrizMap = rdp.getMatrizMap();
-        Set<String> plazasAccion = getPlazasAccion(rdp);
 
         return tInvariantes.stream()
                 // Por cada tInvariante encontrar plazas involucradas
