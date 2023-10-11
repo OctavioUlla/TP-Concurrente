@@ -109,7 +109,7 @@ public class AnalizadorRdp {
             HashSet<Map<String, Integer>> marcados) {
 
         if (!marcados.add(marcadoInicial)) {
-            // Si se repite marcado volver
+            // Si se repite marcado volver, fin rama
             return;
         }
 
@@ -120,6 +120,7 @@ public class AnalizadorRdp {
                                         + marcadoNecesario.getValue() >= 0))
                 .collect(Collectors.toSet());
 
+        // Abrir rama por cada trancision sensibilizada
         for (String t : transicionesSensibilizadas) {
             // Copy marcado
             Map<String, Integer> marcado = new HashMap<String, Integer>();
