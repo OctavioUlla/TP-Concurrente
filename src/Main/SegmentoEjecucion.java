@@ -59,13 +59,16 @@ public class SegmentoEjecucion implements Iterable<String> {
 
         Map<String, String> joins = getJoins(matriz, plazasAccion);
 
-        // Comenzar con segmentos iguales a los tInvariantes
+        // Comenzar con segmentos iguales a los tInvariantes(Caso 1)
         List<Set<String>> tSegmentos = AnalizadorRdp.getTInvariantes(rdp);
 
+        // (Caso 2)
         crearSegmentosFork(forks, tSegmentos);
 
+        // (Caso 3)
         crearSegmentosJoins(joins, tSegmentos);
 
+        // Se tienen las transiciones de los segmentos pero se necesitan las plazas
         List<Set<String>> plazasSegmentos = AnalizadorRdp.getPlazasAccionTInvariantes(rdp, tSegmentos);
 
         // Eliminar plazas correspodientes
@@ -77,6 +80,7 @@ public class SegmentoEjecucion implements Iterable<String> {
             }
         }
 
+        // Calcula la cantidad de hilos necesarios por segmento
         List<Integer> hilosSegmentos = getHilosSegmentos(rdp, plazasSegmentos);
 
         return tSegmentos.stream()
