@@ -52,6 +52,7 @@ public class SegmentoEjecucion implements Iterable<String> {
     }
 
     public static List<SegmentoEjecucion> getSegmentosEjecucion(Rdp rdp) {
+        // 4.2 Determinar responsabilidad de hilos
         SortedMap<String, SortedMap<String, Integer>> matriz = rdp.getMatrizMap();
         Set<String> plazasAccion = AnalizadorRdp.getPlazasAccion(rdp);
 
@@ -80,7 +81,7 @@ public class SegmentoEjecucion implements Iterable<String> {
             }
         }
 
-        // Calcula la cantidad de hilos necesarios por segmento
+        // 4.3 Calcula la cantidad de hilos necesarios por segmento
         List<Integer> hilosSegmentos = getHilosSegmentos(rdp, plazasSegmentos);
 
         return tSegmentos.stream()
