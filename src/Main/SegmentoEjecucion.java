@@ -98,14 +98,7 @@ public class SegmentoEjecucion implements Iterable<String> {
 
         // Calcular suma maxima de marcados en las plazas de cada segmento
         return plazasSegmentos.stream()
-                .map(plazasSegmento -> marcados.stream()
-                        .map(marcado -> marcado.entrySet().stream()
-                                .filter(p -> plazasSegmento.contains(p.getKey()))
-                                .map(p -> p.getValue())
-                                .mapToInt(Integer::intValue).sum())
-                        .mapToInt(Integer::intValue)
-                        .max()
-                        .orElse(0))
+                .map(plazasSegmento -> AnalizadorRdp.getMaxHilosActivos(marcados, plazasSegmento))
                 .collect(Collectors.toList());
     }
 
@@ -157,7 +150,7 @@ public class SegmentoEjecucion implements Iterable<String> {
                         }
                     }
 
-                    // Encontar transiciones que pertenecen al segmento nuevo
+                    // Encontar transiciones que pertenecen al segmento nuevo segmento
                     nuevoSegmento = tSegmento.stream()
                             .limit(indice)
                             .collect(Collectors.toCollection(LinkedHashSet::new));
