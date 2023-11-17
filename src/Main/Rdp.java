@@ -41,6 +41,7 @@ public class Rdp {
 
         Set<String> tSensibilizadas = getTransicionesMarcadosNecesarios();
 
+        // Dispara
         matrizMap.get(transicion)
                 .entrySet()
                 .forEach(plazaTok -> marcado.merge(plazaTok.getKey(),
