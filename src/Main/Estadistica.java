@@ -8,20 +8,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class Estadistica {
     private final List<Set<String>> tInvariantes;
     private final List<String> tInvarianteIncompleto = new ArrayList<String>();
     private final Map<Set<String>, Integer> tInvariantesCount = new HashMap<Set<String>, Integer>();
+    private final Map<Set<String>, Integer> pInvariantesSuma;
     private final Object notificador = new Object();
     private BufferedWriter writer;
     private long startTime;
     private long stopTime;
+    private boolean verificanPInvariantes = true;
 
     public Estadistica(Rdp rdp) {
         tInvariantes = AnalizadorRdp.getTInvariantes(rdp);
         // Inicializas cuenta de tInvariantes en 0
         tInvariantes.forEach(tInvariante -> tInvariantesCount.put(tInvariante, 0));
+
+        // Obtiene la suma de tokens en cada pInvariante
+        List<Set<String>> pInvariantes = AnalizadorRdp.getPInvariantes(rdp);
+        pInvariantesSuma = pInvariantes.stream()
+                .collect(Collectors.toMap(pInvariante -> pInvariante,
+                        pInvariante -> rdp.getMarcado().entrySet().stream()
+                                .filter(p -> pInvariante.contains(p.getKey()))
+                                .map(p -> p.getValue())
+                                .reduce(0, Integer::sum)));
 
         try {
             writer = new BufferedWriter(new FileWriter("log.txt"));
@@ -30,7 +43,7 @@ public class Estadistica {
         }
     }
 
-    public void registrarDisparo(String transicion) {
+    public void registrarDisparo(String transicion, Map<String, Integer> newMarcado) {
         System.out.printf("%s Disparada\n", transicion);
 
         // Log transicion
@@ -57,6 +70,8 @@ public class Estadistica {
                 }
             }
         }
+
+        verificarPInvariantes(newMarcado);
     }
 
     public void wait1000TInvariantes() throws InterruptedException {
@@ -93,6 +108,7 @@ public class Estadistica {
             System.out.println();
         });
 
+        System.out.printf("PInvariantes verifican: %s\n", verificanPInvariantes);
         System.out.printf("Tiempo de ejecución: %dms\n", stopTime - startTime);
     }
 
@@ -102,5 +118,18 @@ public class Estadistica {
                 .sum();
 
         return count == 1000;
+    }
+
+    private void verificarPInvariantes(Map<String, Integer> newMarcado) {
+        for (Entry<Set<String>, Integer> pInvarianteSuma : pInvariantesSuma.entrySet()) {
+            int suma = newMarcado.entrySet().stream()
+                    .filter(p -> pInvarianteSuma.getKey().contains(p.getKey()))
+                    .map(p -> p.getValue())
+                    .reduce(0, Integer::sum);
+
+            if (pInvarianteSuma.getValue() != suma) {
+                verificanPInvariantes = false;
+            }
+        }
     }
 }

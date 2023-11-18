@@ -181,31 +181,6 @@ public class AnalizadorRdp {
                 .orElse(0);
     }
 
-    public static boolean verificarPInvariantes(HashSet<Map<String, Integer>> marcados,
-            List<Set<String>> pInvariantes) {
-
-        Map<Set<String>, Integer> pInvariantesSumas = new HashMap<Set<String>, Integer>();
-
-        for (Set<String> pInvariante : pInvariantes) {
-            for (Map<String, Integer> marcado : marcados) {
-                int sumaPInvariante = marcado.entrySet().stream()
-                        .filter(p -> pInvariante.contains(p.getKey()))
-                        .map(p -> p.getValue())
-                        .reduce(0, Integer::sum);
-
-                if (pInvariantesSumas.containsKey(pInvariante)) {
-                    if (sumaPInvariante != pInvariantesSumas.get(pInvariante)) {
-                        return false;
-                    }
-                }
-
-                pInvariantesSumas.put(pInvariante, sumaPInvariante);
-            }
-        }
-
-        return true;
-    }
-
     private static LinkedHashSet<String> ordenarTInvariante(
             Iterator<String> iteradorTInvariante,
             Set<String> tInvariante,

@@ -51,7 +51,7 @@ public class Rdp {
         updateTimeStamps(tSensibilizadas);
 
         if (estadistica != null) {
-            estadistica.registrarDisparo(transicion);
+            estadistica.registrarDisparo(transicion, marcado);
         }
 
         return true;

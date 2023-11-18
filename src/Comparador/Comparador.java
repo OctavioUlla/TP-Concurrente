@@ -46,9 +46,6 @@ public class Comparador {
 
                 List<SegmentoEjecucion> segmentos = SegmentoEjecucion.getSegmentosEjecucion(rdp);
 
-                boolean pInvariantesVerificados = AnalizadorRdp.verificarPInvariantes(marcados, pInvariantes);
-
-                System.out.println("PInvariantes verifican: " + pInvariantesVerificados);
                 System.out.println("Cantidad marcados posibles: " + marcados.size());
                 System.out.println("Promedio tokens en cada plaza de acción: " + promedioPlazaAccion);
                 System.out.println("Promedio tokens en plazas de acción: " + promedioGeneral);
