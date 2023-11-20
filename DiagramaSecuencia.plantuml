@@ -1,0 +1,106 @@
+@startuml DiagramaSecuencia
+skinparam Style strictuml
+
+participant Hilo1
+hnote over Hilo1: Hilo activo
+participant Hilo2
+hnote over Hilo2: Hilo dormido
+
+Hilo1 -> Monitor : dispararTransicion()
+activate Monitor
+
+Monitor -> Mutex : acquire()
+activate Mutex
+return
+
+Monitor -> Monitor : k = true
+
+loop k == true
+    Monitor -> Rdp : disparar()
+    activate Rdp
+    return disparoExitoso
+
+    alt disparoExitoso == true
+        
+        Monitor -> Rdp : getTransicionesMarcadosNecesarios()
+        activate Rdp
+        return sensibilizadas
+
+        Monitor -> Colas : getTransicionesEspera()
+        activate Colas
+        return esperando
+
+        Monitor -> Monitor : sensibilizadas = sensibilizadas ∩ esperando
+
+        alt sensibilizadas > 0
+            Monitor -> Politica : getProximaTransicion()
+            activate Politica
+            return proximaTransicion
+            
+            Monitor -> Colas : release(proximaTransicion)
+            activate Colas
+            return
+
+            Monitor --> Hilo1
+            note left: salir del monitor
+            activate Hilo1
+            deactivate Hilo1
+
+            Monitor --> Hilo2
+            note left: se activa el hilo
+            activate Hilo2
+            deactivate Hilo2
+        else sensibilizadas == 0
+            Monitor -> Monitor : k = false
+        end
+    else disparoExitoso == false
+        Monitor -> Rdp : hasMarcadoNecesario(transicion)
+        activate Rdp
+        Rdp --> Monitor : hasMarcadoNecesario
+        deactivate Rdp
+
+        alt hasMarcadoNecesario == true
+            Monitor -> Mutex : release()
+            activate Mutex
+            Mutex --> Monitor
+            deactivate Mutex
+
+            Monitor -> Rdp : getEsperaTemporal()
+            activate Rdp
+            Rdp --> Monitor : espera
+            deactivate Rdp
+
+            Monitor -> Monitor : Thread.sleep(espera)
+
+            Monitor -> Mutex : acquire()
+            activate Mutex
+            Mutex --> Monitor
+            deactivate Mutex
+
+            Monitor -> Monitor : k = true
+        else hasMarcadoNecesario == false
+            Monitor -> Mutex : release()
+            activate Mutex
+            Mutex --> Monitor
+            deactivate Mutex
+
+            Monitor -> Colas : acquire()
+            activate Colas
+            Colas --> Monitor
+            deactivate Colas
+
+            Hilo2 -> Monitor: continua
+            note left: continua ejecucion del hilo
+        end
+    end
+end
+
+Monitor -> Mutex : release()
+activate Mutex
+Mutex --> Monitor
+deactivate Mutex
+
+return
+
+deactivate Monitor
+@enduml
