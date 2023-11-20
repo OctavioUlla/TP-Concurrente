@@ -84,7 +84,7 @@ public class Main {
     }
 
     private static void runTInvarianteAnalizador() throws IOException {
-        Process process = Runtime.getRuntime().exec("python Analizador.py");
+        Process process = Runtime.getRuntime().exec("python3 Analizador.py");
         String buffer;
         BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
         while ((buffer = stdInput.readLine()) != null)
