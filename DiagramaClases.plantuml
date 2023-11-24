@@ -2,10 +2,10 @@
 interface IImportador
 interface IPolitica
 
-Main ..> Monitor
-Main ..> SegmentoEjecucion
+Main --> Monitor
+Main --> SegmentoEjecucion
 Main --> IPolitica
-Main ..> Rdp
+Main --> Rdp
 Main --> IImportador
 Main --> AnalizadorRdp
 Main --> Estadistica
@@ -22,14 +22,14 @@ ImportadorPIPE --> Temporizacion
 PoliticaRandom ..|> IPolitica  
 
 PoliticaBalanceada ..|> IPolitica 
-PoliticaBalanceada ..> Estadistica
+PoliticaBalanceada <-- Estadistica
 
 AnalizadorRdp --> Matriz
 AnalizadorRdp <-- Rdp
 
 Disparador --> Monitor
 
-Estadistica *-- Rdp
+Estadistica --- Rdp
 
 Monitor *-- Rdp
 Monitor *-- Colas
