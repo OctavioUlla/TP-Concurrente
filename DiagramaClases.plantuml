@@ -25,7 +25,7 @@ PoliticaBalanceada ..|> IPolitica
 PoliticaBalanceada ..> Estadistica
 
 AnalizadorRdp --> Matriz
-AnalizadorRdp *-- Rdp
+AnalizadorRdp <-- Rdp
 
 Disparador --> Monitor
 
