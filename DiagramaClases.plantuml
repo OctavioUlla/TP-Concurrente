@@ -1,0 +1,227 @@
+@startuml Dis
+interface IImportador
+interface IPolitica
+
+Main ..> Monitor
+Main ..> SegmentoEjecucion
+Main --> IPolitica
+Main ..> Rdp
+Main --> IImportador
+Main --> AnalizadorRdp
+Main --> Estadistica
+Main --> Disparador
+
+IImportador --> Rdp
+
+ImportadorPetrinator ..|>  IImportador 
+ImportadorPetrinator --> Temporizacion
+
+ImportadorPIPE ..|> IImportador 
+ImportadorPIPE --> Temporizacion
+
+PoliticaRandom ..|> IPolitica  
+
+PoliticaBalanceada ..|> IPolitica 
+PoliticaBalanceada ..> Estadistica
+
+AnalizadorRdp --> Matriz
+AnalizadorRdp *-- Rdp
+
+Disparador --> Monitor
+
+Estadistica *-- Rdp
+
+Monitor *-- Rdp
+Monitor *-- Colas
+Monitor o-- IPolitica
+
+SegmentoEjecucion --> AnalizadorRdp
+
+Comparador --> IImportador
+Comparador o-- Rdp
+Comparador --> AnalizadorRdp
+Comparador --> SegmentoEjecucion
+
+Rdp --> Temporizacion
+
+Class Main{
+    +main(String[] args) 
+    -completarTInvariantes(Rdp rdp)
+}
+
+Class AnalizadorRdp{
+    +getTInvariantes(Rdp rdp): List<Set<String>>
+    +getPInvariantes(Rdp rdp): List<Set<String>> 
+    +getPlazasAccion(Rdp rdp): Set<String>
+    +getPlazasAccionTInvariantes(Rdp rdp, List<Set<String>> tInvariantes,
+        Set<String> plazasAccion) : List<Set<String>>
+    +getAllMarcados(Rdp rdp,Map<String, Integer> marcadoInicial,
+        HashSet<Map<String, Integer>> marcados)
+    +filtrarMarcadosPlazas(HashSet<Map<String, Integer>> marcados,
+        Set<String> plazas) : HashSet<Map<String, Integer>>
+    +getPromedioPlazas(HashSet<Map<String, Integer>> marcados,
+        Set<String> plazas): Map<String, Double>  
+    +getPromedioGeneral(Map<String, Double> marcadosPromedio): double     
+    +getMaxHilosActivos(HashSet<Map<String, Integer>> marcados,
+        Set<String> plazasAccion): int
+    +ordenarTInvariante(Iterator<String> iteradorTInvariante,
+        Set<String> tInvariante,Set<String> plazasAccionTInvariante,
+        SortedMap<String, SortedMap<String, Integer>> matriz): LinkedHashSet<String>    
+}
+
+Class Colas{
+    -Map<String, Semaphore> semaforos
+    +Colas(Set<String> transiciones)
+    +getTransicionesEspera() : Set<String>
+    +acquire(String transicion)
+    +release(String transicion)
+}
+
+Class Disparador <<Runnable>>{
+    -Monitor monitor
+    -Iterator<String> tIterator
+    +Disparador(Monitor monitor, SegmentoEjecucion segmento)
+    +run()
+}
+
+Class Estadistica {
+    -List<Set<String>> tInvariantes
+    -List<String> tInvarianteIncompleto 
+    -Map<Set<String>, Integer> tInvariantesCount
+    -Map<Set<String>, Integer> pInvariantesSuma
+    -Object notificador 
+    -BufferedWriter writer
+    -long startTime
+    -long stopTime
+    -boolean verificanPInvariantes
+    +Estadistica(Rdp rdp)
+    +registrarDisparo(String transicion,
+     Map<String, Integer> newMarcado)
+    +wait1000TInvariantes()
+    +getTInvariantesIncompletos(): List<String>
+    +getTInvariantesCount(): Map<Set<String>, Integer>
+    +startTimer()
+    +stop()
+    +printEstadisticas()
+    -verificarPInvariantes(Map<String, Integer> newMarcado)
+}
+
+Class Matriz {
+    -int[][] data
+    +Matriz(Integer[][] data)
+    +kernel() : Matriz
+    +transpose(): Matriz
+
+}
+
+Class Monitor {
+    -Rdp rdp
+    -Colas colas
+    -Semaphore mutex
+    -IPolitica politica
+    -boolean k 
+    +Monitor(Rdp redDePetri)
+    +dispararTransicion(String transicion)
+    +setPolitica(IPolitica politica)
+}
+
+Class Rdp {
+    -SortedMap<String, SortedMap<String, Integer>> matrizMap
+    -Map<String, Temporizacion> transicionesTemporizadas
+    -Map<String, Integer> marcado
+    -Estadistica estadistica
+    +Rdp(SortedMap<String, SortedMap<String, Integer>> matrizIncidencia,
+        Map<String, Integer> marcadoInicial,
+        Map<String, Temporizacion> transicionesTemporizadas)
+    +crearEstadisticas(): Estadistica
+    +getEstadistica(): Estadistica
+    +disparar(String transicion): boolean
+    +getMatrizMap(): SortedMap<String, SortedMap<String, Integer>>
+    +getMatriz(): Matriz
+    +getMarcado(): Map<String, Integer>
+    +getTrancisiones(): Set<String>
+    +getPlazas(): Set<String>
+    +getTransicionesMarcadosNecesarios(): Set<String>
+    +isTemporal(String transicion): boolean
+    +hasMarcadoNecesario(String transicion): boolean
+    +getEsperaTemporal(String transicion): long
+    -updateTimeStamps(Set<String> tSensibilizadasAnt)
+    -isSensibilizada(String transicion): boolean
+    -isEnVentana(String transicion): boolean
+}
+
+Class SegmentoEjecucion <<Iterable<String>>>{
+    -int hilos
+    -String[] transiciones
+    +SegmentoEjecucion(int hilos, Set<String> transiciones)
+    +getHilos(): int
+    +iterator(): Iterator<String>
+    +toString(): String
+    +getSegmentosEjecucion(Rdp rdp): List<SegmentoEjecucion>
+    -getHilosSegmentos(Rdp rdp,
+        List<Set<String>> plazasSegmentos): List<Integer>
+    -crearSegmentosJoins(Map<String, String> joins,
+        List<Set<String>> tSegmentos)
+    -crearSegmentosFork(Map<String, String> forks,
+        List<Set<String>> tSegmentos)
+    -getForks(SortedMap<String, SortedMap<String, Integer>> matriz,
+        Set<String> plazasAccion): Map<String, String>
+    -getJoins(SortedMap<String, SortedMap<String, Integer>> matriz,
+        Set<String> plazasAccion): Map<String, String>       
+}
+
+Class Temporizacion{
+    -long alpha
+    -long beta
+    -long timeStamp
+    +Temporizacion(long alpha, long beta)
+    +getEspera(): long
+    +isEnVentana(): boolean
+}
+
+Class IPolitica{
+    +getProximaTransicion(Set<String> transicionesSensibilizadas): String
+}
+
+Class PoliticaBalanceada <<IPolitica>>{
+    -Estadistica estadistica
+    +PoliticaBalanceada(Estadistica estadistica)
+    +getProximaTransicion(Set<String> transicionesSensibilizadas): String
+}
+
+Class PoliticaRandom <<IPolitica>>{
+    -Random random
+    +getProximaTransicion(Set<String> transicionesSensibilizadas): String
+}
+
+Class IImportador{
+    +importar(String filename): Rdp
+}
+
+Class ImportadorPetrinator <<IImportador>>{
+    +importar(String filename): Rdp
+    -getPlazas(Document doc): Map<String, String>
+    -getEstadoInicial(Document doc): Map<String, String>
+    -getTransiciones(Document doc): Map<String, String>
+    -getTransicionesTemporizadas(Document doc): SortedMap<String, Temporizacion>
+    -rellenarMatriz(Document doc, 
+        SortedMap<String, SortedMap<String, Integer>> matrizIncidencia,
+        Map<String, String> plazas, Map<String, String> transiciones)
+}
+
+Class ImportadorPIPE <<IImportador>>{
+    +importar(String filename): Rdp
+    -getPlazas(Document doc): Map<String, String>
+    -getEstadoInicial(Document doc): Map<String, String>
+    -getTransiciones(Document doc): Map<String, String>
+    -rellenarMatriz(Document doc, 
+        SortedMap<String, SortedMap<String, Integer>> matrizIncidencia,
+        Map<String, String> plazas, Map<String, String> transiciones)
+}
+
+Class Comparador {
+    +main(String[] args)
+    +analizar(Rdp rdp)
+}
+
+@enduml
